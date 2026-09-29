@@ -1,0 +1,83 @@
+FORMA 0.4
+
+INSTALL ON YOUR PHONE (recommended)
+1. Open Forma's web address on your phone in Chrome or Samsung Internet.
+2. In Forma go to Settings > App & backups > Install, or use the browser
+   menu > Install app / Add to home screen. (iPhone: Safari > Share >
+   Add to Home Screen.)
+3. Forma now opens full screen from its icon and works offline.
+   Long-press the icon for shortcuts: Log activity, Quick start, Progress.
+When a new version is published, Forma shows "A new version is ready".
+Tap Update now; your data stays where it is.
+
+OR OPEN IT AS A FILE
+Open Forma.html in any modern browser. No installation or account needed.
+
+BRINGING YOUR DATA ACROSS
+- Same browser, same computer as the previous Forma.html: your routines,
+  plans, history and any unfinished session are picked up automatically.
+  The old copy is left untouched, so you can always go back.
+- Anywhere else (or from the online version): in the old version choose
+  Export backup, then in this version go to Settings > Restore backup and
+  pick that file. Backups from the previous version restore fine.
+
+SAVING AND PRIVACY
+Everything autosaves in this browser on this device, and nowhere else:
+there is no server and no account. The installed app asks the browser to
+protect its data from automatic clean-up. Back up now and then from
+Settings > App & backups ("Share backup" sends it to Google Drive, email
+and so on). A backup is also how you move your data to another device.
+Clearing browser data or switching browsers can make local saves
+unavailable. A reload recovers an active session, paused where you left it.
+
+WHAT'S NEW IN 0.3
+- Real tracking: log actual reps, weight and distance per set, with
+  "last time" hints and weight carried to the remaining sets.
+- Log activities done outside the app (runs, classes, sports) and mark
+  planned sessions as done. Your week shows what is planned and what is done.
+- Progress: minutes per week, streak, personal bests, per-exercise history,
+  full history with notes and effort, CSV export.
+- 228 exercises (118 new): barbell, dumbbell, kettlebell, cable/machines,
+  calisthenics, HIIT, running/rowing/swimming with distance, mobility, yoga
+  and guided breathing. Filter by the equipment you own.
+- 13 templates, incl. push/pull/legs, full-body barbell, Tabata, run-walk
+  intervals, morning mobility and breathing.
+- Quick start: interval timer, meditation with breathing guides, "do it again".
+- Routine editor: searchable exercise picker, duplicate steps, named repeat
+  groups (circuits, supersets), notes per exercise, unsaved-changes guard.
+- Player: back button, countdown beeps, keeps the screen awake, keyboard
+  shortcuts (Space = pause, Enter = done), finish summary with effort + notes.
+- Settings: kg/lb, week start, light/dark theme, sounds, default rest.
+
+OFFLINE
+Everything works offline. Web fonts and any image/video links you add to
+custom exercises need internet; without it the app uses system fonts.
+
+WHAT'S NEW IN 0.4
+- Installable app with its own icon, offline mode, update notice,
+  home-screen shortcuts, storage protection and backup sharing.
+
+FOR WHOEVER EDITS THE CODE NEXT
+source/ is the real app and runs as-is: open source/index.html.
+Build with:   python3 build.py
+  docs/        the installable web app that GitHub Pages serves
+  Forma.html   the single-file edition
+  source/index.html        page shell and navigation
+  source/style.css         all styles; colours are tokens with a dark theme
+  source/js/library.js     built-in exercises, one per line (IDs never change)
+  source/js/util.js        DOM, dates, units (stored in kg and metres)
+  source/js/model.js       categories, equipment, templates, routine compiler
+  source/js/store.js       saving, loading, validation, v1 migration, backups
+  source/js/stats.js       history maths: weekly totals, streaks, records
+  source/js/ui.js          routing, dialogs, toasts, icons, body map
+  source/js/views/*.js     one file per screen
+  source/js/player.js      the session player
+  source/js/pwa.js         install, offline, updates, storage protection
+  source/js/main.js        event wiring and start-up
+  source/sw.js             offline cache (build.py stamps its version)
+  source/manifest.webmanifest, source/icons/   app name, icon, shortcuts
+Clicks are routed by data-action="…" to the actions object, forms by id to
+the forms object, and inputs by data-bind to the binds object.
+
+Exercise instructions are general guidance, not medical or personal
+training advice.
