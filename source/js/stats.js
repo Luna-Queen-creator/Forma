@@ -71,7 +71,7 @@ function lastPerformance(e, excludeEntryId) { return exerciseLog(e, excludeEntry
 function setText(t) {
   if (t.mode === 'reps') return t.weight ? `${t.reps ?? t.value} × ${fmtWeight(t.weight)}` : `${t.reps ?? t.value} reps`;
   if (t.mode === 'distance') return `${fmtDistance(t.distance ?? t.value)}${t.actualSeconds ? ' in ' + formatClock(t.actualSeconds) : ''}`;
-  return t.actualSeconds !== undefined ? fmtDuration(t.actualSeconds) : fmtDuration(t.value);
+  return t.actualSeconds ? fmtDuration(t.actualSeconds) : fmtDuration(t.value);
 }
 
 /** Several sets compressed: "3 × 5 @ 80 kg" when identical, otherwise a list. */

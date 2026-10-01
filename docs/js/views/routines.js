@@ -117,34 +117,40 @@ function valueField(b) {
   return `<label>${label}<input type="number" data-field="value" min="1" max="7200" step="1" required value="${b.value}"></label>`;
 }
 
-function toolButtons(path, i, length) {
+const GRIP = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="9" cy="6" r="1.7"/><circle cx="15" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="18" r="1.7"/><circle cx="15" cy="18" r="1.7"/></svg>';
+
+/** Grip to drag a step (or move it with the arrow keys), with its number. */
+function dragHandle(path, i, label) {
+  return `<button type="button" class="drag-handle" data-drag-handle data-path="${path}" aria-label="Move ${esc(label)}: drag, or use the arrow keys" title="Drag to reorder">${GRIP}</button>
+    <span class="step-number">${i + 1}</span>`;
+}
+
+function toolButtons(path) {
   return `<div class="step-tools">
-    <button type="button" class="tiny" data-action="block-up" data-path="${path}" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
-    <button type="button" class="tiny" data-action="block-down" data-path="${path}" ${i === length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
     <button type="button" class="tiny" data-action="block-copy" data-path="${path}" aria-label="Duplicate" title="Duplicate">⧉</button>
-    <button type="button" class="tiny remove" data-action="block-remove" data-path="${path}" aria-label="Remove">×</button></div>`;
+    <button type="button" class="tiny remove" data-action="block-remove" data-path="${path}" aria-label="Remove" title="Remove">×</button></div>`;
 }
 
 function blockHTML(b, path, i, length) {
   if (b.kind === 'rest') {
-    return `<div class="step rest-block" data-path="${path}"><div class="step-head"><span class="step-number">${i + 1}</span>
-      <div class="step-title"><strong>Break</strong><small>Counts down, then carries on</small></div>${toolButtons(path, i, length)}</div>
+    return `<div class="step rest-block" data-path="${path}"><div class="step-head">${dragHandle(path, i, 'break')}
+      <div class="step-title"><strong>Break</strong><small>Counts down, then carries on</small></div>${toolButtons(path)}</div>
       <div class="step-main"><label>Seconds<input type="number" data-field="value" min="1" max="3600" step="1" required value="${b.value}"></label></div></div>`;
   }
   if (b.kind === 'group') {
-    return `<div class="step repeat-group" data-path="${path}"><div class="step-head"><span class="step-number">${i + 1}</span>
-      <div class="step-title"><strong>Repeat group</strong><small>Circuits, supersets and intervals</small></div>${toolButtons(path, i, length)}</div>
+    return `<div class="step repeat-group" data-path="${path}"><div class="step-head">${dragHandle(path, i, b.name || 'repeat group')}
+      <div class="step-title"><strong>Repeat group</strong><small>Circuits, supersets and intervals</small></div>${toolButtons(path)}</div>
       <div class="step-main"><label class="grow">Name (optional)<input data-field="name" maxlength="60" value="${esc(b.name)}" placeholder="e.g. Circuit A"></label>
         <label>Rounds<input type="number" data-field="rounds" min="1" max="50" step="1" required value="${b.rounds}"></label></div>
-      <div class="blocks">${b.steps.map((x, j) => blockHTML(x, `${path}.${j}`, j, b.steps.length)).join('') || '<p class="muted small">Empty so far. Add exercises and breaks below.</p>'}</div>
+      <div class="blocks">${b.steps.map((x, j) => blockHTML(x, `${path}.${j}`, j, b.steps.length)).join('') || '<p class="muted small empty-group">Empty so far. Add exercises below, or drag steps in here.</p>'}</div>
       ${addControls(path)}</div>`;
   }
   const e = exercise(b.exerciseId);
   const weighted = b.mode !== 'distance' && b.mode !== 'manual' && (['Strength', 'HIIT'].includes(e?.category) || b.weight > 0);
   const both = b.side === 'Both sides';
-  return `<div class="step" data-path="${path}"><div class="step-head"><span class="step-number">${i + 1}</span>
+  return `<div class="step" data-path="${path}"><div class="step-head">${dragHandle(path, i, e?.name || 'exercise')}
     <div class="step-title"><strong>${esc(e?.name || 'Unavailable exercise')}</strong><small>${esc(e?.category || '')}${both ? ' · each side' : ''}${b.section !== 'Main' && b.section !== e?.category ? ' · ' + esc(b.section) : ''}</small></div>
-    ${toolButtons(path, i, length)}</div>
+    ${toolButtons(path)}</div>
     <div class="step-main">
       <label>Sets<input type="number" data-field="sets" min="1" max="50" step="1" required value="${b.sets}"></label>
       <span class="times" aria-hidden="true">×</span>${valueField(b)}
@@ -301,28 +307,154 @@ function guardEditorClose() {
 actions.close = () => { if (!guardEditorClose()) closeModal(); };
 
 // --------------------------------------------------------------- picker ----
+// A compact version of the library: same search, filters and sorting, details on tap,
+// and a + button to add. Several exercises can be added in one go; the last add can be undone.
 
-let pickerTarget = '';
-let pickerQuery = '';
-let pickerCategory = 'All';
-let pickerAdded = 0;
+let pickerTarget = '';      // '' = the routine itself, otherwise the path of a repeat group
+let pickerAdds = [];        // [{ blockId, exerciseId }] added during this visit, for undo and badges
+let pickerScroll = 0;
+let pickerDetailId = null;  // the exercise whose details are open inside the picker, if any
 
 actions['open-picker'] = el => openPicker(el.dataset.parent ?? '');
 function openPicker(parent) {
   pickerTarget = parent;
-  pickerAdded = 0;
-  $('#picker-content').innerHTML = `<div class="modal-inner"><div class="modal-header"><h2>Add exercises</h2>
-    <button type="button" class="close" data-action="close-picker" aria-label="Close">×</button></div>
-    <input id="picker-search" type="search" placeholder="Search by name, muscle or equipment…" value="${esc(pickerQuery)}" aria-label="Search exercises" autocomplete="off">
-    <div id="picker-cats"></div>
-    <label class="checkrow small"><input type="checkbox" data-bind="picker-gear" ${state.settings.onlyMyGear ? 'checked' : ''}> Only exercises I have the equipment for</label>
-    <div id="picker-list" class="pick-list"></div>
-    <div class="picker-foot"><span id="picker-count" class="muted small">Tap to add. Add as many as you like.</span><button type="button" class="btn" data-action="close-picker">Done</button></div></div>`;
-  renderPickerList();
+  pickerAdds = [];
+  listLimits.picker = 60;
+  renderPickerShell();
   const dlg = $('#picker');
   if (!dlg.open) dlg.showModal();
-  if (matchMedia('(pointer: fine)').matches) $('#picker-search').focus();
+  if (matchMedia('(pointer: fine)').matches) $('.filter-search', dlg)?.focus();
 }
+
+function pickerTargetList() { return pickerTarget === '' ? draft.steps : getBlock(pickerTarget).block.steps; }
+function pickerTargetName() {
+  if (pickerTarget === '') return draft.name.trim() || 'your routine';
+  return getBlock(pickerTarget).block.name || 'the repeat group';
+}
+
+function renderPickerShell() {
+  pickerDetailId = null;
+  $('#picker-content').innerHTML = `<div class="picker-view">
+    <div class="modal-header"><div><h2>Add exercises</h2><p class="muted small">to ${esc(pickerTargetName())}</p></div>
+      <button type="button" class="close" data-action="close-picker" aria-label="Close">×</button></div>
+    ${filterControlsHTML('picker')}
+    <div id="picker-list" class="pick-list"></div>
+    ${pickerFootHTML()}</div>`;
+  renderPickerList();
+}
+
+function pickerFootHTML() {
+  const extra = pickerDetailId ? `<button type="button" class="btn lime" data-action="pick" data-id="${pickerDetailId}" data-back="1">${icon('plus')} Add</button>` : '';
+  const last = pickerAdds.at(-1);
+  const text = pickerAdds.length ? `${plural(pickerAdds.length, 'exercise')} added · last: ${esc(exercise(last.exerciseId)?.name || '')}`
+    : pickerDetailId ? '' : 'Tap a name for details, ＋ to add.';
+  return `<div class="picker-foot"><span id="picker-count" class="muted small">${text}</span>
+    <div class="row">${pickerAdds.length ? '<button type="button" class="btn light small" data-action="picker-undo">Undo</button>' : ''}${extra}
+    <button type="button" class="btn" data-action="close-picker">Done</button></div></div>`;
+}
+function refreshPickerFoot() {
+  const foot = $('#picker .picker-foot');
+  if (foot) foot.outerHTML = pickerFootHTML();
+}
+
+function pickerRow(e, usage) {
+  const added = pickerAdds.filter(a => a.exerciseId === e.id).length;
+  const n = usedCount(usage, e);
+  const last = n ? lastPerformance(e) : null;
+  const gearText = esc((e.gear || []).map(gearLabel).join(', ') || 'No equipment');
+  const meta2 = last ? `${gearText} · <span class="last">last: ${esc(setsSummary(last.sets))}</span>` : gearText;
+  return `<div class="pick-row rich">
+    <button type="button" class="pick-info" data-action="picker-detail" data-id="${e.id}" aria-label="Details for ${esc(e.name)}">
+      ${bodymap(e, 'mini')}
+      <span class="pick-text"><strong>${esc(e.name)}${e.level === 'Advanced' ? ' <span class="badge">Advanced</span>' : ''}${e.custom ? ' <span class="badge">Yours</span>' : ''}</strong>
+        <small><span class="dot cat-${catClass(e.category)}" aria-hidden="true"></span>${esc(e.category)} · ${esc(e.primary.slice(0, 3).join(', ') || 'Breath & awareness')}</small>
+        <small class="pick-meta">${meta2}</small></span>
+    </button>
+    <button type="button" class="pick-add ${added ? 'on' : ''}" data-action="pick" data-id="${e.id}" aria-label="Add ${esc(e.name)}">${added ? '✓' + (added > 1 ? `<small>${added}</small>` : '') : '＋'}</button>
+  </div>`;
+}
+
+function renderPickerList() {
+  const box = $('#picker-list');
+  if (!box) return;
+  const usage = exerciseUsage();
+  const { list: all, groupOf } = filterExercises(filters.picker, usage);
+  const list = all.slice(0, listLimits.picker);
+  const count = $('[data-count="picker"]');
+  if (count) count.textContent = plural(all.length, 'exercise');
+  box.innerHTML = withHeadings(list, groupOf, e => pickerRow(e, usage), g => `<h3 class="group-head">${esc(g)}</h3>`)
+    + (all.length > list.length ? `<div class="center row more-row"><button type="button" class="btn light small" data-action="picker-more">Show ${Math.min(60, all.length - list.length)} more</button></div>` : '')
+    + (all.length ? '' : `<div class="empty"><h3>Nothing matches</h3><p class="muted">Try fewer words, another activity or fewer filters.</p><button type="button" class="btn light small" data-action="clear-filters" data-scope="picker">Clear filters</button></div>`);
+}
+actions['picker-more'] = () => { listLimits.picker += 60; const top = $('#picker-list').scrollTop; renderPickerList(); $('#picker-list').scrollTop = top; };
+
+actions['picker-detail'] = el => {
+  const e = exercise(el.dataset.id);
+  if (!e) return;
+  if ($('#picker-list')) pickerScroll = $('#picker-list').scrollTop;
+  pickerDetailId = e.id;
+  $('#picker-content').innerHTML = `<div class="picker-view">
+    <div class="modal-header"><button type="button" class="text-btn back-btn" data-action="picker-back">‹ All exercises</button>
+      <button type="button" class="close" data-action="close-picker" aria-label="Close">×</button></div>
+    <div class="picker-detail"><h2>${esc(e.name)}</h2>${exerciseInfoHTML(e, 'picker-detail')}</div>
+    ${pickerFootHTML()}</div>`;
+};
+actions['picker-back'] = () => {
+  renderPickerShell();
+  const list = $('#picker-list');
+  if (list) list.scrollTop = pickerScroll;
+};
+
+actions.pick = el => {
+  const e = exercise(el.dataset.id);
+  const list = pickerTargetList();
+  if (list.length >= 200) { toast('Maximum 200 blocks per list.'); return; }
+  const block = newMove(e);
+  list.push(block);
+  pickerAdds.push({ blockId: block.id, exerciseId: e.id });
+  draftDirty = true;
+  navigator.vibrate?.(8);
+  renderEditor();
+  if (el.dataset.back) { actions['picker-back'](); toast(`${e.name} added.`); return; }
+  updatePickButtons(e.id);
+  refreshPickerFoot();
+};
+
+/** Update one exercise's ＋ / ✓ button without re-rendering the list (keeps the scroll position). */
+function updatePickButtons(exerciseId) {
+  const added = pickerAdds.filter(a => a.exerciseId === exerciseId).length;
+  $$(`#picker-list .pick-add[data-id="${exerciseId}"]`).forEach(btn => {
+    btn.classList.toggle('on', added > 0);
+    btn.innerHTML = added ? '✓' + (added > 1 ? `<small>${added}</small>` : '') : '＋';
+    if (added) { btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop'); }
+  });
+}
+
+/** Remove a block anywhere in the draft by id. */
+function removeBlockById(blocks, id) {
+  const i = blocks.findIndex(b => b.id === id);
+  if (i >= 0) { blocks.splice(i, 1); return true; }
+  return blocks.some(b => b.kind === 'group' && removeBlockById(b.steps, id));
+}
+
+actions['picker-undo'] = () => {
+  const last = pickerAdds.pop();
+  if (!last) return;
+  removeBlockById(draft.steps, last.blockId);
+  renderEditor();
+  updatePickButtons(last.exerciseId);
+  refreshPickerFoot();
+  toast(`${exercise(last.exerciseId)?.name || 'Exercise'} removed again.`);
+};
+
+actions['close-picker'] = () => {
+  $('#picker').close();
+  if (pickerAdds.length) {
+    // Bring the newest step into view in the editor.
+    const added = pathOfBlock(pickerAdds.at(-1).blockId);
+    $(`#routine-form [data-path="${added}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+};
 
 /** Name matches first, then everything else that matches, each group in library order. */
 function rankByQuery(list, query) {
@@ -351,39 +483,156 @@ function exerciseMatches(e, query) {
   return query.toLowerCase().split(/\s+/).filter(Boolean).every(word => hay.includes(word));
 }
 
-function renderPickerList() {
-  $('#picker-cats').innerHTML = chips('picker-cat', ['All', 'Yours', ...CATEGORIES], pickerCategory);
-  const list = rankByQuery(libraryOrder(allExercises()), pickerQuery).filter(e => exerciseMatches(e, pickerQuery)
-    && (pickerCategory === 'All' || (pickerCategory === 'Yours' ? e.custom : e.category === pickerCategory))
-    && (!state.settings.onlyMyGear || gearOk(e)));
-  $('#picker-list').innerHTML = list.map(e => `<button type="button" class="pick-row" data-action="pick" data-id="${e.id}">
-      <span class="dot cat-${catClass(e.category)}" aria-hidden="true"></span>
-      <span class="pick-text"><strong>${esc(e.name)}</strong><small>${esc([e.category, e.primary.slice(0, 2).join(', '), (e.gear || []).map(gearLabel).join(', ') || 'No equipment'].filter(Boolean).join(' · '))}</small></span>
-      <span class="pick-add" aria-hidden="true">＋</span></button>`).join('')
-    || '<p class="muted">Nothing matches. Try fewer words or another category.</p>';
-}
-chipHandlers['picker-cat'] = v => { pickerCategory = v; renderPickerList(); };
-binds['picker-gear'] = el => { state.settings.onlyMyGear = el.checked; save(); renderPickerList(); };
 
-actions.pick = el => {
-  const e = exercise(el.dataset.id);
-  const list = pickerTarget === '' ? draft.steps : getBlock(pickerTarget).block.steps;
-  if (list.length >= 200) { toast('Maximum 200 blocks per list.'); return; }
-  list.push(newMove(e));
-  draftDirty = true;
-  pickerAdded++;
-  el.classList.remove('added'); void el.offsetWidth; el.classList.add('added');
-  $('#picker-count').textContent = `${plural(pickerAdded, 'exercise')} added`;
-  renderEditor();
-};
-actions['close-picker'] = () => {
-  $('#picker').close();
-  if (pickerAdded) {
-    // Scroll the editor to the newest step so it is visible.
-    const blocks = $$('#routine-form .step');
-    blocks.at(-1)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+// --------------------------------------------------------- drag & drop ----
+// Pointer events cover mouse, touch and pen. The handle has touch-action: none, so dragging
+// it never scrolls the page; the dialog scrolls itself when you drag near its edges.
+
+let drag = null;
+
+/** Path ("3" or "2.1") of a block by id in the current draft. */
+function pathOfBlock(id, blocks = draft.steps, prefix = '') {
+  for (let i = 0; i < blocks.length; i++) {
+    const path = prefix + i;
+    if (blocks[i].id === id) return path;
+    if (blocks[i].kind === 'group') {
+      const inner = pathOfBlock(id, blocks[i].steps, path + '.');
+      if (inner) return inner;
+    }
   }
-};
+  return null;
+}
+
+/** Move a block to `index` in the list at `toListPath` ('' = top level). Returns the moved block, or null. */
+function moveBlockTo(fromPath, toListPath, index) {
+  const from = getBlock(fromPath);
+  const target = toListPath === '' ? draft.steps : getBlock(toListPath).block.steps;
+  if (from.block.kind === 'group' && toListPath !== '') return null;   // groups do not nest
+  if (target === from.list) {
+    if (index === from.index || index === from.index + 1) return null; // dropped where it was
+    if (index > from.index) index--;
+  } else if (target.length >= 200) { toast('Maximum 200 blocks per list.'); return null; }
+  from.list.splice(from.index, 1);
+  target.splice(index, 0, from.block);
+  return from.block;
+}
+
+function flashBlock(id) {
+  const el = $(`#routine-form [data-path="${pathOfBlock(id)}"]`);
+  if (el) { el.classList.remove('just-moved'); void el.offsetWidth; el.classList.add('just-moved'); }
+}
+
+/** Every place a dragged step could land: between the cards of each list it may enter. */
+function dropSlots() {
+  const form = $('#routine-form');
+  const lists = [{ el: $(':scope > .blocks', form), path: '' }];
+  if (!drag.isGroup) $$('.repeat-group', form).forEach(g => lists.push({ el: $(':scope > .blocks', g), path: g.dataset.path }));
+  const slots = [];
+  for (const { el, path } of lists) {
+    if (!el) continue;
+    const box = el.getBoundingClientRect();
+    const cards = [...el.children].filter(c => c.matches('[data-path]'));
+    if (!cards.length) { slots.push({ path, index: 0, y: box.top + box.height / 2, left: box.left, width: box.width }); continue; }
+    let prevBottom = cards[0].getBoundingClientRect().top - 10;
+    cards.forEach((c, k) => {
+      const r = c.getBoundingClientRect();
+      slots.push({ path, index: k, y: (prevBottom + r.top) / 2, left: box.left, width: box.width });
+      prevBottom = r.bottom;
+    });
+    slots.push({ path, index: cards.length, y: prevBottom + 5, left: box.left, width: box.width });
+  }
+  return slots;
+}
+
+function beginDrag(handle, ev) {
+  const card = handle.closest('.step');   // the whole card, not the handle (which carries the path too)
+  const rect = card.getBoundingClientRect();
+  const ghost = card.cloneNode(true);
+  ghost.classList.add('drag-ghost');
+  ghost.removeAttribute('data-path');
+  $$('[data-path]', ghost).forEach(n => n.removeAttribute('data-path'));
+  Object.assign(ghost.style, { width: rect.width + 'px', left: rect.left + 'px', top: rect.top + 'px' });
+  const line = document.createElement('div');
+  line.className = 'drop-line';
+  $('#modal').append(ghost, line);
+  card.classList.add('drag-source');
+  document.body.classList.add('is-dragging');
+  try { handle.setPointerCapture(ev.pointerId); } catch { /* older browsers */ }
+  navigator.vibrate?.(12);
+  drag = { path: card.dataset.path, id: getBlock(card.dataset.path).block.id, isGroup: card.classList.contains('repeat-group'),
+    card, ghost, line, grab: ev.clientY - rect.top, y: ev.clientY, pointerId: ev.pointerId, target: null, raf: 0 };
+  moveDrag();
+  drag.raf = requestAnimationFrame(autoScroll);
+}
+
+function moveDrag() {
+  const d = drag;
+  d.ghost.style.top = `${d.y - d.grab}px`;
+  let best = null;
+  for (const slot of dropSlots()) if (!best || Math.abs(slot.y - d.y) < Math.abs(best.y - d.y)) best = slot;
+  d.target = best;
+  if (best) Object.assign(d.line.style, { top: `${best.y - 2}px`, left: `${best.left}px`, width: `${best.width}px` });
+}
+
+function autoScroll() {
+  if (!drag) return;
+  const modal = $('#modal'), r = modal.getBoundingClientRect(), edge = 90;
+  let dy = 0;
+  if (drag.y < r.top + edge) dy = -Math.ceil((r.top + edge - drag.y) / 5);
+  else if (drag.y > r.bottom - edge) dy = Math.ceil((drag.y - (r.bottom - edge)) / 5);
+  if (dy) {
+    const before = modal.scrollTop;
+    modal.scrollTop += dy;
+    if (modal.scrollTop !== before) moveDrag();
+  }
+  drag.raf = requestAnimationFrame(autoScroll);
+}
+
+function endDrag(commit) {
+  const d = drag;
+  drag = null;
+  cancelAnimationFrame(d.raf);
+  d.ghost.remove();
+  d.line.remove();
+  d.card.classList.remove('drag-source');
+  document.body.classList.remove('is-dragging');
+  if (!commit || !d.target) return;
+  if (moveBlockTo(d.path, d.target.path, d.target.index)) {
+    draftDirty = true;
+    renderEditor();
+    flashBlock(d.id);
+  }
+}
+
+document.addEventListener('pointerdown', ev => {
+  const handle = ev.target.closest?.('[data-drag-handle]');
+  if (!handle || !draft || drag || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+  ev.preventDefault();
+  beginDrag(handle, ev);
+});
+document.addEventListener('pointermove', ev => {
+  if (!drag || ev.pointerId !== drag.pointerId) return;
+  ev.preventDefault();
+  drag.y = ev.clientY;
+  moveDrag();
+}, { passive: false });
+document.addEventListener('pointerup', ev => { if (drag && ev.pointerId === drag.pointerId) endDrag(true); });
+document.addEventListener('pointercancel', ev => { if (drag && ev.pointerId === drag.pointerId) endDrag(false); });
+
+// Keyboard: focus a grip and press the up / down arrow keys.
+document.addEventListener('keydown', ev => {
+  const handle = ev.target.closest?.('[data-drag-handle]');
+  if (!handle || !draft || (ev.key !== 'ArrowUp' && ev.key !== 'ArrowDown')) return;
+  ev.preventDefault();
+  const { list, index, block } = getBlock(handle.dataset.path);
+  const to = index + (ev.key === 'ArrowUp' ? -1 : 1);
+  if (to < 0 || to >= list.length) return;
+  [list[index], list[to]] = [list[to], list[index]];
+  draftDirty = true;
+  renderEditor();
+  $(`#routine-form [data-path="${pathOfBlock(block.id)}"] > .step-head [data-drag-handle]`)?.focus();
+  flashBlock(block.id);
+});
 
 // ----------------------------------------------------- add to a routine ----
 

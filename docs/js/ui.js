@@ -99,8 +99,8 @@ function emptyState(title, text, button = '') {
   return `<div class="empty"><h3>${title}</h3><p class="muted">${text}</p>${button}</div>`;
 }
 const pill = (text, cls = '') => `<span class="pill ${cls}">${text}</span>`;
-function chips(name, values, current, labels = {}) {
-  return `<div class="chips" role="group">${values.map(v => `<button type="button" class="chip ${v === current ? 'on' : ''}" data-action="chip" data-chip="${esc(name)}" data-value="${esc(v)}" aria-pressed="${v === current}">${esc(labels[v] || v)}</button>`).join('')}</div>`;
+function chips(name, values, current, labels = {}, cls = '') {
+  return `<div class="chips ${cls}" role="group">${values.map(v => `<button type="button" class="chip ${v === current ? 'on' : ''}" data-action="chip" data-chip="${esc(name)}" data-value="${esc(v)}" aria-pressed="${v === current}">${esc(labels[v] || v)}</button>`).join('')}</div>`;
 }
 function options(values, current, labels = {}) {
   return values.map(v => `<option value="${esc(v)}" ${String(v) === String(current) ? 'selected' : ''}>${esc(labels[v] ?? v)}</option>`).join('');

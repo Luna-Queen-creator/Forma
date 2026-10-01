@@ -1,7 +1,7 @@
 // Settings: units, calendar, theme, session behaviour, equipment and data.
 'use strict';
 
-const APP_VERSION = '0.4';
+const APP_VERSION = '0.5';
 
 renderers.settings = () => {
   const s = state.settings;

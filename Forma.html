@@ -655,6 +655,88 @@ body.in-session .topbar .btn { display: none; }
   .topbar { height: calc(58px + env(safe-area-inset-top)); }
 }
 
+/* ------------------------------------------------- app feel (no select) --- */
+/* Tapping text should never highlight it, like a native app. Fields you type in still select. */
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }
+input, textarea, [contenteditable="true"] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+button, a, summary, label, .chip { touch-action: manipulation; }
+
+/* ------------------------------------------- shared exercise filters --- */
+.filter-controls { display: grid; gap: 10px; margin-bottom: 10px; min-width: 0; }
+.filter-controls .chips { margin: 0; }
+.chips.scroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; overscroll-behavior-x: contain; }
+.chips.scroll::-webkit-scrollbar { display: none; }
+.chips.scroll .chip { flex-shrink: 0; }
+.filter-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.filter-toggle .icon { width: 16px; height: 16px; }
+.filter-toggle.has { border-color: var(--focus); box-shadow: inset 0 0 0 1px var(--focus); }
+.sort-label { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: var(--muted); }
+.sort-label select { width: auto; min-height: 36px; padding: 6px 10px; font-size: 13px; }
+.result-count { margin-left: auto; }
+.filter-panel { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 12px; background: var(--surface-2); border-radius: 12px; }
+.filter-panel[hidden] { display: none; }
+.filter-panel > label { font-size: 12px; color: var(--muted); margin: 0; }
+.filter-panel select { margin-top: 4px; min-height: 40px; padding: 7px 10px; font-size: 14px; }
+.panel-foot { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.panel-foot .checkrow { margin: 0; font-size: 13px; }
+.panel-foot .text-btn { font-size: 13px; }
+.group-head { grid-column: 1 / -1; font-family: var(--font); font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 2px 0; }
+.exercise-grid > .group-head:first-child { margin-top: 4px; }
+
+/* ----------------------------------------------------- exercise picker --- */
+#picker { overflow: hidden; }
+.picker-view { display: flex; flex-direction: column; height: min(88dvh, 880px); padding: 22px 24px 16px; }
+.picker-view .modal-header { margin-bottom: 12px; flex-shrink: 0; }
+.picker-view .filter-controls { flex-shrink: 0; }
+#picker .pick-list { display: block; flex: 1; min-height: 0; max-height: none; overflow-y: auto; margin: 4px -8px 0; padding: 0 8px 8px; overscroll-behavior: contain; }
+.pick-list .group-head { position: sticky; top: 0; z-index: 1; background: var(--surface); margin: 0; padding: 12px 2px 6px; }
+.picker-detail { flex: 1; min-height: 0; overflow-y: auto; margin: 0 -8px; padding: 0 8px 12px; overscroll-behavior: contain; }
+.picker-detail h2 { margin-bottom: 12px; }
+.picker-foot { flex-shrink: 0; margin-top: 8px; }
+.back-btn { font-weight: 600; font-size: 15px; }
+.pick-row.rich { display: flex; align-items: center; gap: 4px; padding: 0; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 6px; background: var(--surface); }
+.pick-row.rich:hover { background: var(--surface); border-color: var(--line-strong); }
+.pick-info { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; text-align: left; padding: 8px 4px 8px 10px; border-radius: 11px 0 0 11px; }
+.pick-info:hover { background: var(--surface-2); }
+.bodymap.mini { width: 34px; height: 51px; }
+.pick-row.rich .pick-text small { display: block; line-height: 1.45; }
+.pick-row.rich .pick-text .dot { display: inline-block; width: 8px; height: 8px; margin-right: 5px; vertical-align: 0; }
+.pick-meta .last { color: var(--good); font-weight: 600; }
+.badge { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 1px 6px; border-radius: 6px; background: var(--surface-3); color: var(--muted); vertical-align: 2px; margin-left: 4px; }
+.pick-row.rich .pick-add { width: 48px; height: 48px; margin-right: 7px; display: grid; place-items: center; grid-auto-flow: column; gap: 1px; font-size: 22px; border-radius: 12px; background: var(--surface-2); color: var(--ink); flex-shrink: 0; }
+.pick-row.rich .pick-add:hover { background: var(--surface-3); }
+.pick-row.rich .pick-add.on { background: var(--lime); color: var(--lime-ink); font-size: 18px; font-weight: 700; }
+.pick-add small { font-size: 11px; }
+.pick-add.pop { animation: pop .35s ease; }
+@keyframes pop { 50% { transform: scale(1.18); } }
+
+/* ------------------------------------------------- drag to reorder --- */
+.step-head { gap: 8px; }
+.drag-handle { width: 30px; height: 40px; margin: -4px 0 -4px -6px; display: grid; place-items: center; color: var(--muted); border-radius: 8px; touch-action: none; cursor: grab; flex-shrink: 0; }
+.drag-handle svg { width: 20px; height: 20px; }
+.drag-handle:hover, .drag-handle:focus-visible { background: var(--surface-2); color: var(--ink-strong); }
+body.is-dragging, body.is-dragging * { cursor: grabbing !important; }
+.drag-source { opacity: .35; }
+.drag-ghost { position: fixed; z-index: 20; margin: 0; pointer-events: none; max-height: 220px; overflow: hidden; background: var(--surface); box-shadow: 0 18px 50px rgba(0, 0, 0, .28); transform: scale(1.02) rotate(-.6deg); }
+.drop-line { position: fixed; z-index: 21; height: 4px; border-radius: 4px; background: var(--focus); pointer-events: none; }
+.drop-line::before { content: ''; position: absolute; left: -6px; top: -4px; width: 12px; height: 12px; border-radius: 50%; background: var(--focus); }
+.just-moved { animation: moved 1s ease; }
+@keyframes moved { 0% { box-shadow: 0 0 0 3px var(--lime); } 100% { box-shadow: 0 0 0 3px transparent; } }
+.empty-group { padding: 14px; border: 1px dashed var(--line-strong); border-radius: 10px; text-align: center; margin: 0; }
+
+@media (max-width: 640px) {
+  .picker-view { height: 92dvh; padding: 16px 14px 12px; }
+  .filter-panel { grid-template-columns: 1fr 1fr; }
+  .filter-panel > label:nth-of-type(3) { grid-column: 1 / -1; }
+  .result-count { width: 100%; margin: 0; order: 3; }
+  .sort-label > span { display: none; }
+  .step-number { display: none; }
+  .picker-foot { flex-wrap: wrap; row-gap: 8px; }
+  .picker-foot #picker-count { flex-basis: 100%; }
+  .picker-foot #picker-count:empty { display: none; }
+  .picker-foot .row { margin-left: auto; }
+}
+
 </style>
   <script>
     // Apply the saved theme before first paint to avoid a flash.
@@ -1759,7 +1841,7 @@ function lastPerformance(e, excludeEntryId) { return exerciseLog(e, excludeEntry
 function setText(t) {
   if (t.mode === 'reps') return t.weight ? `${t.reps ?? t.value} × ${fmtWeight(t.weight)}` : `${t.reps ?? t.value} reps`;
   if (t.mode === 'distance') return `${fmtDistance(t.distance ?? t.value)}${t.actualSeconds ? ' in ' + formatClock(t.actualSeconds) : ''}`;
-  return t.actualSeconds !== undefined ? fmtDuration(t.actualSeconds) : fmtDuration(t.value);
+  return t.actualSeconds ? fmtDuration(t.actualSeconds) : fmtDuration(t.value);
 }
 
 /** Several sets compressed: "3 × 5 @ 80 kg" when identical, otherwise a list. */
@@ -1934,8 +2016,8 @@ function emptyState(title, text, button = '') {
   return `<div class="empty"><h3>${title}</h3><p class="muted">${text}</p>${button}</div>`;
 }
 const pill = (text, cls = '') => `<span class="pill ${cls}">${text}</span>`;
-function chips(name, values, current, labels = {}) {
-  return `<div class="chips" role="group">${values.map(v => `<button type="button" class="chip ${v === current ? 'on' : ''}" data-action="chip" data-chip="${esc(name)}" data-value="${esc(v)}" aria-pressed="${v === current}">${esc(labels[v] || v)}</button>`).join('')}</div>`;
+function chips(name, values, current, labels = {}, cls = '') {
+  return `<div class="chips ${cls}" role="group">${values.map(v => `<button type="button" class="chip ${v === current ? 'on' : ''}" data-action="chip" data-chip="${esc(name)}" data-value="${esc(v)}" aria-pressed="${v === current}">${esc(labels[v] || v)}</button>`).join('')}</div>`;
 }
 function options(values, current, labels = {}) {
   return values.map(v => `<option value="${esc(v)}" ${String(v) === String(current) ? 'selected' : ''}>${esc(labels[v] ?? v)}</option>`).join('');
@@ -2368,34 +2450,40 @@ function valueField(b) {
   return `<label>${label}<input type="number" data-field="value" min="1" max="7200" step="1" required value="${b.value}"></label>`;
 }
 
-function toolButtons(path, i, length) {
+const GRIP = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="9" cy="6" r="1.7"/><circle cx="15" cy="6" r="1.7"/><circle cx="9" cy="12" r="1.7"/><circle cx="15" cy="12" r="1.7"/><circle cx="9" cy="18" r="1.7"/><circle cx="15" cy="18" r="1.7"/></svg>';
+
+/** Grip to drag a step (or move it with the arrow keys), with its number. */
+function dragHandle(path, i, label) {
+  return `<button type="button" class="drag-handle" data-drag-handle data-path="${path}" aria-label="Move ${esc(label)}: drag, or use the arrow keys" title="Drag to reorder">${GRIP}</button>
+    <span class="step-number">${i + 1}</span>`;
+}
+
+function toolButtons(path) {
   return `<div class="step-tools">
-    <button type="button" class="tiny" data-action="block-up" data-path="${path}" ${i === 0 ? 'disabled' : ''} aria-label="Move up">↑</button>
-    <button type="button" class="tiny" data-action="block-down" data-path="${path}" ${i === length - 1 ? 'disabled' : ''} aria-label="Move down">↓</button>
     <button type="button" class="tiny" data-action="block-copy" data-path="${path}" aria-label="Duplicate" title="Duplicate">⧉</button>
-    <button type="button" class="tiny remove" data-action="block-remove" data-path="${path}" aria-label="Remove">×</button></div>`;
+    <button type="button" class="tiny remove" data-action="block-remove" data-path="${path}" aria-label="Remove" title="Remove">×</button></div>`;
 }
 
 function blockHTML(b, path, i, length) {
   if (b.kind === 'rest') {
-    return `<div class="step rest-block" data-path="${path}"><div class="step-head"><span class="step-number">${i + 1}</span>
-      <div class="step-title"><strong>Break</strong><small>Counts down, then carries on</small></div>${toolButtons(path, i, length)}</div>
+    return `<div class="step rest-block" data-path="${path}"><div class="step-head">${dragHandle(path, i, 'break')}
+      <div class="step-title"><strong>Break</strong><small>Counts down, then carries on</small></div>${toolButtons(path)}</div>
       <div class="step-main"><label>Seconds<input type="number" data-field="value" min="1" max="3600" step="1" required value="${b.value}"></label></div></div>`;
   }
   if (b.kind === 'group') {
-    return `<div class="step repeat-group" data-path="${path}"><div class="step-head"><span class="step-number">${i + 1}</span>
-      <div class="step-title"><strong>Repeat group</strong><small>Circuits, supersets and intervals</small></div>${toolButtons(path, i, length)}</div>
+    return `<div class="step repeat-group" data-path="${path}"><div class="step-head">${dragHandle(path, i, b.name || 'repeat group')}
+      <div class="step-title"><strong>Repeat group</strong><small>Circuits, supersets and intervals</small></div>${toolButtons(path)}</div>
       <div class="step-main"><label class="grow">Name (optional)<input data-field="name" maxlength="60" value="${esc(b.name)}" placeholder="e.g. Circuit A"></label>
         <label>Rounds<input type="number" data-field="rounds" min="1" max="50" step="1" required value="${b.rounds}"></label></div>
-      <div class="blocks">${b.steps.map((x, j) => blockHTML(x, `${path}.${j}`, j, b.steps.length)).join('') || '<p class="muted small">Empty so far. Add exercises and breaks below.</p>'}</div>
+      <div class="blocks">${b.steps.map((x, j) => blockHTML(x, `${path}.${j}`, j, b.steps.length)).join('') || '<p class="muted small empty-group">Empty so far. Add exercises below, or drag steps in here.</p>'}</div>
       ${addControls(path)}</div>`;
   }
   const e = exercise(b.exerciseId);
   const weighted = b.mode !== 'distance' && b.mode !== 'manual' && (['Strength', 'HIIT'].includes(e?.category) || b.weight > 0);
   const both = b.side === 'Both sides';
-  return `<div class="step" data-path="${path}"><div class="step-head"><span class="step-number">${i + 1}</span>
+  return `<div class="step" data-path="${path}"><div class="step-head">${dragHandle(path, i, e?.name || 'exercise')}
     <div class="step-title"><strong>${esc(e?.name || 'Unavailable exercise')}</strong><small>${esc(e?.category || '')}${both ? ' · each side' : ''}${b.section !== 'Main' && b.section !== e?.category ? ' · ' + esc(b.section) : ''}</small></div>
-    ${toolButtons(path, i, length)}</div>
+    ${toolButtons(path)}</div>
     <div class="step-main">
       <label>Sets<input type="number" data-field="sets" min="1" max="50" step="1" required value="${b.sets}"></label>
       <span class="times" aria-hidden="true">×</span>${valueField(b)}
@@ -2552,28 +2640,154 @@ function guardEditorClose() {
 actions.close = () => { if (!guardEditorClose()) closeModal(); };
 
 // --------------------------------------------------------------- picker ----
+// A compact version of the library: same search, filters and sorting, details on tap,
+// and a + button to add. Several exercises can be added in one go; the last add can be undone.
 
-let pickerTarget = '';
-let pickerQuery = '';
-let pickerCategory = 'All';
-let pickerAdded = 0;
+let pickerTarget = '';      // '' = the routine itself, otherwise the path of a repeat group
+let pickerAdds = [];        // [{ blockId, exerciseId }] added during this visit, for undo and badges
+let pickerScroll = 0;
+let pickerDetailId = null;  // the exercise whose details are open inside the picker, if any
 
 actions['open-picker'] = el => openPicker(el.dataset.parent ?? '');
 function openPicker(parent) {
   pickerTarget = parent;
-  pickerAdded = 0;
-  $('#picker-content').innerHTML = `<div class="modal-inner"><div class="modal-header"><h2>Add exercises</h2>
-    <button type="button" class="close" data-action="close-picker" aria-label="Close">×</button></div>
-    <input id="picker-search" type="search" placeholder="Search by name, muscle or equipment…" value="${esc(pickerQuery)}" aria-label="Search exercises" autocomplete="off">
-    <div id="picker-cats"></div>
-    <label class="checkrow small"><input type="checkbox" data-bind="picker-gear" ${state.settings.onlyMyGear ? 'checked' : ''}> Only exercises I have the equipment for</label>
-    <div id="picker-list" class="pick-list"></div>
-    <div class="picker-foot"><span id="picker-count" class="muted small">Tap to add. Add as many as you like.</span><button type="button" class="btn" data-action="close-picker">Done</button></div></div>`;
-  renderPickerList();
+  pickerAdds = [];
+  listLimits.picker = 60;
+  renderPickerShell();
   const dlg = $('#picker');
   if (!dlg.open) dlg.showModal();
-  if (matchMedia('(pointer: fine)').matches) $('#picker-search').focus();
+  if (matchMedia('(pointer: fine)').matches) $('.filter-search', dlg)?.focus();
 }
+
+function pickerTargetList() { return pickerTarget === '' ? draft.steps : getBlock(pickerTarget).block.steps; }
+function pickerTargetName() {
+  if (pickerTarget === '') return draft.name.trim() || 'your routine';
+  return getBlock(pickerTarget).block.name || 'the repeat group';
+}
+
+function renderPickerShell() {
+  pickerDetailId = null;
+  $('#picker-content').innerHTML = `<div class="picker-view">
+    <div class="modal-header"><div><h2>Add exercises</h2><p class="muted small">to ${esc(pickerTargetName())}</p></div>
+      <button type="button" class="close" data-action="close-picker" aria-label="Close">×</button></div>
+    ${filterControlsHTML('picker')}
+    <div id="picker-list" class="pick-list"></div>
+    ${pickerFootHTML()}</div>`;
+  renderPickerList();
+}
+
+function pickerFootHTML() {
+  const extra = pickerDetailId ? `<button type="button" class="btn lime" data-action="pick" data-id="${pickerDetailId}" data-back="1">${icon('plus')} Add</button>` : '';
+  const last = pickerAdds.at(-1);
+  const text = pickerAdds.length ? `${plural(pickerAdds.length, 'exercise')} added · last: ${esc(exercise(last.exerciseId)?.name || '')}`
+    : pickerDetailId ? '' : 'Tap a name for details, ＋ to add.';
+  return `<div class="picker-foot"><span id="picker-count" class="muted small">${text}</span>
+    <div class="row">${pickerAdds.length ? '<button type="button" class="btn light small" data-action="picker-undo">Undo</button>' : ''}${extra}
+    <button type="button" class="btn" data-action="close-picker">Done</button></div></div>`;
+}
+function refreshPickerFoot() {
+  const foot = $('#picker .picker-foot');
+  if (foot) foot.outerHTML = pickerFootHTML();
+}
+
+function pickerRow(e, usage) {
+  const added = pickerAdds.filter(a => a.exerciseId === e.id).length;
+  const n = usedCount(usage, e);
+  const last = n ? lastPerformance(e) : null;
+  const gearText = esc((e.gear || []).map(gearLabel).join(', ') || 'No equipment');
+  const meta2 = last ? `${gearText} · <span class="last">last: ${esc(setsSummary(last.sets))}</span>` : gearText;
+  return `<div class="pick-row rich">
+    <button type="button" class="pick-info" data-action="picker-detail" data-id="${e.id}" aria-label="Details for ${esc(e.name)}">
+      ${bodymap(e, 'mini')}
+      <span class="pick-text"><strong>${esc(e.name)}${e.level === 'Advanced' ? ' <span class="badge">Advanced</span>' : ''}${e.custom ? ' <span class="badge">Yours</span>' : ''}</strong>
+        <small><span class="dot cat-${catClass(e.category)}" aria-hidden="true"></span>${esc(e.category)} · ${esc(e.primary.slice(0, 3).join(', ') || 'Breath & awareness')}</small>
+        <small class="pick-meta">${meta2}</small></span>
+    </button>
+    <button type="button" class="pick-add ${added ? 'on' : ''}" data-action="pick" data-id="${e.id}" aria-label="Add ${esc(e.name)}">${added ? '✓' + (added > 1 ? `<small>${added}</small>` : '') : '＋'}</button>
+  </div>`;
+}
+
+function renderPickerList() {
+  const box = $('#picker-list');
+  if (!box) return;
+  const usage = exerciseUsage();
+  const { list: all, groupOf } = filterExercises(filters.picker, usage);
+  const list = all.slice(0, listLimits.picker);
+  const count = $('[data-count="picker"]');
+  if (count) count.textContent = plural(all.length, 'exercise');
+  box.innerHTML = withHeadings(list, groupOf, e => pickerRow(e, usage), g => `<h3 class="group-head">${esc(g)}</h3>`)
+    + (all.length > list.length ? `<div class="center row more-row"><button type="button" class="btn light small" data-action="picker-more">Show ${Math.min(60, all.length - list.length)} more</button></div>` : '')
+    + (all.length ? '' : `<div class="empty"><h3>Nothing matches</h3><p class="muted">Try fewer words, another activity or fewer filters.</p><button type="button" class="btn light small" data-action="clear-filters" data-scope="picker">Clear filters</button></div>`);
+}
+actions['picker-more'] = () => { listLimits.picker += 60; const top = $('#picker-list').scrollTop; renderPickerList(); $('#picker-list').scrollTop = top; };
+
+actions['picker-detail'] = el => {
+  const e = exercise(el.dataset.id);
+  if (!e) return;
+  if ($('#picker-list')) pickerScroll = $('#picker-list').scrollTop;
+  pickerDetailId = e.id;
+  $('#picker-content').innerHTML = `<div class="picker-view">
+    <div class="modal-header"><button type="button" class="text-btn back-btn" data-action="picker-back">‹ All exercises</button>
+      <button type="button" class="close" data-action="close-picker" aria-label="Close">×</button></div>
+    <div class="picker-detail"><h2>${esc(e.name)}</h2>${exerciseInfoHTML(e, 'picker-detail')}</div>
+    ${pickerFootHTML()}</div>`;
+};
+actions['picker-back'] = () => {
+  renderPickerShell();
+  const list = $('#picker-list');
+  if (list) list.scrollTop = pickerScroll;
+};
+
+actions.pick = el => {
+  const e = exercise(el.dataset.id);
+  const list = pickerTargetList();
+  if (list.length >= 200) { toast('Maximum 200 blocks per list.'); return; }
+  const block = newMove(e);
+  list.push(block);
+  pickerAdds.push({ blockId: block.id, exerciseId: e.id });
+  draftDirty = true;
+  navigator.vibrate?.(8);
+  renderEditor();
+  if (el.dataset.back) { actions['picker-back'](); toast(`${e.name} added.`); return; }
+  updatePickButtons(e.id);
+  refreshPickerFoot();
+};
+
+/** Update one exercise's ＋ / ✓ button without re-rendering the list (keeps the scroll position). */
+function updatePickButtons(exerciseId) {
+  const added = pickerAdds.filter(a => a.exerciseId === exerciseId).length;
+  $$(`#picker-list .pick-add[data-id="${exerciseId}"]`).forEach(btn => {
+    btn.classList.toggle('on', added > 0);
+    btn.innerHTML = added ? '✓' + (added > 1 ? `<small>${added}</small>` : '') : '＋';
+    if (added) { btn.classList.remove('pop'); void btn.offsetWidth; btn.classList.add('pop'); }
+  });
+}
+
+/** Remove a block anywhere in the draft by id. */
+function removeBlockById(blocks, id) {
+  const i = blocks.findIndex(b => b.id === id);
+  if (i >= 0) { blocks.splice(i, 1); return true; }
+  return blocks.some(b => b.kind === 'group' && removeBlockById(b.steps, id));
+}
+
+actions['picker-undo'] = () => {
+  const last = pickerAdds.pop();
+  if (!last) return;
+  removeBlockById(draft.steps, last.blockId);
+  renderEditor();
+  updatePickButtons(last.exerciseId);
+  refreshPickerFoot();
+  toast(`${exercise(last.exerciseId)?.name || 'Exercise'} removed again.`);
+};
+
+actions['close-picker'] = () => {
+  $('#picker').close();
+  if (pickerAdds.length) {
+    // Bring the newest step into view in the editor.
+    const added = pathOfBlock(pickerAdds.at(-1).blockId);
+    $(`#routine-form [data-path="${added}"]`)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+};
 
 /** Name matches first, then everything else that matches, each group in library order. */
 function rankByQuery(list, query) {
@@ -2602,39 +2816,156 @@ function exerciseMatches(e, query) {
   return query.toLowerCase().split(/\s+/).filter(Boolean).every(word => hay.includes(word));
 }
 
-function renderPickerList() {
-  $('#picker-cats').innerHTML = chips('picker-cat', ['All', 'Yours', ...CATEGORIES], pickerCategory);
-  const list = rankByQuery(libraryOrder(allExercises()), pickerQuery).filter(e => exerciseMatches(e, pickerQuery)
-    && (pickerCategory === 'All' || (pickerCategory === 'Yours' ? e.custom : e.category === pickerCategory))
-    && (!state.settings.onlyMyGear || gearOk(e)));
-  $('#picker-list').innerHTML = list.map(e => `<button type="button" class="pick-row" data-action="pick" data-id="${e.id}">
-      <span class="dot cat-${catClass(e.category)}" aria-hidden="true"></span>
-      <span class="pick-text"><strong>${esc(e.name)}</strong><small>${esc([e.category, e.primary.slice(0, 2).join(', '), (e.gear || []).map(gearLabel).join(', ') || 'No equipment'].filter(Boolean).join(' · '))}</small></span>
-      <span class="pick-add" aria-hidden="true">＋</span></button>`).join('')
-    || '<p class="muted">Nothing matches. Try fewer words or another category.</p>';
-}
-chipHandlers['picker-cat'] = v => { pickerCategory = v; renderPickerList(); };
-binds['picker-gear'] = el => { state.settings.onlyMyGear = el.checked; save(); renderPickerList(); };
 
-actions.pick = el => {
-  const e = exercise(el.dataset.id);
-  const list = pickerTarget === '' ? draft.steps : getBlock(pickerTarget).block.steps;
-  if (list.length >= 200) { toast('Maximum 200 blocks per list.'); return; }
-  list.push(newMove(e));
-  draftDirty = true;
-  pickerAdded++;
-  el.classList.remove('added'); void el.offsetWidth; el.classList.add('added');
-  $('#picker-count').textContent = `${plural(pickerAdded, 'exercise')} added`;
-  renderEditor();
-};
-actions['close-picker'] = () => {
-  $('#picker').close();
-  if (pickerAdded) {
-    // Scroll the editor to the newest step so it is visible.
-    const blocks = $$('#routine-form .step');
-    blocks.at(-1)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+// --------------------------------------------------------- drag & drop ----
+// Pointer events cover mouse, touch and pen. The handle has touch-action: none, so dragging
+// it never scrolls the page; the dialog scrolls itself when you drag near its edges.
+
+let drag = null;
+
+/** Path ("3" or "2.1") of a block by id in the current draft. */
+function pathOfBlock(id, blocks = draft.steps, prefix = '') {
+  for (let i = 0; i < blocks.length; i++) {
+    const path = prefix + i;
+    if (blocks[i].id === id) return path;
+    if (blocks[i].kind === 'group') {
+      const inner = pathOfBlock(id, blocks[i].steps, path + '.');
+      if (inner) return inner;
+    }
   }
-};
+  return null;
+}
+
+/** Move a block to `index` in the list at `toListPath` ('' = top level). Returns the moved block, or null. */
+function moveBlockTo(fromPath, toListPath, index) {
+  const from = getBlock(fromPath);
+  const target = toListPath === '' ? draft.steps : getBlock(toListPath).block.steps;
+  if (from.block.kind === 'group' && toListPath !== '') return null;   // groups do not nest
+  if (target === from.list) {
+    if (index === from.index || index === from.index + 1) return null; // dropped where it was
+    if (index > from.index) index--;
+  } else if (target.length >= 200) { toast('Maximum 200 blocks per list.'); return null; }
+  from.list.splice(from.index, 1);
+  target.splice(index, 0, from.block);
+  return from.block;
+}
+
+function flashBlock(id) {
+  const el = $(`#routine-form [data-path="${pathOfBlock(id)}"]`);
+  if (el) { el.classList.remove('just-moved'); void el.offsetWidth; el.classList.add('just-moved'); }
+}
+
+/** Every place a dragged step could land: between the cards of each list it may enter. */
+function dropSlots() {
+  const form = $('#routine-form');
+  const lists = [{ el: $(':scope > .blocks', form), path: '' }];
+  if (!drag.isGroup) $$('.repeat-group', form).forEach(g => lists.push({ el: $(':scope > .blocks', g), path: g.dataset.path }));
+  const slots = [];
+  for (const { el, path } of lists) {
+    if (!el) continue;
+    const box = el.getBoundingClientRect();
+    const cards = [...el.children].filter(c => c.matches('[data-path]'));
+    if (!cards.length) { slots.push({ path, index: 0, y: box.top + box.height / 2, left: box.left, width: box.width }); continue; }
+    let prevBottom = cards[0].getBoundingClientRect().top - 10;
+    cards.forEach((c, k) => {
+      const r = c.getBoundingClientRect();
+      slots.push({ path, index: k, y: (prevBottom + r.top) / 2, left: box.left, width: box.width });
+      prevBottom = r.bottom;
+    });
+    slots.push({ path, index: cards.length, y: prevBottom + 5, left: box.left, width: box.width });
+  }
+  return slots;
+}
+
+function beginDrag(handle, ev) {
+  const card = handle.closest('.step');   // the whole card, not the handle (which carries the path too)
+  const rect = card.getBoundingClientRect();
+  const ghost = card.cloneNode(true);
+  ghost.classList.add('drag-ghost');
+  ghost.removeAttribute('data-path');
+  $$('[data-path]', ghost).forEach(n => n.removeAttribute('data-path'));
+  Object.assign(ghost.style, { width: rect.width + 'px', left: rect.left + 'px', top: rect.top + 'px' });
+  const line = document.createElement('div');
+  line.className = 'drop-line';
+  $('#modal').append(ghost, line);
+  card.classList.add('drag-source');
+  document.body.classList.add('is-dragging');
+  try { handle.setPointerCapture(ev.pointerId); } catch { /* older browsers */ }
+  navigator.vibrate?.(12);
+  drag = { path: card.dataset.path, id: getBlock(card.dataset.path).block.id, isGroup: card.classList.contains('repeat-group'),
+    card, ghost, line, grab: ev.clientY - rect.top, y: ev.clientY, pointerId: ev.pointerId, target: null, raf: 0 };
+  moveDrag();
+  drag.raf = requestAnimationFrame(autoScroll);
+}
+
+function moveDrag() {
+  const d = drag;
+  d.ghost.style.top = `${d.y - d.grab}px`;
+  let best = null;
+  for (const slot of dropSlots()) if (!best || Math.abs(slot.y - d.y) < Math.abs(best.y - d.y)) best = slot;
+  d.target = best;
+  if (best) Object.assign(d.line.style, { top: `${best.y - 2}px`, left: `${best.left}px`, width: `${best.width}px` });
+}
+
+function autoScroll() {
+  if (!drag) return;
+  const modal = $('#modal'), r = modal.getBoundingClientRect(), edge = 90;
+  let dy = 0;
+  if (drag.y < r.top + edge) dy = -Math.ceil((r.top + edge - drag.y) / 5);
+  else if (drag.y > r.bottom - edge) dy = Math.ceil((drag.y - (r.bottom - edge)) / 5);
+  if (dy) {
+    const before = modal.scrollTop;
+    modal.scrollTop += dy;
+    if (modal.scrollTop !== before) moveDrag();
+  }
+  drag.raf = requestAnimationFrame(autoScroll);
+}
+
+function endDrag(commit) {
+  const d = drag;
+  drag = null;
+  cancelAnimationFrame(d.raf);
+  d.ghost.remove();
+  d.line.remove();
+  d.card.classList.remove('drag-source');
+  document.body.classList.remove('is-dragging');
+  if (!commit || !d.target) return;
+  if (moveBlockTo(d.path, d.target.path, d.target.index)) {
+    draftDirty = true;
+    renderEditor();
+    flashBlock(d.id);
+  }
+}
+
+document.addEventListener('pointerdown', ev => {
+  const handle = ev.target.closest?.('[data-drag-handle]');
+  if (!handle || !draft || drag || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+  ev.preventDefault();
+  beginDrag(handle, ev);
+});
+document.addEventListener('pointermove', ev => {
+  if (!drag || ev.pointerId !== drag.pointerId) return;
+  ev.preventDefault();
+  drag.y = ev.clientY;
+  moveDrag();
+}, { passive: false });
+document.addEventListener('pointerup', ev => { if (drag && ev.pointerId === drag.pointerId) endDrag(true); });
+document.addEventListener('pointercancel', ev => { if (drag && ev.pointerId === drag.pointerId) endDrag(false); });
+
+// Keyboard: focus a grip and press the up / down arrow keys.
+document.addEventListener('keydown', ev => {
+  const handle = ev.target.closest?.('[data-drag-handle]');
+  if (!handle || !draft || (ev.key !== 'ArrowUp' && ev.key !== 'ArrowDown')) return;
+  ev.preventDefault();
+  const { list, index, block } = getBlock(handle.dataset.path);
+  const to = index + (ev.key === 'ArrowUp' ? -1 : 1);
+  if (to < 0 || to >= list.length) return;
+  [list[index], list[to]] = [list[to], list[index]];
+  draftDirty = true;
+  renderEditor();
+  $(`#routine-form [data-path="${pathOfBlock(block.id)}"] > .step-head [data-drag-handle]`)?.focus();
+  flashBlock(block.id);
+});
 
 // ----------------------------------------------------- add to a routine ----
 
@@ -2665,64 +2996,161 @@ actions['new-routine-with'] = el => {
 </script>
 <script>/* js/views/exercises.js */
 // The exercise library, exercise details (with your own history) and custom exercises.
+// The search / filter / sort controls here are shared with the exercise picker in the routine editor.
 'use strict';
 
-const libraryFilter = { query: '', category: 'All', muscle: 'All muscles', gear: 'Any equipment', level: 'Any level' };
+const FILTER_DEFAULTS = { query: '', category: 'All', muscle: 'All muscles', gear: 'Any equipment', level: 'Any level', sort: 'suggested' };
+const filters = { library: { ...FILTER_DEFAULTS }, picker: { ...FILTER_DEFAULTS } };
+const filterPanelOpen = { library: window.innerWidth > 760, picker: false };
+const SORTS = { suggested: 'Suggested', az: 'A to Z', used: 'Most used by you', recent: 'Recently done', muscle: 'By main muscle' };
+const listLimits = { library: 60, picker: 60 };
 
-renderers.library = () => {
-  const f = libraryFilter;
-  app().innerHTML = heading('Find your next move.', `${allExercises().length} exercises: strength, cardio, stillness and everything in between.`,
-    `<button class="btn" data-action="new-exercise">${icon('plus')} Custom exercise</button>`)
-    + `<div class="toolbar"><input id="search" type="search" aria-label="Search exercises" placeholder="Search by name, muscle or equipment…" value="${esc(f.query)}" autocomplete="off"></div>
-    ${chips('library-cat', ['All', 'Yours', ...CATEGORIES], f.category)}
-    <div class="toolbar filters">
-      <select data-bind="library-muscle" aria-label="Filter by muscle">${options(['All muscles', ...MUSCLES], f.muscle)}</select>
-      <select data-bind="library-gear" aria-label="Filter by equipment">${options(['Any equipment', 'No equipment', ...GEAR], f.gear)}</select>
-      <select data-bind="library-level" aria-label="Filter by level">${options(['Any level', 'General', 'Advanced'], f.level)}</select>
-      <label class="checkrow"><input type="checkbox" data-bind="library-mygear" ${state.settings.onlyMyGear ? 'checked' : ''}> Only my equipment</label>
-    </div>
-    <div id="exercise-results"></div>
-    <p class="note">Body maps show approximate target areas, not exact muscle activation. Instructions are general guidance, not a personal programme: warm up, move within a range you control, and stop if something hurts. Set up your equipment in <button class="link" data-view="settings">Settings</button>.</p>`;
-  renderExerciseResults();
-};
+/** How many sessions included each exercise, and when it was last done. */
+function exerciseUsage() {
+  const usage = new Map();
+  for (const h of state.history) {
+    for (const t of h.steps) {
+      if (!t.exerciseId) continue;
+      const u = usage.get(t.exerciseId) || { sessions: new Set(), last: 0 };
+      u.sessions.add(h.id);
+      u.last = Math.max(u.last, Date.parse(h.at));
+      usage.set(t.exerciseId, u);
+    }
+  }
+  return usage;
+}
+const usedCount = (usage, e) => usage.get(e.id)?.sessions.size || 0;
 
-let libraryLimit = 60;
+function activeFilterCount(f) {
+  return [f.muscle !== 'All muscles', f.gear !== 'Any equipment', f.level !== 'Any level', state.settings.onlyMyGear].filter(Boolean).length;
+}
 
-function filteredExercises() {
-  const f = libraryFilter;
-  return rankByQuery(libraryOrder(allExercises()), f.query).filter(e => exerciseMatches(e, f.query)
+/** Filter and sort the exercises. `groupOf` (or null) names the section heading for each. */
+function filterExercises(f, usage = exerciseUsage()) {
+  let list = allExercises().filter(e => exerciseMatches(e, f.query)
     && (f.category === 'All' || (f.category === 'Yours' ? e.custom : e.category === f.category))
     && (f.muscle === 'All muscles' || e.primary.includes(f.muscle) || e.secondary.includes(f.muscle))
     && (f.gear === 'Any equipment' || (f.gear === 'No equipment' ? !(e.gear || []).length : (e.gear || []).some(g => g.split('|').includes(f.gear))))
     && (f.level === 'Any level' || (e.level || 'General') === f.level)
     && (!state.settings.onlyMyGear || gearOk(e)));
+  const byName = (a, b) => a.name.localeCompare(b.name);
+  const tried = e => (usage.has(e.id) ? 'Done before' : 'Not tried yet');
+  let groupOf = null;
+  if (f.sort === 'az') { list.sort(byName); groupOf = e => e.name[0].toUpperCase(); }
+  else if (f.sort === 'used') { list.sort((a, b) => usedCount(usage, b) - usedCount(usage, a) || byName(a, b)); groupOf = tried; }
+  else if (f.sort === 'recent') { list.sort((a, b) => (usage.get(b.id)?.last || 0) - (usage.get(a.id)?.last || 0) || byName(a, b)); groupOf = tried; }
+  else if (f.sort === 'muscle') {
+    const rank = e => (e.primary.length ? MUSCLES.indexOf(e.primary[0]) : MUSCLES.length);
+    list.sort((a, b) => rank(a) - rank(b) || byName(a, b));
+    groupOf = e => e.primary[0] || 'Breath & whole body';
+  } else {
+    list = libraryOrder(list);
+    if (f.query.trim()) list = rankByQuery(list, f.query);
+    else if (f.category === 'All') groupOf = e => (e.custom ? 'Your exercises' : e.category);
+  }
+  return { list, groupOf };
 }
+
+/** Search, activity chips, Filters toggle, Sort and the filter panel, for `scope` = library | picker. */
+function filterControlsHTML(scope) {
+  const f = filters[scope], n = activeFilterCount(f), open = filterPanelOpen[scope];
+  return `<div class="filter-controls" data-scope="${scope}">
+    <input type="search" class="filter-search" data-bind="filter-query" data-scope="${scope}" value="${esc(f.query)}" placeholder="Search by name, muscle or equipment…" aria-label="Search exercises" autocomplete="off">
+    ${chips('cat-' + scope, ['All', 'Yours', ...CATEGORIES], f.category, {}, 'scroll')}
+    <div class="filter-bar">
+      <button type="button" class="btn light small filter-toggle ${n ? 'has' : ''}" data-action="toggle-filters" data-scope="${scope}" aria-expanded="${open}">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        Filters<span class="filter-count">${n ? ' · ' + n : ''}</span></button>
+      <label class="sort-label"><span>Sort</span><select data-bind="filter-sort" data-scope="${scope}" aria-label="Sort exercises">${options(Object.keys(SORTS), f.sort, SORTS)}</select></label>
+      <span class="muted small result-count" data-count="${scope}"></span>
+    </div>
+    <div class="filter-panel" data-panel="${scope}" ${open ? '' : 'hidden'}>
+      <label>Muscle<select data-bind="filter-muscle" data-scope="${scope}">${options(['All muscles', ...MUSCLES], f.muscle)}</select></label>
+      <label>Equipment<select data-bind="filter-gear" data-scope="${scope}">${options(['Any equipment', 'No equipment', ...GEAR], f.gear)}</select></label>
+      <label>Level<select data-bind="filter-level" data-scope="${scope}">${options(['Any level', 'General', 'Advanced'], f.level)}</select></label>
+      <div class="panel-foot"><label class="checkrow"><input type="checkbox" data-bind="filter-mygear" data-scope="${scope}" ${state.settings.onlyMyGear ? 'checked' : ''}> Only equipment I have</label>
+      <button type="button" class="text-btn" data-action="clear-filters" data-scope="${scope}">Clear filters</button></div>
+    </div></div>`;
+}
+
+/** Re-render a scope's results after a filter change, and keep its controls in step. */
+function filtersChanged(scope) {
+  listLimits[scope] = 60;
+  const f = filters[scope], n = activeFilterCount(f);
+  $$(`.filter-controls[data-scope="${scope}"]`).forEach(box => {
+    $('.filter-toggle', box)?.classList.toggle('has', n > 0);
+    const count = $('.filter-count', box);
+    if (count) count.textContent = n ? ' · ' + n : '';
+    $$('.chip', box).forEach(c => { const on = c.dataset.value === f.category; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+  });
+  if (scope === 'library') renderExerciseResults();
+  else renderPickerList();
+}
+
+const scopeOf = el => (el.dataset.scope === 'picker' ? 'picker' : 'library');
+binds['filter-query'] = el => { filters[scopeOf(el)].query = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-sort'] = el => { filters[scopeOf(el)].sort = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-muscle'] = el => { filters[scopeOf(el)].muscle = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-gear'] = el => { filters[scopeOf(el)].gear = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-level'] = el => { filters[scopeOf(el)].level = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-mygear'] = el => { state.settings.onlyMyGear = el.checked; save(); filtersChanged(scopeOf(el)); };
+chipHandlers['cat-library'] = v => { filters.library.category = v; filtersChanged('library'); };
+chipHandlers['cat-picker'] = v => { filters.picker.category = v; filtersChanged('picker'); };
+actions['toggle-filters'] = el => {
+  const scope = scopeOf(el);
+  filterPanelOpen[scope] = !filterPanelOpen[scope];
+  const panel = $(`[data-panel="${scope}"]`);
+  if (panel) panel.hidden = !filterPanelOpen[scope];
+  el.setAttribute('aria-expanded', filterPanelOpen[scope]);
+};
+actions['clear-filters'] = el => {
+  const scope = scopeOf(el);
+  filters[scope] = { ...FILTER_DEFAULTS };
+  state.settings.onlyMyGear = false;
+  save();
+  if (scope === 'library') render(); else renderPickerShell();
+};
+
+/** Section heading rows between groups of results. */
+function withHeadings(list, groupOf, item, heading) {
+  let last = null;
+  return list.map(e => {
+    const g = groupOf ? groupOf(e) : null;
+    const head = g !== null && g !== last ? heading(g) : '';
+    last = g;
+    return head + item(e);
+  }).join('');
+}
+
+// -------------------------------------------------------------- library ----
+
+renderers.library = () => {
+  app().innerHTML = heading('Find your next move.', `${allExercises().length} exercises: strength, cardio, stillness and everything in between.`,
+    `<button class="btn" data-action="new-exercise">${icon('plus')} Custom exercise</button>`)
+    + filterControlsHTML('library')
+    + `<div id="exercise-results"></div>
+    <p class="note">Body maps show approximate target areas, not exact muscle activation. Instructions are general guidance, not a personal programme: warm up, move within a range you control, and stop if something hurts. Set up your equipment in <button class="link" data-view="settings">Settings</button>.</p>`;
+  renderExerciseResults();
+};
 
 function renderExerciseResults() {
-  const all = filteredExercises();
-  const list = all.slice(0, libraryLimit);
-  const logged = new Set(state.history.flatMap(h => h.steps.map(t => t.exerciseId)));
-  $('#exercise-results').innerHTML = `<p class="muted small">${plural(all.length, 'exercise')}</p>
-    <div class="exercise-grid">${list.map(e => `<button class="exercise-card" data-action="detail" data-id="${e.id}">${bodymap(e)}
+  const usage = exerciseUsage();
+  const { list: all, groupOf } = filterExercises(filters.library, usage);
+  const list = all.slice(0, listLimits.library);
+  const count = $('[data-count="library"]');
+  if (count) count.textContent = plural(all.length, 'exercise');
+  const card = e => {
+    const n = usedCount(usage, e);
+    return `<button class="exercise-card" data-action="detail" data-id="${e.id}">${bodymap(e)}
       <div><span class="category">${esc(e.category)}${e.custom ? ' · YOURS' : e.level === 'Advanced' ? ' · ADVANCED' : ''}</span>
       <h3>${esc(e.name)}</h3><p>${esc(e.primary.join(' · ') || 'Breath and awareness')}</p>
-      <p class="gear-line">${esc((e.gear || []).map(gearLabel).join(', ') || 'No equipment')}${logged.has(e.id) ? ' · <span class="logged-mark">logged</span>' : ''}</p></div></button>`).join('')}</div>
+      <p class="gear-line">${esc((e.gear || []).map(gearLabel).join(', ') || 'No equipment')}${n ? ` · <span class="logged-mark">done ${n}×</span>` : ''}</p></div></button>`;
+  };
+  $('#exercise-results').innerHTML = `<div class="exercise-grid">${withHeadings(list, groupOf, card, g => `<h3 class="group-head">${esc(g)}</h3>`)}</div>
     ${all.length > list.length ? `<div class="center row more-row"><button class="btn light" data-action="more-exercises">Show ${Math.min(60, all.length - list.length)} more of ${all.length - list.length}</button></div>` : ''}
-    ${all.length ? '' : emptyState('No exercises match', 'Try another filter, or create your own exercise.', '<button class="btn light" data-action="clear-filters">Clear filters</button>')}`;
+    ${all.length ? '' : emptyState('No exercises match', 'Try another filter, or create your own exercise.', '<button class="btn light" data-action="clear-filters" data-scope="library">Clear filters</button>')}`;
 }
-
-actions['more-exercises'] = () => { libraryLimit += 60; renderExerciseResults(); };
-const refilter = () => { libraryLimit = 60; renderExerciseResults(); };
-binds.search = el => { libraryFilter.query = el.value; refilter(); };
-chipHandlers['library-cat'] = v => { libraryFilter.category = v; $$('[data-chip="library-cat"]').forEach(b => { b.classList.toggle('on', b.dataset.value === v); b.setAttribute('aria-pressed', b.dataset.value === v); }); refilter(); };
-binds['library-muscle'] = el => { libraryFilter.muscle = el.value; refilter(); };
-binds['library-gear'] = el => { libraryFilter.gear = el.value; refilter(); };
-binds['library-level'] = el => { libraryFilter.level = el.value; refilter(); };
-binds['library-mygear'] = el => { state.settings.onlyMyGear = el.checked; save(); refilter(); };
-actions['clear-filters'] = () => {
-  Object.assign(libraryFilter, { query: '', category: 'All', muscle: 'All muscles', gear: 'Any equipment', level: 'Any level' });
-  state.settings.onlyMyGear = false; save(); render();
-};
+actions['more-exercises'] = () => { listLimits.library += 60; renderExerciseResults(); };
 
 // -------------------------------------------------------------- details ----
 
@@ -2752,12 +3180,12 @@ function exerciseHistoryHTML(e) {
 }
 
 actions.detail = el => exerciseDetail(el.dataset.id);
-function exerciseDetail(id) {
-  const e = exercise(id);
-  if (!e) return;
+
+/** The body of an exercise's details. `relatedAction` decides where related variations open. */
+function exerciseInfoHTML(e, relatedAction = 'detail') {
   const related = e.family ? BUILTIN_EXERCISES.filter(x => x.id !== e.id && x.family === e.family) : [];
   const stretch = isStretch(e.category);
-  showModal(modalHead(e.name) + `<div class="detail-grid">
+  return `<div class="detail-grid">
     <div class="anatomy">${bodymap(e, 'large')}<div class="legend"><span><i class="swatch ${stretch ? 'stretch' : ''}"></i>${stretch ? 'Stretch' : 'Primary'}</span><span><i class="swatch secondary"></i>Secondary</span></div></div>
     <div>
       <div class="row">${pill(esc(e.category))}${e.level === 'Advanced' ? pill('Advanced', 'warn') : ''}${e.custom ? pill('Yours') : ''}${e.bilateral ? pill('Left & right') : ''}</div>
@@ -2770,7 +3198,13 @@ function exerciseDetail(id) {
     </div></div>
     ${e.level === 'Advanced' ? '<p class="note">Advanced skill: warm up first and build up through the related variations. These default to waiting for you to tap Begin.</p>' : ''}
     ${exerciseHistoryHTML(e)}
-    ${related.length ? `<h3 class="related-title">Related variations</h3><div class="row">${related.map(x => `<button class="btn light small" data-action="detail" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}
+    ${related.length ? `<h3 class="related-title">Related variations</h3><div class="row">${related.map(x => `<button type="button" class="btn light small" data-action="${relatedAction}" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}`;
+}
+
+function exerciseDetail(id) {
+  const e = exercise(id);
+  if (!e) return;
+  showModal(modalHead(e.name) + exerciseInfoHTML(e) + `
     <div class="modal-actions spread"><div class="row">
       ${e.custom ? `<button class="btn light" data-action="edit-exercise" data-id="${e.id}">Edit</button><button class="btn danger" data-action="delete-exercise" data-id="${e.id}">Delete</button>`
         : `<button class="btn light" data-action="copy-exercise" data-id="${e.id}" title="Create an editable copy with your own defaults and notes">Make my own version</button>`}</div>
@@ -3209,7 +3643,7 @@ actions['delete-entry'] = el => {
 // Settings: units, calendar, theme, session behaviour, equipment and data.
 'use strict';
 
-const APP_VERSION = '0.4';
+const APP_VERSION = '0.5';
 
 renderers.settings = () => {
   const s = state.settings;
@@ -3923,11 +4357,6 @@ function onInput(ev) {
   const el = ev.target;
   if (editorInput(ev)) return;
   if (el.dataset?.log && session?.pending) { setPending(el.dataset.log, el.value); return; }
-  if (el.id === 'picker-search') {
-    // Only while typing: re-rendering on blur would swallow the click that caused the blur.
-    if (ev.type === 'input') { pickerQuery = el.value; renderPickerList(); }
-    return;
-  }
   const key = el.dataset?.bind || el.id;
   // Text fields react while typing; everything else on change.
   const live = el.type === 'search' || el.type === 'text';

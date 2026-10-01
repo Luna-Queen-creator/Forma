@@ -30,11 +30,6 @@ function onInput(ev) {
   const el = ev.target;
   if (editorInput(ev)) return;
   if (el.dataset?.log && session?.pending) { setPending(el.dataset.log, el.value); return; }
-  if (el.id === 'picker-search') {
-    // Only while typing: re-rendering on blur would swallow the click that caused the blur.
-    if (ev.type === 'input') { pickerQuery = el.value; renderPickerList(); }
-    return;
-  }
   const key = el.dataset?.bind || el.id;
   // Text fields react while typing; everything else on change.
   const live = el.type === 'search' || el.type === 'text';

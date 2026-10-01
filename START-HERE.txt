@@ -1,4 +1,4 @@
-FORMA 0.4
+FORMA 0.5
 
 INSTALL ON YOUR PHONE (recommended)
 1. Open Forma's web address on your phone in Chrome or Samsung Internet.
@@ -56,6 +56,16 @@ custom exercises need internet; without it the app uses system fonts.
 WHAT'S NEW IN 0.4
 - Installable app with its own icon, offline mode, update notice,
   home-screen shortcuts, storage protection and backup sharing.
+
+WHAT'S NEW IN 0.5
+- Feels more like an app: tapping text no longer highlights it.
+- Routine editor: drag steps by their grip handle to reorder them, also
+  into and out of repeat groups (arrow keys work on a focused grip).
+- Exercise picker: the library's search, activity chips, filters and
+  sorting (suggested, A to Z, most used, recently done, by muscle) with
+  section headings, body maps, your last result, details without leaving
+  the picker, a ✓ count per exercise, and Undo for the last add.
+- The library gained the same sorting and headings.
 
 FOR WHOEVER EDITS THE CODE NEXT
 source/ is the real app and runs as-is: open source/index.html.

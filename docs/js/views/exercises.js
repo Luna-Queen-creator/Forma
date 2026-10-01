@@ -1,62 +1,159 @@
 // The exercise library, exercise details (with your own history) and custom exercises.
+// The search / filter / sort controls here are shared with the exercise picker in the routine editor.
 'use strict';
 
-const libraryFilter = { query: '', category: 'All', muscle: 'All muscles', gear: 'Any equipment', level: 'Any level' };
+const FILTER_DEFAULTS = { query: '', category: 'All', muscle: 'All muscles', gear: 'Any equipment', level: 'Any level', sort: 'suggested' };
+const filters = { library: { ...FILTER_DEFAULTS }, picker: { ...FILTER_DEFAULTS } };
+const filterPanelOpen = { library: window.innerWidth > 760, picker: false };
+const SORTS = { suggested: 'Suggested', az: 'A to Z', used: 'Most used by you', recent: 'Recently done', muscle: 'By main muscle' };
+const listLimits = { library: 60, picker: 60 };
 
-renderers.library = () => {
-  const f = libraryFilter;
-  app().innerHTML = heading('Find your next move.', `${allExercises().length} exercises: strength, cardio, stillness and everything in between.`,
-    `<button class="btn" data-action="new-exercise">${icon('plus')} Custom exercise</button>`)
-    + `<div class="toolbar"><input id="search" type="search" aria-label="Search exercises" placeholder="Search by name, muscle or equipment…" value="${esc(f.query)}" autocomplete="off"></div>
-    ${chips('library-cat', ['All', 'Yours', ...CATEGORIES], f.category)}
-    <div class="toolbar filters">
-      <select data-bind="library-muscle" aria-label="Filter by muscle">${options(['All muscles', ...MUSCLES], f.muscle)}</select>
-      <select data-bind="library-gear" aria-label="Filter by equipment">${options(['Any equipment', 'No equipment', ...GEAR], f.gear)}</select>
-      <select data-bind="library-level" aria-label="Filter by level">${options(['Any level', 'General', 'Advanced'], f.level)}</select>
-      <label class="checkrow"><input type="checkbox" data-bind="library-mygear" ${state.settings.onlyMyGear ? 'checked' : ''}> Only my equipment</label>
-    </div>
-    <div id="exercise-results"></div>
-    <p class="note">Body maps show approximate target areas, not exact muscle activation. Instructions are general guidance, not a personal programme: warm up, move within a range you control, and stop if something hurts. Set up your equipment in <button class="link" data-view="settings">Settings</button>.</p>`;
-  renderExerciseResults();
-};
+/** How many sessions included each exercise, and when it was last done. */
+function exerciseUsage() {
+  const usage = new Map();
+  for (const h of state.history) {
+    for (const t of h.steps) {
+      if (!t.exerciseId) continue;
+      const u = usage.get(t.exerciseId) || { sessions: new Set(), last: 0 };
+      u.sessions.add(h.id);
+      u.last = Math.max(u.last, Date.parse(h.at));
+      usage.set(t.exerciseId, u);
+    }
+  }
+  return usage;
+}
+const usedCount = (usage, e) => usage.get(e.id)?.sessions.size || 0;
 
-let libraryLimit = 60;
+function activeFilterCount(f) {
+  return [f.muscle !== 'All muscles', f.gear !== 'Any equipment', f.level !== 'Any level', state.settings.onlyMyGear].filter(Boolean).length;
+}
 
-function filteredExercises() {
-  const f = libraryFilter;
-  return rankByQuery(libraryOrder(allExercises()), f.query).filter(e => exerciseMatches(e, f.query)
+/** Filter and sort the exercises. `groupOf` (or null) names the section heading for each. */
+function filterExercises(f, usage = exerciseUsage()) {
+  let list = allExercises().filter(e => exerciseMatches(e, f.query)
     && (f.category === 'All' || (f.category === 'Yours' ? e.custom : e.category === f.category))
     && (f.muscle === 'All muscles' || e.primary.includes(f.muscle) || e.secondary.includes(f.muscle))
     && (f.gear === 'Any equipment' || (f.gear === 'No equipment' ? !(e.gear || []).length : (e.gear || []).some(g => g.split('|').includes(f.gear))))
     && (f.level === 'Any level' || (e.level || 'General') === f.level)
     && (!state.settings.onlyMyGear || gearOk(e)));
+  const byName = (a, b) => a.name.localeCompare(b.name);
+  const tried = e => (usage.has(e.id) ? 'Done before' : 'Not tried yet');
+  let groupOf = null;
+  if (f.sort === 'az') { list.sort(byName); groupOf = e => e.name[0].toUpperCase(); }
+  else if (f.sort === 'used') { list.sort((a, b) => usedCount(usage, b) - usedCount(usage, a) || byName(a, b)); groupOf = tried; }
+  else if (f.sort === 'recent') { list.sort((a, b) => (usage.get(b.id)?.last || 0) - (usage.get(a.id)?.last || 0) || byName(a, b)); groupOf = tried; }
+  else if (f.sort === 'muscle') {
+    const rank = e => (e.primary.length ? MUSCLES.indexOf(e.primary[0]) : MUSCLES.length);
+    list.sort((a, b) => rank(a) - rank(b) || byName(a, b));
+    groupOf = e => e.primary[0] || 'Breath & whole body';
+  } else {
+    list = libraryOrder(list);
+    if (f.query.trim()) list = rankByQuery(list, f.query);
+    else if (f.category === 'All') groupOf = e => (e.custom ? 'Your exercises' : e.category);
+  }
+  return { list, groupOf };
 }
+
+/** Search, activity chips, Filters toggle, Sort and the filter panel, for `scope` = library | picker. */
+function filterControlsHTML(scope) {
+  const f = filters[scope], n = activeFilterCount(f), open = filterPanelOpen[scope];
+  return `<div class="filter-controls" data-scope="${scope}">
+    <input type="search" class="filter-search" data-bind="filter-query" data-scope="${scope}" value="${esc(f.query)}" placeholder="Search by name, muscle or equipment…" aria-label="Search exercises" autocomplete="off">
+    ${chips('cat-' + scope, ['All', 'Yours', ...CATEGORIES], f.category, {}, 'scroll')}
+    <div class="filter-bar">
+      <button type="button" class="btn light small filter-toggle ${n ? 'has' : ''}" data-action="toggle-filters" data-scope="${scope}" aria-expanded="${open}">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        Filters<span class="filter-count">${n ? ' · ' + n : ''}</span></button>
+      <label class="sort-label"><span>Sort</span><select data-bind="filter-sort" data-scope="${scope}" aria-label="Sort exercises">${options(Object.keys(SORTS), f.sort, SORTS)}</select></label>
+      <span class="muted small result-count" data-count="${scope}"></span>
+    </div>
+    <div class="filter-panel" data-panel="${scope}" ${open ? '' : 'hidden'}>
+      <label>Muscle<select data-bind="filter-muscle" data-scope="${scope}">${options(['All muscles', ...MUSCLES], f.muscle)}</select></label>
+      <label>Equipment<select data-bind="filter-gear" data-scope="${scope}">${options(['Any equipment', 'No equipment', ...GEAR], f.gear)}</select></label>
+      <label>Level<select data-bind="filter-level" data-scope="${scope}">${options(['Any level', 'General', 'Advanced'], f.level)}</select></label>
+      <div class="panel-foot"><label class="checkrow"><input type="checkbox" data-bind="filter-mygear" data-scope="${scope}" ${state.settings.onlyMyGear ? 'checked' : ''}> Only equipment I have</label>
+      <button type="button" class="text-btn" data-action="clear-filters" data-scope="${scope}">Clear filters</button></div>
+    </div></div>`;
+}
+
+/** Re-render a scope's results after a filter change, and keep its controls in step. */
+function filtersChanged(scope) {
+  listLimits[scope] = 60;
+  const f = filters[scope], n = activeFilterCount(f);
+  $$(`.filter-controls[data-scope="${scope}"]`).forEach(box => {
+    $('.filter-toggle', box)?.classList.toggle('has', n > 0);
+    const count = $('.filter-count', box);
+    if (count) count.textContent = n ? ' · ' + n : '';
+    $$('.chip', box).forEach(c => { const on = c.dataset.value === f.category; c.classList.toggle('on', on); c.setAttribute('aria-pressed', on); });
+  });
+  if (scope === 'library') renderExerciseResults();
+  else renderPickerList();
+}
+
+const scopeOf = el => (el.dataset.scope === 'picker' ? 'picker' : 'library');
+binds['filter-query'] = el => { filters[scopeOf(el)].query = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-sort'] = el => { filters[scopeOf(el)].sort = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-muscle'] = el => { filters[scopeOf(el)].muscle = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-gear'] = el => { filters[scopeOf(el)].gear = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-level'] = el => { filters[scopeOf(el)].level = el.value; filtersChanged(scopeOf(el)); };
+binds['filter-mygear'] = el => { state.settings.onlyMyGear = el.checked; save(); filtersChanged(scopeOf(el)); };
+chipHandlers['cat-library'] = v => { filters.library.category = v; filtersChanged('library'); };
+chipHandlers['cat-picker'] = v => { filters.picker.category = v; filtersChanged('picker'); };
+actions['toggle-filters'] = el => {
+  const scope = scopeOf(el);
+  filterPanelOpen[scope] = !filterPanelOpen[scope];
+  const panel = $(`[data-panel="${scope}"]`);
+  if (panel) panel.hidden = !filterPanelOpen[scope];
+  el.setAttribute('aria-expanded', filterPanelOpen[scope]);
+};
+actions['clear-filters'] = el => {
+  const scope = scopeOf(el);
+  filters[scope] = { ...FILTER_DEFAULTS };
+  state.settings.onlyMyGear = false;
+  save();
+  if (scope === 'library') render(); else renderPickerShell();
+};
+
+/** Section heading rows between groups of results. */
+function withHeadings(list, groupOf, item, heading) {
+  let last = null;
+  return list.map(e => {
+    const g = groupOf ? groupOf(e) : null;
+    const head = g !== null && g !== last ? heading(g) : '';
+    last = g;
+    return head + item(e);
+  }).join('');
+}
+
+// -------------------------------------------------------------- library ----
+
+renderers.library = () => {
+  app().innerHTML = heading('Find your next move.', `${allExercises().length} exercises: strength, cardio, stillness and everything in between.`,
+    `<button class="btn" data-action="new-exercise">${icon('plus')} Custom exercise</button>`)
+    + filterControlsHTML('library')
+    + `<div id="exercise-results"></div>
+    <p class="note">Body maps show approximate target areas, not exact muscle activation. Instructions are general guidance, not a personal programme: warm up, move within a range you control, and stop if something hurts. Set up your equipment in <button class="link" data-view="settings">Settings</button>.</p>`;
+  renderExerciseResults();
+};
 
 function renderExerciseResults() {
-  const all = filteredExercises();
-  const list = all.slice(0, libraryLimit);
-  const logged = new Set(state.history.flatMap(h => h.steps.map(t => t.exerciseId)));
-  $('#exercise-results').innerHTML = `<p class="muted small">${plural(all.length, 'exercise')}</p>
-    <div class="exercise-grid">${list.map(e => `<button class="exercise-card" data-action="detail" data-id="${e.id}">${bodymap(e)}
+  const usage = exerciseUsage();
+  const { list: all, groupOf } = filterExercises(filters.library, usage);
+  const list = all.slice(0, listLimits.library);
+  const count = $('[data-count="library"]');
+  if (count) count.textContent = plural(all.length, 'exercise');
+  const card = e => {
+    const n = usedCount(usage, e);
+    return `<button class="exercise-card" data-action="detail" data-id="${e.id}">${bodymap(e)}
       <div><span class="category">${esc(e.category)}${e.custom ? ' · YOURS' : e.level === 'Advanced' ? ' · ADVANCED' : ''}</span>
       <h3>${esc(e.name)}</h3><p>${esc(e.primary.join(' · ') || 'Breath and awareness')}</p>
-      <p class="gear-line">${esc((e.gear || []).map(gearLabel).join(', ') || 'No equipment')}${logged.has(e.id) ? ' · <span class="logged-mark">logged</span>' : ''}</p></div></button>`).join('')}</div>
+      <p class="gear-line">${esc((e.gear || []).map(gearLabel).join(', ') || 'No equipment')}${n ? ` · <span class="logged-mark">done ${n}×</span>` : ''}</p></div></button>`;
+  };
+  $('#exercise-results').innerHTML = `<div class="exercise-grid">${withHeadings(list, groupOf, card, g => `<h3 class="group-head">${esc(g)}</h3>`)}</div>
     ${all.length > list.length ? `<div class="center row more-row"><button class="btn light" data-action="more-exercises">Show ${Math.min(60, all.length - list.length)} more of ${all.length - list.length}</button></div>` : ''}
-    ${all.length ? '' : emptyState('No exercises match', 'Try another filter, or create your own exercise.', '<button class="btn light" data-action="clear-filters">Clear filters</button>')}`;
+    ${all.length ? '' : emptyState('No exercises match', 'Try another filter, or create your own exercise.', '<button class="btn light" data-action="clear-filters" data-scope="library">Clear filters</button>')}`;
 }
-
-actions['more-exercises'] = () => { libraryLimit += 60; renderExerciseResults(); };
-const refilter = () => { libraryLimit = 60; renderExerciseResults(); };
-binds.search = el => { libraryFilter.query = el.value; refilter(); };
-chipHandlers['library-cat'] = v => { libraryFilter.category = v; $$('[data-chip="library-cat"]').forEach(b => { b.classList.toggle('on', b.dataset.value === v); b.setAttribute('aria-pressed', b.dataset.value === v); }); refilter(); };
-binds['library-muscle'] = el => { libraryFilter.muscle = el.value; refilter(); };
-binds['library-gear'] = el => { libraryFilter.gear = el.value; refilter(); };
-binds['library-level'] = el => { libraryFilter.level = el.value; refilter(); };
-binds['library-mygear'] = el => { state.settings.onlyMyGear = el.checked; save(); refilter(); };
-actions['clear-filters'] = () => {
-  Object.assign(libraryFilter, { query: '', category: 'All', muscle: 'All muscles', gear: 'Any equipment', level: 'Any level' });
-  state.settings.onlyMyGear = false; save(); render();
-};
+actions['more-exercises'] = () => { listLimits.library += 60; renderExerciseResults(); };
 
 // -------------------------------------------------------------- details ----
 
@@ -86,12 +183,12 @@ function exerciseHistoryHTML(e) {
 }
 
 actions.detail = el => exerciseDetail(el.dataset.id);
-function exerciseDetail(id) {
-  const e = exercise(id);
-  if (!e) return;
+
+/** The body of an exercise's details. `relatedAction` decides where related variations open. */
+function exerciseInfoHTML(e, relatedAction = 'detail') {
   const related = e.family ? BUILTIN_EXERCISES.filter(x => x.id !== e.id && x.family === e.family) : [];
   const stretch = isStretch(e.category);
-  showModal(modalHead(e.name) + `<div class="detail-grid">
+  return `<div class="detail-grid">
     <div class="anatomy">${bodymap(e, 'large')}<div class="legend"><span><i class="swatch ${stretch ? 'stretch' : ''}"></i>${stretch ? 'Stretch' : 'Primary'}</span><span><i class="swatch secondary"></i>Secondary</span></div></div>
     <div>
       <div class="row">${pill(esc(e.category))}${e.level === 'Advanced' ? pill('Advanced', 'warn') : ''}${e.custom ? pill('Yours') : ''}${e.bilateral ? pill('Left & right') : ''}</div>
@@ -104,7 +201,13 @@ function exerciseDetail(id) {
     </div></div>
     ${e.level === 'Advanced' ? '<p class="note">Advanced skill: warm up first and build up through the related variations. These default to waiting for you to tap Begin.</p>' : ''}
     ${exerciseHistoryHTML(e)}
-    ${related.length ? `<h3 class="related-title">Related variations</h3><div class="row">${related.map(x => `<button class="btn light small" data-action="detail" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}
+    ${related.length ? `<h3 class="related-title">Related variations</h3><div class="row">${related.map(x => `<button type="button" class="btn light small" data-action="${relatedAction}" data-id="${x.id}">${esc(x.name)}</button>`).join('')}</div>` : ''}`;
+}
+
+function exerciseDetail(id) {
+  const e = exercise(id);
+  if (!e) return;
+  showModal(modalHead(e.name) + exerciseInfoHTML(e) + `
     <div class="modal-actions spread"><div class="row">
       ${e.custom ? `<button class="btn light" data-action="edit-exercise" data-id="${e.id}">Edit</button><button class="btn danger" data-action="delete-exercise" data-id="${e.id}">Delete</button>`
         : `<button class="btn light" data-action="copy-exercise" data-id="${e.id}" title="Create an editable copy with your own defaults and notes">Make my own version</button>`}</div>
