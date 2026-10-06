@@ -23,13 +23,54 @@ function go(name) {
   if (!VIEWS[name]) name = 'week';
   if (session) { toast('Finish or end your current session first.'); return; }
   view = name;
-  if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  if (location.hash !== '#' + name) history.replaceState(history.state, '', '#' + name);
   closeDialogs();
   render();
   window.scrollTo(0, 0);
 }
 
+// ------------------------------------------------------- back button ----
+// Phones (and browsers) go "back" through history. While there is something to step back
+// from (an open window, a workout, or any screen other than My week), Forma keeps exactly
+// one extra history entry. Pressing back removes it; Forma then closes the top layer and
+// adds the entry again if there is still more to step back from. On My week, back leaves.
+
+let backGuard = history.state?.formaGuard === true;
+let ignoreNextPop = false;
+let backSyncTimer = 0;
+
+function needsBackGuard() {
+  return $('#modal').open || $('#picker').open || !!session || view !== 'week';
+}
+function syncBackGuard() {
+  clearTimeout(backSyncTimer);
+  backSyncTimer = setTimeout(() => {
+    const need = needsBackGuard();
+    if (need && !backGuard) { history.pushState({ formaGuard: true }, '', location.href); backGuard = true; }
+    else if (!need && backGuard) { backGuard = false; ignoreNextPop = true; history.back(); }
+  }, 0);
+}
+function keepHashInStep() {
+  if (!session && location.hash !== '#' + view) history.replaceState(history.state, '', '#' + view);
+}
+/** One step back: the top-most thing closes. */
+function handleBack() {
+  if (typeof drag !== 'undefined' && drag) return;
+  if ($('#picker').open) { actions['close-picker'](); return; }
+  if ($('#modal').open) { if (pendingConfirm) actions['confirm-no'](); else actions.close(); return; }
+  if (session) { exitSession(); return; }
+  if (view !== 'week') go('week');
+}
+window.addEventListener('popstate', ev => {
+  if (ignoreNextPop) { ignoreNextPop = false; keepHashInStep(); return; }
+  backGuard = ev.state?.formaGuard === true;
+  handleBack();
+  keepHashInStep();
+  syncBackGuard();
+});
+
 function render() {
+  syncBackGuard();
   document.body.classList.toggle('in-session', !!session);
   if (session) { renderSession(); return; }
   $$('nav [data-view]').forEach(b => {
@@ -151,9 +192,14 @@ function sparkline(values, { width = 220, height = 48 } = {}) {
 // --------------------------------------------------------------- theme ----
 
 function applyTheme() {
+  const root = document.documentElement;
   const t = state.settings.theme;
-  if (t === 'system') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', t);
-  const dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-  $('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0f1917' : '#123c39');
+  if (t === 'system') root.removeAttribute('data-theme');
+  else root.setAttribute('data-theme', t);
+  if (state.settings.palette === 'forest') root.removeAttribute('data-palette');
+  else root.setAttribute('data-palette', state.settings.palette);
+  // The phone's status bar takes the colour of the Today card.
+  const bar = getComputedStyle(root).getPropertyValue('--hero-bg').trim();
+  if (bar) $('meta[name="theme-color"]')?.setAttribute('content', bar);
+  renderStickers();
 }

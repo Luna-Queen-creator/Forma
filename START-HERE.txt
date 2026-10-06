@@ -1,4 +1,4 @@
-FORMA 0.5
+FORMA 0.6
 
 INSTALL ON YOUR PHONE (recommended)
 1. Open Forma's web address on your phone in Chrome or Samsung Internet.
@@ -67,6 +67,20 @@ WHAT'S NEW IN 0.5
   the picker, a ✓ count per exercise, and Undo for the last add.
 - The library gained the same sorting and headings.
 
+WHAT'S NEW IN 0.6
+- Colours: Settings > Colours picks Forest, Rose, Lavender, Ocean or
+  Kitty (soft pinks with kitten stickers). Each works in light and dark.
+- Progressive overload: the weight and reps you actually did are saved
+  back into the routine when you finish. The summary shows what changed,
+  with "Keep my previous plan instead" to undo.
+- Note for next time: write it in the finish summary; it pops up (and
+  can be edited) before you start that routine again. No note, no popup.
+- The phone's back button now steps back (closes the picker, a dialog,
+  asks before leaving a session, returns to My week) instead of leaving.
+- New templates: Core A (front and deep core) and Core B (sides and
+  rotation), about 15 minutes each. Alternate them twice a week.
+- The player no longer shows the help line under the controls.
+
 FOR WHOEVER EDITS THE CODE NEXT
 source/ is the real app and runs as-is: open source/index.html.
 Build with:   python3 build.py
@@ -81,7 +95,11 @@ Build with:   python3 build.py
   source/js/stats.js       history maths: weekly totals, streaks, records
   source/js/ui.js          routing, dialogs, toasts, icons, body map
   source/js/views/*.js     one file per screen
-  source/js/player.js      the session player
+  source/js/player.js      the session player (also carry-over and notes)
+  source/js/stickers.js    the Kitty theme's drawings and their layout
+  tools/palettes.py        the colour themes (Forest is the base tokens in
+                           style.css). Edit, then: python3 tools/palettes.py
+                           --write  (checks contrast, updates style.css)
   source/js/pwa.js         install, offline, updates, storage protection
   source/js/main.js        event wiring and start-up
   source/sw.js             offline cache (build.py stamps its version)

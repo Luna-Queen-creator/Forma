@@ -74,6 +74,10 @@
   /* Chart series (validated categorical order, light surface). */
   --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100; --s5: #e87ba4;
   --grid: #e7ece9;
+
+  /* Brand roles that colour themes override. */
+  --hero-accent: #d5f580; --hero-btn-bg: #d5f580; --hero-btn-ink: #19392d; --hero-item: rgba(255, 255, 255, .06);
+  --mark-bg: #123c39; --mark-ink: #d5f580; --brand-dot: #8ba84a; --toast-bg: #153e32;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -94,6 +98,8 @@
     --dot-sport: #7ea6e3; --dot-other: #9aa9ae;
     --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
     --grid: #22302c;
+    --hero-accent: #cdef7a; --hero-btn-bg: #cdef7a; --hero-btn-ink: #10231f; --hero-item: rgba(255, 255, 255, .06);
+    --mark-bg: #123c39; --mark-ink: #d5f580; --brand-dot: #8ba84a; --toast-bg: #2b4a43;
   }
 }
 :root[data-theme="dark"] {
@@ -113,6 +119,8 @@
   --dot-sport: #7ea6e3; --dot-other: #9aa9ae;
   --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500; --s5: #d55181;
   --grid: #22302c;
+  --hero-accent: #cdef7a; --hero-btn-bg: #cdef7a; --hero-btn-ink: #10231f; --hero-item: rgba(255, 255, 255, .06);
+  --mark-bg: #123c39; --mark-ink: #d5f580; --brand-dot: #8ba84a; --toast-bg: #2b4a43;
 }
 
 /* -------------------------------------------------------------- base --- */
@@ -146,8 +154,8 @@ legend { font-size: 14px; font-weight: 600; margin-bottom: 8px; padding: 0; }
   padding: 32px 20px; display: flex; flex-direction: column; overflow-y: auto;
 }
 .brand { font-family: var(--font-display); font-weight: 800; font-size: 32px; letter-spacing: -.06em; text-decoration: none; display: flex; align-items: center; gap: 10px; color: var(--ink-strong); }
-.mark { display: inline-grid; place-items: center; background: #123c39; color: #d5f580; border-radius: 11px; width: 38px; height: 40px; font-size: 34px; font-style: italic; padding-right: 4px; letter-spacing: 0; }
-.brand-dot { color: #8ba84a; margin-left: -10px; }
+.mark { display: inline-grid; place-items: center; background: var(--mark-bg); color: var(--mark-ink); border-radius: 11px; width: 38px; height: 40px; font-size: 34px; font-style: italic; padding-right: 4px; letter-spacing: 0; }
+.brand-dot { color: var(--brand-dot); margin-left: -10px; }
 .eyebrow { font-size: 11px; letter-spacing: .18em; margin: 16px 0 30px; color: var(--muted); }
 nav { display: grid; gap: 4px; }
 nav button { display: flex; align-items: center; gap: 13px; text-align: left; border-radius: 10px; padding: 11px 14px; font-size: 15px; font-weight: 500; color: var(--ink); }
@@ -177,7 +185,8 @@ footer { border-top: 1px solid var(--line); padding: 22px 0 30px; margin-top: 30
 .btn.danger { background: var(--danger-bg); color: var(--danger); }
 .btn.small { min-height: 36px; padding: 6px 12px; font-size: 13px; }
 .btn.on-dark { background: transparent; color: var(--hero-ink); border: 1px solid var(--hero-line); }
-.btn.on-dark:hover { background: rgba(255, 255, 255, .06); }
+.btn.on-dark:hover { background: var(--hero-item); }
+.hero .btn.lime { background: var(--hero-btn-bg); color: var(--hero-btn-ink); }
 .text-btn { padding: 6px 2px; font-size: 14px; font-weight: 500; text-align: left; }
 .text-btn:hover, .link:hover { text-decoration: underline; }
 .link { padding: 0; text-decoration: underline; font-size: inherit; }
@@ -299,23 +308,23 @@ dialog::backdrop { background: var(--backdrop); backdrop-filter: blur(3px); }
 /* -------------------------------------------------------------- week --- */
 .hero { background: var(--hero-bg); color: var(--hero-ink); border-radius: 18px; padding: 26px 30px; display: grid; grid-template-columns: 1fr auto; gap: 24px; margin-bottom: 30px; align-items: center; }
 .hero h2 { color: var(--hero-ink); font-size: 25px; margin: 6px 0 14px; }
-.hero .eyebrow { color: var(--lime); margin: 0; }
+.hero .eyebrow { color: var(--hero-accent); margin: 0; }
 .hero-sub { color: var(--hero-muted); margin-bottom: 16px; max-width: 520px; }
 .today-list { display: grid; gap: 8px; margin-bottom: 16px; max-width: 640px; }
-.today-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: rgba(255, 255, 255, .06); border: 1px solid var(--hero-line); border-radius: 11px; padding: 10px 10px 10px 16px; }
+.today-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--hero-item); border: 1px solid var(--hero-line); border-radius: 11px; padding: 10px 10px 10px 16px; }
 .today-item strong { display: block; }
 .today-item small { color: var(--hero-muted); }
 .today-item.done strong { opacity: .85; }
-.done-badge { display: inline-flex; align-items: center; gap: 5px; color: var(--lime); font-size: 13px; font-weight: 600; padding: 8px 10px; border-radius: 8px; }
+.done-badge { display: inline-flex; align-items: center; gap: 5px; color: var(--hero-accent); font-size: 13px; font-weight: 600; padding: 8px 10px; border-radius: 8px; }
 .done-badge .icon { width: 16px; height: 16px; }
-.done-badge:hover { background: rgba(255, 255, 255, .06); }
+.done-badge:hover { background: var(--hero-item); }
 .hero-actions { gap: 8px; }
 .hero-ring { position: relative; width: 150px; height: 150px; margin: 0 8px; }
 .hero-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
 .ring-bg { fill: none; stroke: var(--hero-line); stroke-width: 8; }
-.ring-fg { fill: none; stroke: var(--lime); stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray .4s; }
+.ring-fg { fill: none; stroke: var(--hero-accent); stroke-width: 8; stroke-linecap: round; transition: stroke-dasharray .4s; }
 .ring-label { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; }
-.ring-label strong { font-family: var(--font-display); font-size: 34px; color: var(--lime); line-height: 1.1; }
+.ring-label strong { font-family: var(--font-display); font-size: 34px; color: var(--hero-accent); line-height: 1.1; }
 .ring-label span { font-size: 11px; color: var(--hero-muted); line-height: 1.35; }
 .week-controls { margin: 0 0 16px; }
 .week-controls h2 { margin: 0; }
@@ -368,7 +377,7 @@ details.more[open] summary { margin-bottom: 8px; }
 .note-field { font-size: 12px; color: var(--muted); margin: 8px 0 0; }
 .note-field input { margin-top: 4px; min-height: 40px; }
 .rest-block { background: var(--surface-2); }
-.repeat-group { background: var(--cat-strength); border-color: var(--line-strong); }
+.repeat-group { background: color-mix(in srgb, var(--lime) 22%, var(--surface)); border-color: var(--line-strong); }
 .repeat-group > .blocks > .step { background: var(--surface); }
 .block-add { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0 4px; }
 .empty-seq { padding: 18px; border: 1px dashed var(--line-strong); border-radius: 12px; text-align: center; }
@@ -547,7 +556,7 @@ tr.clickable:hover td { background: var(--surface-2); }
 body.in-session .topbar .btn { display: none; }
 
 /* ------------------------------------------------------------ toast --- */
-#toast { position: fixed; bottom: 26px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 12px 20px; border-radius: 10px; background: #153e32; color: #fff; box-shadow: 0 6px 30px rgba(0, 0, 0, .2); z-index: 20; max-width: min(90%, 480px); font-size: 14px; transition: opacity .2s, transform .2s; }
+#toast { position: fixed; bottom: 26px; left: 50%; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 12px 20px; border-radius: 10px; background: var(--toast-bg); color: #fff; box-shadow: 0 6px 30px rgba(0, 0, 0, .2); z-index: 20; max-width: min(90%, 480px); font-size: 14px; transition: opacity .2s, transform .2s; }
 #toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* ------------------------------------------------------- responsive --- */
@@ -736,6 +745,85 @@ body.is-dragging, body.is-dragging * { cursor: grabbing !important; }
   .picker-foot #picker-count:empty { display: none; }
   .picker-foot .row { margin-left: auto; }
 }
+/* ---------------------------------------------------- colour themes --- */
+/* Generated by build/palettes.py (contrast-checked). Forest is the default above. */
+:root[data-palette="rose"] {
+  --surface: #ffffff; --hero-item: rgba(255, 255, 255, .07); --bg: #faf4f6; --surface-2: #f8eef2; --surface-3: #f1e1e8; --ink: #431a2e; --ink-strong: #2f0f1f; --muted: #79586a; --line: #eedde4; --line-strong: #dfc4cf; --accent: #8a1d4e; --accent-ink: #ffffff; --lime: #ffc9de; --lime-ink: #4d0f2c; --focus: #b2386f; --hero-bg: #6d1740; --hero-ink: #ffffff; --hero-muted: #f2c6d8; --hero-line: #924067; --hero-accent: #ffc9de; --hero-btn-bg: #ffc9de; --hero-btn-ink: #4d0f2c; --note-bg: #f9edf2; --note-ink: #6e4a5b; --bm-primary: #b2386f; --bm-secondary: #f7a8c8; --bm-base: #f3e8ec; --bm-stroke: #d8b9c6; --bm-muscle: #ead2dc; --grid: #f2e7ec; --mark-bg: #6d1740; --mark-ink: #ffc9de; --brand-dot: #e46ea3; --toast-bg: #6d1740; --backdrop: rgba(60, 15, 35, .45); --cat-strength: #f6dfe9; --dot-strength: #c2457e;
+}
+@media (prefers-color-scheme: dark) {
+:root[data-palette="rose"]:not([data-theme="light"]) {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #170d12; --surface: #22141b; --surface-2: #2b1a23; --surface-3: #36222d; --ink: #f3e3ea; --ink-strong: #fff4f8; --muted: #bf9fae; --line: #3d2733; --line-strong: #523443; --accent: #ffb3d1; --accent-ink: #3d0c24; --lime: #ffb3d1; --lime-ink: #3d0c24; --focus: #f58db9; --hero-bg: #43172d; --hero-ink: #fff4f8; --hero-muted: #e2b6c9; --hero-line: #63304a; --hero-accent: #ffb3d1; --hero-btn-bg: #ffb3d1; --hero-btn-ink: #3d0c24; --note-bg: #2b1a23; --note-ink: #d9bfcb; --bm-primary: #f58db9; --bm-secondary: #ffd0e2; --bm-base: #33212a; --bm-stroke: #573a48; --bm-muscle: #45303b; --grid: #2e1d26; --mark-bg: #6d1740; --mark-ink: #ffc9de; --brand-dot: #e46ea3; --toast-bg: #5a2340; --cat-strength: #3a1d2b; --dot-strength: #e46ea3;
+}
+}
+:root[data-palette="rose"][data-theme="dark"] {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #170d12; --surface: #22141b; --surface-2: #2b1a23; --surface-3: #36222d; --ink: #f3e3ea; --ink-strong: #fff4f8; --muted: #bf9fae; --line: #3d2733; --line-strong: #523443; --accent: #ffb3d1; --accent-ink: #3d0c24; --lime: #ffb3d1; --lime-ink: #3d0c24; --focus: #f58db9; --hero-bg: #43172d; --hero-ink: #fff4f8; --hero-muted: #e2b6c9; --hero-line: #63304a; --hero-accent: #ffb3d1; --hero-btn-bg: #ffb3d1; --hero-btn-ink: #3d0c24; --note-bg: #2b1a23; --note-ink: #d9bfcb; --bm-primary: #f58db9; --bm-secondary: #ffd0e2; --bm-base: #33212a; --bm-stroke: #573a48; --bm-muscle: #45303b; --grid: #2e1d26; --mark-bg: #6d1740; --mark-ink: #ffc9de; --brand-dot: #e46ea3; --toast-bg: #5a2340; --cat-strength: #3a1d2b; --dot-strength: #e46ea3;
+}
+:root[data-palette="lavender"] {
+  --surface: #ffffff; --hero-item: rgba(255, 255, 255, .07); --bg: #f6f4fa; --surface-2: #f1eef8; --surface-3: #e7e2f3; --ink: #2c2148; --ink-strong: #1d1435; --muted: #655c7d; --line: #e2dcef; --line-strong: #cdc4e2; --accent: #45318c; --accent-ink: #ffffff; --lime: #dccfff; --lime-ink: #2a1b5c; --focus: #6a52c2; --hero-bg: #35266e; --hero-ink: #ffffff; --hero-muted: #d3cbf0; --hero-line: #5b4b96; --hero-accent: #dccfff; --hero-btn-bg: #dccfff; --hero-btn-ink: #2a1b5c; --note-bg: #f0edf8; --note-ink: #5a5175; --bm-primary: #6a52c2; --bm-secondary: #b9a8f2; --bm-base: #ece8f5; --bm-stroke: #c4bada; --bm-muscle: #ddd6ee; --grid: #ece8f4; --mark-bg: #35266e; --mark-ink: #dccfff; --brand-dot: #9b84e8; --toast-bg: #35266e; --backdrop: rgba(30, 20, 60, .45); --cat-strength: #e6e0f7; --dot-strength: #6a52c2; --cat-yoga: #e8efda; --dot-yoga: #5f8a2d;
+}
+@media (prefers-color-scheme: dark) {
+:root[data-palette="lavender"]:not([data-theme="light"]) {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #110e19; --surface: #1b1726; --surface-2: #231e31; --surface-3: #2d273d; --ink: #e9e4f6; --ink-strong: #f7f4ff; --muted: #a9a0c2; --line: #302945; --line-strong: #42395b; --accent: #cbbaff; --accent-ink: #1f1446; --lime: #cbbaff; --lime-ink: #1f1446; --focus: #a68ff0; --hero-bg: #2a2150; --hero-ink: #f7f4ff; --hero-muted: #c4bbe3; --hero-line: #463a77; --hero-accent: #cbbaff; --hero-btn-bg: #cbbaff; --hero-btn-ink: #1f1446; --note-bg: #231e31; --note-ink: #c6bfdc; --bm-primary: #a68ff0; --bm-secondary: #ddd2ff; --bm-base: #2a2438; --bm-stroke: #4a4063; --bm-muscle: #3a3250; --grid: #262036; --mark-bg: #35266e; --mark-ink: #dccfff; --brand-dot: #9b84e8; --toast-bg: #3b2f73; --cat-strength: #2a2342; --dot-strength: #9b84e8; --cat-yoga: #25301d; --dot-yoga: #7fae45;
+}
+}
+:root[data-palette="lavender"][data-theme="dark"] {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #110e19; --surface: #1b1726; --surface-2: #231e31; --surface-3: #2d273d; --ink: #e9e4f6; --ink-strong: #f7f4ff; --muted: #a9a0c2; --line: #302945; --line-strong: #42395b; --accent: #cbbaff; --accent-ink: #1f1446; --lime: #cbbaff; --lime-ink: #1f1446; --focus: #a68ff0; --hero-bg: #2a2150; --hero-ink: #f7f4ff; --hero-muted: #c4bbe3; --hero-line: #463a77; --hero-accent: #cbbaff; --hero-btn-bg: #cbbaff; --hero-btn-ink: #1f1446; --note-bg: #231e31; --note-ink: #c6bfdc; --bm-primary: #a68ff0; --bm-secondary: #ddd2ff; --bm-base: #2a2438; --bm-stroke: #4a4063; --bm-muscle: #3a3250; --grid: #262036; --mark-bg: #35266e; --mark-ink: #dccfff; --brand-dot: #9b84e8; --toast-bg: #3b2f73; --cat-strength: #2a2342; --dot-strength: #9b84e8; --cat-yoga: #25301d; --dot-yoga: #7fae45;
+}
+:root[data-palette="ocean"] {
+  --surface: #ffffff; --hero-item: rgba(255, 255, 255, .07); --bg: #f3f6f9; --surface-2: #edf2f7; --surface-3: #e1e9f1; --ink: #14324a; --ink-strong: #0b2236; --muted: #566a7b; --line: #dae3ec; --line-strong: #c1cfdc; --accent: #0f4c75; --accent-ink: #ffffff; --lime: #a9e8ff; --lime-ink: #083049; --focus: #1f78a8; --hero-bg: #0e3a5a; --hero-ink: #ffffff; --hero-muted: #c2d8e8; --hero-line: #34617f; --hero-accent: #a9e8ff; --hero-btn-bg: #a9e8ff; --hero-btn-ink: #083049; --note-bg: #ecf2f7; --note-ink: #4a6275; --bm-primary: #1f78a8; --bm-secondary: #8fd3f0; --bm-base: #e6edf3; --bm-stroke: #b3c6d6; --bm-muscle: #cfdce7; --grid: #e6edf3; --mark-bg: #0e3a5a; --mark-ink: #a9e8ff; --brand-dot: #3fa7d6; --toast-bg: #0e3a5a; --backdrop: rgba(10, 30, 50, .45); --cat-strength: #dbeaf5; --dot-strength: #1f78a8; --cat-mobility: #e8efda; --dot-mobility: #5f8a2d;
+}
+@media (prefers-color-scheme: dark) {
+:root[data-palette="ocean"]:not([data-theme="light"]) {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #0c131a; --surface: #141e28; --surface-2: #1a2733; --surface-3: #22313f; --ink: #e1ebf3; --ink-strong: #f4f9fc; --muted: #9cb1c3; --line: #24323f; --line-strong: #344656; --accent: #9fe0fb; --accent-ink: #082436; --lime: #9fe0fb; --lime-ink: #082436; --focus: #6cc4ec; --hero-bg: #12324b; --hero-ink: #f4f9fc; --hero-muted: #b3cbdc; --hero-line: #2a4d68; --hero-accent: #9fe0fb; --hero-btn-bg: #9fe0fb; --hero-btn-ink: #082436; --note-bg: #1a2733; --note-ink: #b9cad8; --bm-primary: #6cc4ec; --bm-secondary: #c4eeff; --bm-base: #1e2b37; --bm-stroke: #3a4f62; --bm-muscle: #2c3d4c; --grid: #1c2934; --mark-bg: #0e3a5a; --mark-ink: #a9e8ff; --brand-dot: #3fa7d6; --toast-bg: #1d4766; --cat-strength: #182b3b; --dot-strength: #3fa7d6; --cat-mobility: #25301d; --dot-mobility: #7fae45;
+}
+}
+:root[data-palette="ocean"][data-theme="dark"] {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #0c131a; --surface: #141e28; --surface-2: #1a2733; --surface-3: #22313f; --ink: #e1ebf3; --ink-strong: #f4f9fc; --muted: #9cb1c3; --line: #24323f; --line-strong: #344656; --accent: #9fe0fb; --accent-ink: #082436; --lime: #9fe0fb; --lime-ink: #082436; --focus: #6cc4ec; --hero-bg: #12324b; --hero-ink: #f4f9fc; --hero-muted: #b3cbdc; --hero-line: #2a4d68; --hero-accent: #9fe0fb; --hero-btn-bg: #9fe0fb; --hero-btn-ink: #082436; --note-bg: #1a2733; --note-ink: #b9cad8; --bm-primary: #6cc4ec; --bm-secondary: #c4eeff; --bm-base: #1e2b37; --bm-stroke: #3a4f62; --bm-muscle: #2c3d4c; --grid: #1c2934; --mark-bg: #0e3a5a; --mark-ink: #a9e8ff; --brand-dot: #3fa7d6; --toast-bg: #1d4766; --cat-strength: #182b3b; --dot-strength: #3fa7d6; --cat-mobility: #25301d; --dot-mobility: #7fae45;
+}
+:root[data-palette="kitty"] {
+  --surface: #ffffff; --hero-item: rgba(255, 255, 255, .6); --bg: #fff5f9; --surface-2: #fff0f6; --surface-3: #ffe3ef; --ink: #5c2342; --ink-strong: #471632; --muted: #8e5874; --line: #fbdce9; --line-strong: #f4c3d8; --accent: #c2356f; --accent-ink: #ffffff; --lime: #ffd3e5; --lime-ink: #6a1c45; --focus: #c93b78; --hero-bg: #ffd6e7; --hero-ink: #4f1a37; --hero-muted: #7a3d5e; --hero-line: #f2a7c8; --hero-accent: #b02f66; --hero-btn-bg: #c2356f; --hero-btn-ink: #ffffff; --note-bg: #fff0f6; --note-ink: #7f4864; --bm-primary: #e0558f; --bm-secondary: #ffb5d2; --bm-base: #fff0f6; --bm-stroke: #f2c3d7; --bm-muscle: #fbdbe8; --grid: #fde9f1; --mark-bg: #ff8fbd; --mark-ink: #ffffff; --brand-dot: #ff8fbd; --toast-bg: #c2356f; --backdrop: rgba(92, 35, 66, .35); --cat-strength: #ffe0ec; --dot-strength: #e0558f;
+}
+@media (prefers-color-scheme: dark) {
+:root[data-palette="kitty"]:not([data-theme="light"]) {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #1c1117; --surface: #271820; --surface-2: #301e28; --surface-3: #3b2532; --ink: #ffe6f0; --ink-strong: #fff5f9; --muted: #c9a2b5; --line: #43283a; --line-strong: #583448; --accent: #ff9cc6; --accent-ink: #3d0d25; --lime: #ff9cc6; --lime-ink: #3d0d25; --focus: #ff8cbc; --hero-bg: #4a1d35; --hero-ink: #ffe6f0; --hero-muted: #e0b0c6; --hero-line: #6e3352; --hero-accent: #ff9cc6; --hero-btn-bg: #ff9cc6; --hero-btn-ink: #3d0d25; --note-bg: #301e28; --note-ink: #dfc0ce; --bm-primary: #ff8cbc; --bm-secondary: #ffd0e3; --bm-base: #33212b; --bm-stroke: #5b3a4c; --bm-muscle: #47303c; --grid: #2e1c26; --mark-bg: #ff8fbd; --mark-ink: #ffffff; --brand-dot: #ff8fbd; --toast-bg: #8a2c58; --cat-strength: #3d1f2f; --dot-strength: #ff8fbd;
+}
+}
+:root[data-palette="kitty"][data-theme="dark"] {
+  --hero-item: rgba(255, 255, 255, .06); --backdrop: rgba(0, 0, 0, .6); --bg: #1c1117; --surface: #271820; --surface-2: #301e28; --surface-3: #3b2532; --ink: #ffe6f0; --ink-strong: #fff5f9; --muted: #c9a2b5; --line: #43283a; --line-strong: #583448; --accent: #ff9cc6; --accent-ink: #3d0d25; --lime: #ff9cc6; --lime-ink: #3d0d25; --focus: #ff8cbc; --hero-bg: #4a1d35; --hero-ink: #ffe6f0; --hero-muted: #e0b0c6; --hero-line: #6e3352; --hero-accent: #ff9cc6; --hero-btn-bg: #ff9cc6; --hero-btn-ink: #3d0d25; --note-bg: #301e28; --note-ink: #dfc0ce; --bm-primary: #ff8cbc; --bm-secondary: #ffd0e3; --bm-base: #33212b; --bm-stroke: #5b3a4c; --bm-muscle: #47303c; --grid: #2e1c26; --mark-bg: #ff8fbd; --mark-ink: #ffffff; --brand-dot: #ff8fbd; --toast-bg: #8a2c58; --cat-strength: #3d1f2f; --dot-strength: #ff8fbd;
+}
+
+/* ------------------------------------------------------- colour picker --- */
+.palette-picker { display: flex; flex-wrap: wrap; gap: 10px; }
+.palette-option { margin: 0; display: grid; justify-items: center; gap: 4px; cursor: pointer; }
+.palette-option input { position: absolute; opacity: 0; pointer-events: none; }
+.palette-swatch { position: relative; width: 52px; height: 52px; border-radius: 50%; background: linear-gradient(135deg, var(--sa) 0 50%, var(--sb) 50% 100%); box-shadow: 0 0 0 1px var(--line-strong); display: grid; place-items: center; overflow: hidden; }
+.palette-option input:checked + .palette-swatch { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--focus); }
+.palette-option input:focus-visible + .palette-swatch { outline: 2px solid var(--focus); outline-offset: 4px; }
+.palette-name { font-size: 12px; color: var(--muted); }
+.palette-option input:checked ~ .palette-name { color: var(--ink-strong); font-weight: 600; }
+.swatch-kitty { width: 40px; height: 40px; }
+
+/* --------------------------------------------------------- kitty theme --- */
+#stickers { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+#stickers:empty { display: none; }
+.sticker-spot { position: absolute; display: block; opacity: .55; filter: drop-shadow(0 2px 3px rgba(92, 35, 66, .18)); }
+.sticker-spot .sticker { width: 100%; height: auto; display: block; }
+main { position: relative; z-index: 1; }
+.hero { position: relative; }
+.peek-kitty { position: absolute; top: -40px; right: 26%; width: 92px; height: auto; pointer-events: none; filter: drop-shadow(0 -1px 2px rgba(92, 35, 66, .15)); }
+[data-palette="kitty"] .hero { margin-top: 42px; }
+[data-palette="kitty"] .card, [data-palette="kitty"] .panel, [data-palette="kitty"] .day, [data-palette="kitty"] .stat { border-radius: 18px; }
+[data-palette="kitty"] .btn { border-radius: 14px; }
+@media (prefers-color-scheme: dark) { :root[data-palette="kitty"]:not([data-theme="light"]) .sticker-spot { opacity: .3; } }
+:root[data-palette="kitty"][data-theme="dark"] .sticker-spot { opacity: .3; }
+.sticker-spot.phone-only { display: none; }
+@media (max-width: 640px) {
+  .sticker-spot.wide-only { display: none; }
+  .sticker-spot.phone-only { display: block; }
+  .sticker-spot { opacity: .45; }
+  .peek-kitty { right: 18px; width: 76px; top: -33px; }
+  [data-palette="kitty"] .hero { margin-top: 36px; }
+}
 
 </style>
   <script>
@@ -744,11 +832,14 @@ body.is-dragging, body.is-dragging * { cursor: grabbing !important; }
       const saved = JSON.parse(localStorage.getItem('forma-v2') || '{}');
       const theme = saved.settings && saved.settings.theme;
       if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+      const palette = saved.settings && saved.settings.palette;
+      if (palette && palette !== 'forest' && /^[a-z]+$/.test(palette)) document.documentElement.setAttribute('data-palette', palette);
     } catch (e) { /* first visit or storage blocked */ }
   </script>
   <!-- Load order matters: data and helpers first, views next, wiring last. -->
 </head>
 <body>
+  <div id="stickers" aria-hidden="true"></div>
   <aside class="sidebar">
     <a class="brand" href="#week" data-view="week"><span class="mark">f</span><span class="brand-word">forma</span><span class="brand-dot">.</span></a>
     <p class="eyebrow">YOUR OWN RHYTHM</p>
@@ -1283,6 +1374,20 @@ function buildTemplates() {
         tplGroup(3, [tplStep('x-push-up', 'Main', { value: 10 }), tplStep('x-negative-pull-up', 'Main', { value: 4 }),
           tplStep('x-split-squat', 'Main', { value: 8 }), tplStep('x-hollow-hold', 'Main', { value: 20 }), tplRest(60)], 'Circuit')] },
 
+    // --- Core (two short sessions to alternate) ---
+    { id: 'tpl-core-a', name: 'Core A: front & deep core', category: 'Strength', transition: 10,
+      description: 'About 15 minutes. Alternate with Core B. Progress by adding reps, seconds or a light dumbbell.',
+      steps: [tplStep('cat', 'Warm-up', { value: 40 }), tplStep('x-hip-circles', 'Warm-up', { value: 30 }),
+        tplGroup(3, [tplStep('lib-dead-bug', 'Main', { value: 10 }), tplStep('x-reverse-crunch', 'Main', { value: 10 }),
+          tplStep('x-hollow-hold', 'Main', { value: 20 }), tplStep('x-mountain-climbers', 'Main', { value: 30 }), tplRest(40)], 'Core A'),
+        tplStep('lib-sphinx-pose', 'Cool-down', { value: 30 }), tplStep('child', 'Cool-down', { value: 30 })] },
+    { id: 'tpl-core-b', name: 'Core B: sides & rotation', category: 'Strength', transition: 10,
+      description: 'About 15 minutes. Alternate with Core A. Obliques and anti-rotation for a strong, firm waist.',
+      steps: [tplStep('cat', 'Warm-up', { value: 40 }), tplStep('x-hip-circles', 'Warm-up', { value: 30 }),
+        tplGroup(3, [tplStep('x-side-plank', 'Main', { value: 20, sideSwitch: 5 }), tplStep('lib-standing-resistance-band-press-out', 'Main', { value: 8, sideSwitch: 5 }),
+          tplStep('x-russian-twist', 'Main', { value: 12 }), tplStep('bird', 'Main', { value: 8 }), tplRest(30)], 'Core B'),
+        tplStep('x-supine-twist', 'Cool-down', { value: 30, sideSwitch: 5 }), tplStep('child', 'Cool-down', { value: 30 })] },
+
     // --- Conditioning ---
     { id: 'tpl-tabata', name: 'Tabata: 4 hard minutes', category: 'HIIT', transition: 0,
       description: 'Eight rounds of 20 seconds on, 10 seconds off, alternating two moves.',
@@ -1412,10 +1517,20 @@ const STORAGE_KEY = 'forma-v2';
 const SESSION_KEY = 'forma-v2-session';
 const LEGACY_KEY = 'forma-v1';
 
+/** Colour themes: id, name, and the two colours shown on the swatch. */
+const PALETTES = [
+  { id: 'forest', name: 'Forest', a: '#123c39', b: '#d5f580' },
+  { id: 'rose', name: 'Rose', a: '#8a1d4e', b: '#ffc9de' },
+  { id: 'lavender', name: 'Lavender', a: '#45318c', b: '#dccfff' },
+  { id: 'ocean', name: 'Ocean', a: '#0f4c75', b: '#a9e8ff' },
+  { id: 'kitty', name: 'Kitty', a: '#ff8fbd', b: '#ffd6e7' },
+];
+
 const DEFAULT_SETTINGS = {
   units: 'metric',        // metric | imperial
   weekStart: 1,           // 1 = Monday, 0 = Sunday
   theme: 'system',        // system | light | dark
+  palette: 'forest',      // colour theme, see PALETTES
   sounds: true,           // bell at the end of timed steps
   countdown: true,        // short beeps for the last three seconds
   wakeLock: true,         // keep the screen on while a session runs
@@ -1466,6 +1581,7 @@ function normalizeState(raw) {
     units: pick('units', x => ['metric', 'imperial'].includes(x)),
     weekStart: pick('weekStart', x => x === 0 || x === 1),
     theme: pick('theme', x => ['system', 'light', 'dark'].includes(x)),
+    palette: pick('palette', x => PALETTES.some(p => p.id === x)),
     sounds: pick('sounds', bool), countdown: pick('countdown', bool), wakeLock: pick('wakeLock', bool),
     defaultRest: pick('defaultRest', x => int(x, 0, 600)),
     gear: Array.isArray(st.gear) ? st.gear.filter(g => GEAR.includes(g)) : [...DEFAULT_GEAR],
@@ -1537,7 +1653,8 @@ function normalizeState(raw) {
       || !CATEGORIES.includes(r.category) || !optional(r.transition, x => int(x, 0, 600))) fail('a routine has an invalid name, id or activity');
     routineIds.add(r.id);
     checkBlocks(r.steps, 0, r.name);
-    out.routines.push({ id: r.id, name: r.name, description: r.description || '', category: r.category,
+    if (!optional(r.nextNote, x => str(x, 2000))) fail(`routine “${r.name}” has an invalid note`);
+    out.routines.push({ id: r.id, name: r.name, description: r.description || '', category: r.category, nextNote: r.nextNote || '',
       transition: r.transition ?? 10, steps: r.steps.map(b => normalizeBlock(b, lookup)), createdAt: str(r.createdAt, 50) ? r.createdAt : undefined });
   }
 
@@ -1914,6 +2031,129 @@ function newRecords(entry) {
 }
 
 </script>
+<script>/* js/stickers.js */
+// Kitty theme stickers: small original drawings scattered behind the content,
+// plus a kitten peeking over the "Today" card. Only rendered when the Kitty theme is on.
+'use strict';
+
+const KITTY_INK = '#5c2342';
+const FUR = { white: '#fff8fb', pink: '#ffd9e8', lilac: '#ebe3f7', peach: '#ffe2cc' };
+
+/** Draw a path twice: a thick white sticker border behind, then the coloured shape. */
+function stickerShape(d, fill, extra = '') {
+  return `<path d="${d}" fill="#fff" stroke="#fff" stroke-width="12" stroke-linejoin="round"/>
+    <path d="${d}" fill="${fill}" stroke="${KITTY_INK}" stroke-width="3.5" stroke-linejoin="round" ${extra}/>`;
+}
+
+const HEAD = 'M20 50 L26 14 L50 33 Q60 30 70 33 L94 14 L100 50 Q106 64 100 78 Q90 102 60 102 Q30 102 20 78 Q14 64 20 50Z';
+function kittyFace(fur, { eyes = 'happy' } = {}) {
+  const eyeShapes = eyes === 'happy'
+    ? `<path d="M38 64 q6 -8 12 0 M70 64 q6 -8 12 0" fill="none" stroke="${KITTY_INK}" stroke-width="3.5" stroke-linecap="round"/>`
+    : eyes === 'sleepy'
+      ? `<path d="M38 62 q6 6 12 0 M70 62 q6 6 12 0" fill="none" stroke="${KITTY_INK}" stroke-width="3.5" stroke-linecap="round"/>`
+      : `<circle cx="44" cy="62" r="6" fill="${KITTY_INK}"/><circle cx="76" cy="62" r="6" fill="${KITTY_INK}"/>
+         <circle cx="46" cy="60" r="2" fill="#fff"/><circle cx="78" cy="60" r="2" fill="#fff"/>`;
+  return `${stickerShape(HEAD, fur)}
+    <path d="M30 25 L34 42 L45 35Z M90 25 L86 42 L75 35Z" fill="#ffb3d0"/>
+    ${eyeShapes}
+    <ellipse cx="35" cy="76" rx="7" ry="4.5" fill="#ff9cc4" opacity=".75"/><ellipse cx="85" cy="76" rx="7" ry="4.5" fill="#ff9cc4" opacity=".75"/>
+    <path d="M56.5 70 h7 l-3.5 4z" fill="#ff7aa8" stroke="#ff7aa8" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M52 77 q4 5 8 0 q4 5 8 0" fill="none" stroke="${KITTY_INK}" stroke-width="3" stroke-linecap="round"/>
+    <path d="M10 70 l15 2 M11 80 l14 -3 M110 70 l-15 2 M109 80 l-14 -3" stroke="${KITTY_INK}" stroke-width="2.2" stroke-linecap="round"/>`;
+}
+
+const STICKERS = {
+  face: { box: '0 0 120 112', svg: kittyFace(FUR.white) },
+  facePink: { box: '0 0 120 112', svg: kittyFace(FUR.pink, { eyes: 'open' }) },
+  sitting: {
+    box: '0 0 130 160',
+    svg: `<path d="M96 140 Q124 140 120 110 Q118 98 108 103" fill="none" stroke="#fff" stroke-width="22" stroke-linecap="round"/>
+      <path d="M96 140 Q124 140 120 110 Q118 98 108 103" fill="none" stroke="${KITTY_INK}" stroke-width="15" stroke-linecap="round"/>
+      <path d="M96 140 Q124 140 120 110 Q118 98 108 103" fill="none" stroke="${FUR.lilac}" stroke-width="9" stroke-linecap="round"/>
+      ${stickerShape('M36 84 Q24 118 30 146 Q62 156 94 146 Q100 118 88 84Z', FUR.lilac)}
+      <ellipse cx="50" cy="148" rx="10" ry="6" fill="${FUR.lilac}" stroke="${KITTY_INK}" stroke-width="3"/>
+      <ellipse cx="76" cy="148" rx="10" ry="6" fill="${FUR.lilac}" stroke="${KITTY_INK}" stroke-width="3"/>
+      <path d="M50 108 q12 8 26 0" fill="none" stroke="#ffb3d0" stroke-width="4" stroke-linecap="round"/>
+      <g transform="translate(4 0) scale(1)">${kittyFace(FUR.lilac, { eyes: 'open' })}</g>`,
+  },
+  sleepy: {
+    box: '0 0 160 110',
+    svg: `${stickerShape('M40 100 Q30 100 30 84 Q32 52 70 50 L120 50 Q152 52 152 80 Q152 100 128 100Z', FUR.peach)}
+      <path d="M124 100 Q154 102 150 82" fill="none" stroke="${KITTY_INK}" stroke-width="3.5" stroke-linecap="round"/>
+      <path d="M96 64 q10 6 20 0 M104 78 q10 6 20 0" fill="none" stroke="#f3b98f" stroke-width="4" stroke-linecap="round"/>
+      <g transform="translate(0 16) scale(.76)">${kittyFace(FUR.peach, { eyes: 'sleepy' })}</g>
+      <text x="88" y="28" font-family="system-ui, sans-serif" font-weight="800" font-size="20" fill="#e0558f" stroke="#fff" stroke-width="5" paint-order="stroke">z</text>
+      <text x="106" y="16" font-family="system-ui, sans-serif" font-weight="800" font-size="14" fill="#e0558f" stroke="#fff" stroke-width="4" paint-order="stroke">z</text>`,
+  },
+  lifter: {
+    box: '0 0 130 150',
+    svg: `<g transform="translate(5 0)">${kittyFace(FUR.white, { eyes: 'open' })}</g>
+      <rect x="14" y="116" width="102" height="10" rx="5" fill="#fff" stroke="#fff" stroke-width="10"/>
+      <rect x="14" y="116" width="102" height="10" rx="5" fill="#b8b3c4" stroke="${KITTY_INK}" stroke-width="3"/>
+      ${stickerShape('M4 104 h18 v34 h-18z', '#e0558f')}${stickerShape('M108 104 h18 v34 h-18z', '#e0558f')}
+      <ellipse cx="44" cy="120" rx="11" ry="9" fill="${FUR.white}" stroke="${KITTY_INK}" stroke-width="3"/>
+      <ellipse cx="86" cy="120" rx="11" ry="9" fill="${FUR.white}" stroke="${KITTY_INK}" stroke-width="3"/>`,
+  },
+  paw: {
+    box: '0 0 100 100',
+    svg: `${stickerShape('M50 88 Q28 88 26 70 Q26 54 50 50 Q74 54 74 70 Q72 88 50 88Z', '#ff9cc4')}
+      ${stickerShape('M22 46 a9 11 -15 1 0 0.1 0Z', '#ff9cc4')}${stickerShape('M40 32 a9 11 -5 1 0 0.1 0Z', '#ff9cc4')}
+      ${stickerShape('M60 32 a9 11 5 1 0 0.1 0Z', '#ff9cc4')}${stickerShape('M78 46 a9 11 15 1 0 0.1 0Z', '#ff9cc4')}`,
+  },
+  heart: {
+    box: '0 0 100 92',
+    svg: stickerShape('M50 84 Q14 60 10 36 Q8 14 30 12 Q44 12 50 26 Q56 12 70 12 Q92 14 90 36 Q86 60 50 84Z', '#ffb3d0'),
+  },
+  sparkle: {
+    box: '0 0 80 80',
+    svg: stickerShape('M40 6 Q44 32 74 40 Q44 48 40 74 Q36 48 6 40 Q36 32 40 6Z', '#fff2a8'),
+  },
+};
+
+/** Where stickers sit on wide screens: [sticker, left %, top %, size px, rotation]. */
+const STICKER_LAYOUT = [
+  ['face', 88, 12, 74, -10], ['paw', 24, 32, 46, 18], ['sleepy', 72, 46, 120, 4],
+  ['heart', 52, 8, 40, 12], ['lifter', 6, 70, 92, -6], ['sparkle', 94, 60, 38, 0],
+  ['sitting', 90, 82, 92, 6], ['facePink', 40, 88, 66, 10], ['paw', 64, 70, 40, -24],
+  ['sparkle', 30, 54, 30, 0], ['heart', 16, 6, 34, -14], ['paw', 96, 30, 36, 30],
+];
+/** On phones there is no spare margin, so the stickers hug the screen edges, half tucked away,
+    and stay clear of the top bar and headings. */
+const STICKER_LAYOUT_PHONE = [
+  ['face', 102, 26, 62, -14], ['paw', -1, 40, 40, 22], ['sleepy', 104, 55, 92, 6],
+  ['lifter', -3, 69, 74, -8], ['heart', 101, 82, 34, 14], ['sparkle', 1, 55, 26, 0], ['facePink', -2, 93, 54, 12],
+];
+
+function stickerSVG(name, cls = '') {
+  const s = STICKERS[name];
+  return `<svg class="sticker ${cls}" viewBox="${s.box}" aria-hidden="true">${s.svg}</svg>`;
+}
+
+/** Fill the fixed background layer when the Kitty theme is on; empty it otherwise. */
+function renderStickers() {
+  const layer = $('#stickers');
+  if (!layer) return;
+  if (state.settings.palette !== 'kitty') { layer.innerHTML = ''; return; }
+  const spots = (layout, cls) => layout.map(([name, left, top, size, rot]) =>
+    `<span class="sticker-spot ${cls}" style="left:${left}%;top:${top}%;width:${size}px;transform:translate(-50%,-50%) rotate(${rot}deg)">${stickerSVG(name)}</span>`).join('');
+  layer.innerHTML = spots(STICKER_LAYOUT, 'wide-only') + spots(STICKER_LAYOUT_PHONE, 'phone-only');
+}
+
+/** A kitten peeking over the top edge of the Today card. */
+const PEEK_SVG = `<svg class="peek-kitty" viewBox="0 0 120 62" aria-hidden="true">
+  <path d="M18 62 L20 30 L26 6 L48 24 Q60 21 72 24 L94 6 L100 30 L102 62Z" fill="#fff" stroke="#fff" stroke-width="10" stroke-linejoin="round"/>
+  <path d="M18 62 L20 30 L26 6 L48 24 Q60 21 72 24 L94 6 L100 30 L102 62" fill="${FUR.white}" stroke="${KITTY_INK}" stroke-width="3.5" stroke-linejoin="round"/>
+  <path d="M30 16 L33 30 L43 24Z M90 16 L87 30 L77 24Z" fill="#ffb3d0"/>
+  <circle cx="45" cy="44" r="6" fill="${KITTY_INK}"/><circle cx="75" cy="44" r="6" fill="${KITTY_INK}"/>
+  <circle cx="47" cy="42" r="2" fill="#fff"/><circle cx="77" cy="42" r="2" fill="#fff"/>
+  <ellipse cx="34" cy="54" rx="6" ry="4" fill="#ff9cc4" opacity=".75"/><ellipse cx="86" cy="54" rx="6" ry="4" fill="#ff9cc4" opacity=".75"/>
+  <path d="M57 50 h6 l-3 3.5z" fill="#ff7aa8"/>
+  <ellipse cx="30" cy="62" rx="12" ry="8" fill="${FUR.white}" stroke="${KITTY_INK}" stroke-width="3"/>
+  <ellipse cx="90" cy="62" rx="12" ry="8" fill="${FUR.white}" stroke="${KITTY_INK}" stroke-width="3"/>
+  <path d="M26 58 v6 M34 58 v6 M86 58 v6 M94 58 v6" stroke="${KITTY_INK}" stroke-width="2" stroke-linecap="round"/></svg>`;
+const peekKitty = () => (state.settings.palette === 'kitty' ? PEEK_SVG : '');
+
+</script>
 <script>/* js/ui.js */
 // Shared UI: routing, dialogs, toasts, icons, the body map and small components.
 'use strict';
@@ -1940,13 +2180,54 @@ function go(name) {
   if (!VIEWS[name]) name = 'week';
   if (session) { toast('Finish or end your current session first.'); return; }
   view = name;
-  if (location.hash !== '#' + name) history.replaceState(null, '', '#' + name);
+  if (location.hash !== '#' + name) history.replaceState(history.state, '', '#' + name);
   closeDialogs();
   render();
   window.scrollTo(0, 0);
 }
 
+// ------------------------------------------------------- back button ----
+// Phones (and browsers) go "back" through history. While there is something to step back
+// from (an open window, a workout, or any screen other than My week), Forma keeps exactly
+// one extra history entry. Pressing back removes it; Forma then closes the top layer and
+// adds the entry again if there is still more to step back from. On My week, back leaves.
+
+let backGuard = history.state?.formaGuard === true;
+let ignoreNextPop = false;
+let backSyncTimer = 0;
+
+function needsBackGuard() {
+  return $('#modal').open || $('#picker').open || !!session || view !== 'week';
+}
+function syncBackGuard() {
+  clearTimeout(backSyncTimer);
+  backSyncTimer = setTimeout(() => {
+    const need = needsBackGuard();
+    if (need && !backGuard) { history.pushState({ formaGuard: true }, '', location.href); backGuard = true; }
+    else if (!need && backGuard) { backGuard = false; ignoreNextPop = true; history.back(); }
+  }, 0);
+}
+function keepHashInStep() {
+  if (!session && location.hash !== '#' + view) history.replaceState(history.state, '', '#' + view);
+}
+/** One step back: the top-most thing closes. */
+function handleBack() {
+  if (typeof drag !== 'undefined' && drag) return;
+  if ($('#picker').open) { actions['close-picker'](); return; }
+  if ($('#modal').open) { if (pendingConfirm) actions['confirm-no'](); else actions.close(); return; }
+  if (session) { exitSession(); return; }
+  if (view !== 'week') go('week');
+}
+window.addEventListener('popstate', ev => {
+  if (ignoreNextPop) { ignoreNextPop = false; keepHashInStep(); return; }
+  backGuard = ev.state?.formaGuard === true;
+  handleBack();
+  keepHashInStep();
+  syncBackGuard();
+});
+
 function render() {
+  syncBackGuard();
   document.body.classList.toggle('in-session', !!session);
   if (session) { renderSession(); return; }
   $$('nav [data-view]').forEach(b => {
@@ -2068,11 +2349,16 @@ function sparkline(values, { width = 220, height = 48 } = {}) {
 // --------------------------------------------------------------- theme ----
 
 function applyTheme() {
+  const root = document.documentElement;
   const t = state.settings.theme;
-  if (t === 'system') document.documentElement.removeAttribute('data-theme');
-  else document.documentElement.setAttribute('data-theme', t);
-  const dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
-  $('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0f1917' : '#123c39');
+  if (t === 'system') root.removeAttribute('data-theme');
+  else root.setAttribute('data-theme', t);
+  if (state.settings.palette === 'forest') root.removeAttribute('data-palette');
+  else root.setAttribute('data-palette', state.settings.palette);
+  // The phone's status bar takes the colour of the Today card.
+  const bar = getComputedStyle(root).getPropertyValue('--hero-bg').trim();
+  if (bar) $('meta[name="theme-color"]')?.setAttribute('content', bar);
+  renderStickers();
 }
 
 </script>
@@ -2143,7 +2429,7 @@ function todayPanel() {
   const ring = planned ? progressRing(done / planned, `${done}/${planned}`, 'planned sessions<br>done this week')
     : progressRing(minutes ? 1 : 0, minutes, 'minutes<br>this week');
 
-  return `<section class="hero today"><div class="today-main">
+  return `<section class="hero today">${peekKitty()}<div class="today-main">
     <p class="eyebrow">TODAY · ${esc(longDate(today).toUpperCase())}</p>
     <h2>${title}</h2>
     ${items ? `<div class="today-list">${items}</div>` : '<p class="hero-sub">Pick a routine, start something quick, or log what you did elsewhere.</p>'}
@@ -2386,7 +2672,7 @@ actions['new-routine'] = () => editRoutine();
 actions['edit-routine'] = el => editRoutine(el.dataset.id);
 actions['duplicate-routine'] = el => {
   const r = routine(el.dataset.id);
-  state.routines.push({ ...structuredClone(r), id: uid(), name: (r.name + ' (copy)').slice(0, 90), steps: freshIds(r.steps) });
+  state.routines.push({ ...structuredClone(r), id: uid(), name: (r.name + ' (copy)').slice(0, 90), steps: freshIds(r.steps), nextNote: '' });
   save(); render(); toast('Routine duplicated.');
 };
 actions['delete-routine'] = el => {
@@ -3643,7 +3929,7 @@ actions['delete-entry'] = el => {
 // Settings: units, calendar, theme, session behaviour, equipment and data.
 'use strict';
 
-const APP_VERSION = '0.5';
+const APP_VERSION = '0.6';
 
 renderers.settings = () => {
   const s = state.settings;
@@ -3654,7 +3940,10 @@ renderers.settings = () => {
       <section class="panel"><h2>Display</h2>
         <p class="label">Units</p><div class="segmented">${radio('units', 'metric', 'Metric (kg, km)')}${radio('units', 'imperial', 'Imperial (lb, mi)')}</div>
         <p class="label">Week starts on</p><div class="segmented">${radio('weekStart', 1, 'Monday')}${radio('weekStart', 0, 'Sunday')}</div>
-        <p class="label">Theme</p><div class="segmented">${radio('theme', 'system', 'Match device')}${radio('theme', 'light', 'Light')}${radio('theme', 'dark', 'Dark')}</div>
+        <p class="label">Colours</p>
+        <div class="palette-picker">${PALETTES.map(p => `<label class="palette-option"><input type="radio" name="palette" value="${p.id}" data-bind="setting" ${s.palette === p.id ? 'checked' : ''}>
+          <span class="palette-swatch" style="--sa:${p.a};--sb:${p.b}">${p.id === 'kitty' ? stickerSVG('face', 'swatch-kitty') : ''}</span><span class="palette-name">${p.name}</span></label>`).join('')}</div>
+        <p class="label">Light or dark</p><div class="segmented">${radio('theme', 'system', 'Match device')}${radio('theme', 'light', 'Light')}${radio('theme', 'dark', 'Dark')}</div>
       </section>
 
       <section class="panel"><h2>Sessions</h2>
@@ -3692,7 +3981,7 @@ binds.setting = el => {
   }
   state.settings[key] = value;
   save();
-  if (key === 'theme') applyTheme();
+  if (key === 'theme' || key === 'palette') applyTheme();
   if (el.type === 'radio') { render(); toast('Saved.'); }
 };
 binds.gear = () => {
@@ -3947,11 +4236,87 @@ function finishSession() {
     steps: s.completed.map(({ queueIndex, ...rest }) => rest), note: '',
   };
   addHistory(entry);
+  const changes = carryOverToRoutine(s);
   render();
-  summaryDialog(entry);
+  summaryDialog(entry, changes);
 }
 
-function summaryDialog(entry) {
+let lastCarry = null;   // what the latest session changed in its routine, so it can be undone
+
+/** Find a block anywhere in a routine by id. */
+function findBlock(blocks, id) {
+  for (const b of blocks) {
+    if (b.id === id) return b;
+    if (b.kind === 'group') { const inner = findBlock(b.steps, id); if (inner) return inner; }
+  }
+  return null;
+}
+
+/** The reps you hit on most sets (ties go to the higher number). */
+function typicalReps(list) {
+  const counts = new Map();
+  list.forEach(x => counts.set(x, (counts.get(x) || 0) + 1));
+  let best = list[0];
+  for (const [v, c] of counts) if (c > counts.get(best) || (c === counts.get(best) && v > best)) best = v;
+  return best;
+}
+
+/**
+ * Progressive overload: write the weight and reps actually used back into the routine,
+ * so the next session starts from there. Returns what changed.
+ */
+function carryOverToRoutine(s) {
+  lastCarry = null;
+  const r = s.routineId && routine(s.routineId);
+  if (!r) return [];
+  const byBlock = new Map();
+  for (const c of s.completed) {
+    const q = s.queue[c.queueIndex];
+    if (!q?.blockId) continue;
+    if (!byBlock.has(q.blockId)) byBlock.set(q.blockId, []);
+    byBlock.get(q.blockId).push(c);
+  }
+  const changes = [];
+  for (const [id, sets] of byBlock) {
+    const b = findBlock(r.steps, id);
+    if (!b || b.kind !== 'exercise') continue;
+    const before = { weight: b.weight || 0, value: b.value };
+    const last = sets.at(-1);
+    if (last.weight > 0 && Math.abs(last.weight - before.weight) > 0.001) b.weight = Math.round(last.weight * 1000) / 1000;
+    if (b.mode === 'reps' && sets.every(t => t.mode === 'reps')) {
+      const reps = Math.round(typicalReps(sets.map(t => t.reps ?? t.value)));
+      if (reps >= 1 && reps <= 7200) b.value = reps;
+    }
+    if (b.weight !== before.weight || b.value !== before.value) {
+      changes.push({ id, name: last.name, mode: b.mode, before, after: { weight: b.weight, value: b.value } });
+    }
+  }
+  if (changes.length) { lastCarry = { routineId: r.id, changes }; save(); }
+  return changes;
+}
+
+function carryText(c) {
+  const parts = [];
+  if (c.before.weight !== c.after.weight) parts.push(`${fmtNum(kgToDisplay(c.before.weight), 1)} → ${fmtWeight(c.after.weight)}`);
+  if (c.before.value !== c.after.value) parts.push(`${c.before.value} → ${c.after.value} reps`);
+  return `${c.name}: ${parts.join(', ')}`;
+}
+
+actions['undo-carry'] = el => {
+  const r = lastCarry && routine(lastCarry.routineId);
+  if (!r) return;
+  for (const c of lastCarry.changes) {
+    const b = findBlock(r.steps, c.id);
+    if (b) { b.weight = c.before.weight; b.value = c.before.value; }
+  }
+  lastCarry = null;
+  save();
+  el.closest('.carry')?.remove();
+  toast('Kept your previous plan.');
+};
+
+function summaryDialog(entry, changes = []) {
+  const r = entry.routineId && routine(entry.routineId);
   const records = newRecords(entry);
   const volume = entryVolume(entry), distance = entryDistance(entry);
   const tile = (label, value) => `<div class="stat small-stat"><span class="stat-label">${label}</span><strong class="stat-value">${value}</strong></div>`;
@@ -3959,15 +4324,26 @@ function summaryDialog(entry) {
     + `<div class="stats compact">${tile('Time', fmtDuration(entry.seconds))}${entry.category !== 'Meditation' ? tile('Sets', entry.steps.length) : ''}
       ${volume ? tile('Lifted', `${Math.round(kgToDisplay(volume)).toLocaleString()} ${weightUnit()}`) : ''}${distance ? tile('Distance', fmtDistance(distance)) : ''}</div>
     ${records.length ? `<div class="note good"><strong>New personal best${records.length > 1 ? 's' : ''}</strong><ul>${records.map(r => `<li>${esc(r)}</li>`).join('')}</ul></div>` : ''}
+    ${changes.length ? `<div class="note carry"><strong>Saved for next time</strong><ul>${changes.map(c => `<li>${esc(carryText(c))}</li>`).join('')}</ul>
+      <button type="button" class="link" data-action="undo-carry">Keep my previous plan instead</button></div>` : ''}
     ${entry.skipped ? `<p class="muted small">${plural(entry.skipped, 'step')} skipped.</p>` : ''}
     <form id="summary-form" data-id="${entry.id}">
       <div class="field"><label>How hard was it?</label>${effortPicker()}</div>
-      <div class="field"><label for="sum-note">Note (optional)</label><textarea id="sum-note" name="note" maxlength="2000" placeholder="Anything to remember for next time?"></textarea></div>
+      ${r ? `<div class="field"><label for="sum-note">Note for next time</label><textarea id="sum-note" name="note" maxlength="2000" placeholder="e.g. increase the weight on hammer curls">${esc(r.nextNote || '')}</textarea>
+        <small>Shows up before you start “${esc(r.name)}” again. Leave it empty and nothing pops up.</small></div>`
+        : `<div class="field"><label for="sum-note">Note (optional)</label><textarea id="sum-note" name="note" maxlength="2000" placeholder="Anything to remember?"></textarea></div>`}
       <div class="modal-actions"><button type="button" class="btn light" data-action="close">Skip</button><button class="btn">Save</button></div></form>`);
 }
 forms['summary-form'] = (f, fd) => {
   const h = state.history.find(x => x.id === f.dataset.id);
-  if (h) { h.effort = readEffort(fd); h.note = fd.get('note').trim(); save(); }
+  const note = fd.get('note').trim();
+  if (h) {
+    h.effort = readEffort(fd);
+    h.note = note;
+    const r = h.routineId && routine(h.routineId);
+    if (r) r.nextNote = note;
+    save();
+  }
   closeModal(); render(); toast('Saved. A little time for you.');
 };
 
@@ -4097,7 +4473,6 @@ function renderSession() {
       ${move && e.instructions.length ? `<details class="how-to" ${howToOpen ? 'open' : ''}><summary>How to do it</summary><ol class="instructions">${e.instructions.map(x => `<li>${esc(x)}</li>`).join('')}</ol></details>` : ''}
       ${!move && upcoming && upcoming === next ? '' : next ? `<p class="note up-next">Up next: <strong>${esc(stepTitle(next))}</strong>${next.kind === 'move' ? ' · ' + esc(targetText(next)) : ` · ${fmtDuration(next.value)}`}</p>` : '<p class="note up-next">Last step. Finish at your own pace.</p>'}
     </div>
-    <p class="muted small session-help">Timed steps move on by themselves; reps and holds wait for you. Space pauses, Enter completes. <span data-save-status>Saved on this device</span></p>
   </section>`;
   updateLiveParts();
   updateSaveBadges();
@@ -4123,10 +4498,25 @@ function updateLiveParts() {
 
 // ------------------------------------------------------------- actions ----
 
-actions.start = el => {
-  const r = routine(el.dataset.id);
-  if (r) startSession(r);
+actions.start = el => startRoutine(routine(el.dataset.id));
+
+/** Start a saved routine, first showing the note left for this session if there is one. */
+function startRoutine(r) {
+  if (!r) return;
+  if (!r.nextNote?.trim()) { startSession(r); return; }
+  showModal(modalHead('Note from last time', esc(r.name)) + `<form id="prestart-form" data-id="${r.id}">
+    <textarea id="prestart-note" name="note" maxlength="2000" aria-label="Note for this session">${esc(r.nextNote)}</textarea>
+    <p class="muted small">You can edit it now, or after the session.</p>
+    <div class="modal-actions"><button type="button" class="btn light" data-action="prestart-clear">Clear note</button><button class="btn">Start session</button></div></form>`);
+}
+forms['prestart-form'] = (f, fd) => {
+  const r = routine(f.dataset.id);
+  if (!r) return;
+  r.nextNote = fd.get('note').trim();
+  save();
+  startSession(r);
 };
+actions['prestart-clear'] = () => { const t = $('#prestart-note'); if (t) { t.value = ''; t.focus(); } };
 actions['toggle-timer'] = () => toggleTimer();
 actions['complete-step'] = () => advance(false);
 actions['skip-step'] = () => advance(true);
@@ -4331,7 +4721,7 @@ function handleLaunchAction() {
 document.addEventListener('click', ev => {
   const el = ev.target.closest('[data-action],[data-view]');
   if (!el || el.disabled) return;
-  if (el.dataset.view && !el.dataset.action) { go(el.dataset.view); return; }
+  if (el.dataset.view && !el.dataset.action) { ev.preventDefault(); go(el.dataset.view); return; }
   const handler = actions[el.dataset.action];
   if (handler) { ev.preventDefault(); handler(el, ev); }
 });
@@ -4407,10 +4797,8 @@ document.addEventListener('visibilitychange', () => {
   else if (session) { if (session.running) accountTime(); renderSession(); }
   updateWakeLock();
 });
-window.addEventListener('hashchange', () => {
-  const name = location.hash.slice(1);
-  if (VIEWS[name] && name !== view && !session) go(name);
-});
+// Opening or closing any dialog may change what the phone's back button should do.
+for (const id of ['modal', 'picker']) new MutationObserver(syncBackGuard).observe(document.getElementById(id), { attributes: true, attributeFilter: ['open'] });
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyTheme);
 
 // ---------------------------------------------------------------- start ----

@@ -24,6 +24,8 @@
       const saved = JSON.parse(localStorage.getItem('forma-v2') || '{}');
       const theme = saved.settings && saved.settings.theme;
       if (theme === 'light' || theme === 'dark') document.documentElement.setAttribute('data-theme', theme);
+      const palette = saved.settings && saved.settings.palette;
+      if (palette && palette !== 'forest' && /^[a-z]+$/.test(palette)) document.documentElement.setAttribute('data-palette', palette);
     } catch (e) { /* first visit or storage blocked */ }
   </script>
   <!-- Load order matters: data and helpers first, views next, wiring last. -->
@@ -32,6 +34,7 @@
   <script defer src="js/model.js"></script>
   <script defer src="js/store.js"></script>
   <script defer src="js/stats.js"></script>
+  <script defer src="js/stickers.js"></script>
   <script defer src="js/ui.js"></script>
   <script defer src="js/views/week.js"></script>
   <script defer src="js/views/routines.js"></script>
@@ -44,6 +47,7 @@
   <script defer src="js/main.js"></script>
 </head>
 <body>
+  <div id="stickers" aria-hidden="true"></div>
   <aside class="sidebar">
     <a class="brand" href="#week" data-view="week"><span class="mark">f</span><span class="brand-word">forma</span><span class="brand-dot">.</span></a>
     <p class="eyebrow">YOUR OWN RHYTHM</p>

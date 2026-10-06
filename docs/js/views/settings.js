@@ -1,7 +1,7 @@
 // Settings: units, calendar, theme, session behaviour, equipment and data.
 'use strict';
 
-const APP_VERSION = '0.5';
+const APP_VERSION = '0.6';
 
 renderers.settings = () => {
   const s = state.settings;
@@ -12,7 +12,10 @@ renderers.settings = () => {
       <section class="panel"><h2>Display</h2>
         <p class="label">Units</p><div class="segmented">${radio('units', 'metric', 'Metric (kg, km)')}${radio('units', 'imperial', 'Imperial (lb, mi)')}</div>
         <p class="label">Week starts on</p><div class="segmented">${radio('weekStart', 1, 'Monday')}${radio('weekStart', 0, 'Sunday')}</div>
-        <p class="label">Theme</p><div class="segmented">${radio('theme', 'system', 'Match device')}${radio('theme', 'light', 'Light')}${radio('theme', 'dark', 'Dark')}</div>
+        <p class="label">Colours</p>
+        <div class="palette-picker">${PALETTES.map(p => `<label class="palette-option"><input type="radio" name="palette" value="${p.id}" data-bind="setting" ${s.palette === p.id ? 'checked' : ''}>
+          <span class="palette-swatch" style="--sa:${p.a};--sb:${p.b}">${p.id === 'kitty' ? stickerSVG('face', 'swatch-kitty') : ''}</span><span class="palette-name">${p.name}</span></label>`).join('')}</div>
+        <p class="label">Light or dark</p><div class="segmented">${radio('theme', 'system', 'Match device')}${radio('theme', 'light', 'Light')}${radio('theme', 'dark', 'Dark')}</div>
       </section>
 
       <section class="panel"><h2>Sessions</h2>
@@ -50,7 +53,7 @@ binds.setting = el => {
   }
   state.settings[key] = value;
   save();
-  if (key === 'theme') applyTheme();
+  if (key === 'theme' || key === 'palette') applyTheme();
   if (el.type === 'radio') { render(); toast('Saved.'); }
 };
 binds.gear = () => {

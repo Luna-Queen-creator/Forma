@@ -197,11 +197,87 @@ function finishSession() {
     steps: s.completed.map(({ queueIndex, ...rest }) => rest), note: '',
   };
   addHistory(entry);
+  const changes = carryOverToRoutine(s);
   render();
-  summaryDialog(entry);
+  summaryDialog(entry, changes);
 }
 
-function summaryDialog(entry) {
+let lastCarry = null;   // what the latest session changed in its routine, so it can be undone
+
+/** Find a block anywhere in a routine by id. */
+function findBlock(blocks, id) {
+  for (const b of blocks) {
+    if (b.id === id) return b;
+    if (b.kind === 'group') { const inner = findBlock(b.steps, id); if (inner) return inner; }
+  }
+  return null;
+}
+
+/** The reps you hit on most sets (ties go to the higher number). */
+function typicalReps(list) {
+  const counts = new Map();
+  list.forEach(x => counts.set(x, (counts.get(x) || 0) + 1));
+  let best = list[0];
+  for (const [v, c] of counts) if (c > counts.get(best) || (c === counts.get(best) && v > best)) best = v;
+  return best;
+}
+
+/**
+ * Progressive overload: write the weight and reps actually used back into the routine,
+ * so the next session starts from there. Returns what changed.
+ */
+function carryOverToRoutine(s) {
+  lastCarry = null;
+  const r = s.routineId && routine(s.routineId);
+  if (!r) return [];
+  const byBlock = new Map();
+  for (const c of s.completed) {
+    const q = s.queue[c.queueIndex];
+    if (!q?.blockId) continue;
+    if (!byBlock.has(q.blockId)) byBlock.set(q.blockId, []);
+    byBlock.get(q.blockId).push(c);
+  }
+  const changes = [];
+  for (const [id, sets] of byBlock) {
+    const b = findBlock(r.steps, id);
+    if (!b || b.kind !== 'exercise') continue;
+    const before = { weight: b.weight || 0, value: b.value };
+    const last = sets.at(-1);
+    if (last.weight > 0 && Math.abs(last.weight - before.weight) > 0.001) b.weight = Math.round(last.weight * 1000) / 1000;
+    if (b.mode === 'reps' && sets.every(t => t.mode === 'reps')) {
+      const reps = Math.round(typicalReps(sets.map(t => t.reps ?? t.value)));
+      if (reps >= 1 && reps <= 7200) b.value = reps;
+    }
+    if (b.weight !== before.weight || b.value !== before.value) {
+      changes.push({ id, name: last.name, mode: b.mode, before, after: { weight: b.weight, value: b.value } });
+    }
+  }
+  if (changes.length) { lastCarry = { routineId: r.id, changes }; save(); }
+  return changes;
+}
+
+function carryText(c) {
+  const parts = [];
+  if (c.before.weight !== c.after.weight) parts.push(`${fmtNum(kgToDisplay(c.before.weight), 1)} → ${fmtWeight(c.after.weight)}`);
+  if (c.before.value !== c.after.value) parts.push(`${c.before.value} → ${c.after.value} reps`);
+  return `${c.name}: ${parts.join(', ')}`;
+}
+
+actions['undo-carry'] = el => {
+  const r = lastCarry && routine(lastCarry.routineId);
+  if (!r) return;
+  for (const c of lastCarry.changes) {
+    const b = findBlock(r.steps, c.id);
+    if (b) { b.weight = c.before.weight; b.value = c.before.value; }
+  }
+  lastCarry = null;
+  save();
+  el.closest('.carry')?.remove();
+  toast('Kept your previous plan.');
+};
+
+function summaryDialog(entry, changes = []) {
+  const r = entry.routineId && routine(entry.routineId);
   const records = newRecords(entry);
   const volume = entryVolume(entry), distance = entryDistance(entry);
   const tile = (label, value) => `<div class="stat small-stat"><span class="stat-label">${label}</span><strong class="stat-value">${value}</strong></div>`;
@@ -209,15 +285,26 @@ function summaryDialog(entry) {
     + `<div class="stats compact">${tile('Time', fmtDuration(entry.seconds))}${entry.category !== 'Meditation' ? tile('Sets', entry.steps.length) : ''}
       ${volume ? tile('Lifted', `${Math.round(kgToDisplay(volume)).toLocaleString()} ${weightUnit()}`) : ''}${distance ? tile('Distance', fmtDistance(distance)) : ''}</div>
     ${records.length ? `<div class="note good"><strong>New personal best${records.length > 1 ? 's' : ''}</strong><ul>${records.map(r => `<li>${esc(r)}</li>`).join('')}</ul></div>` : ''}
+    ${changes.length ? `<div class="note carry"><strong>Saved for next time</strong><ul>${changes.map(c => `<li>${esc(carryText(c))}</li>`).join('')}</ul>
+      <button type="button" class="link" data-action="undo-carry">Keep my previous plan instead</button></div>` : ''}
     ${entry.skipped ? `<p class="muted small">${plural(entry.skipped, 'step')} skipped.</p>` : ''}
     <form id="summary-form" data-id="${entry.id}">
       <div class="field"><label>How hard was it?</label>${effortPicker()}</div>
-      <div class="field"><label for="sum-note">Note (optional)</label><textarea id="sum-note" name="note" maxlength="2000" placeholder="Anything to remember for next time?"></textarea></div>
+      ${r ? `<div class="field"><label for="sum-note">Note for next time</label><textarea id="sum-note" name="note" maxlength="2000" placeholder="e.g. increase the weight on hammer curls">${esc(r.nextNote || '')}</textarea>
+        <small>Shows up before you start “${esc(r.name)}” again. Leave it empty and nothing pops up.</small></div>`
+        : `<div class="field"><label for="sum-note">Note (optional)</label><textarea id="sum-note" name="note" maxlength="2000" placeholder="Anything to remember?"></textarea></div>`}
       <div class="modal-actions"><button type="button" class="btn light" data-action="close">Skip</button><button class="btn">Save</button></div></form>`);
 }
 forms['summary-form'] = (f, fd) => {
   const h = state.history.find(x => x.id === f.dataset.id);
-  if (h) { h.effort = readEffort(fd); h.note = fd.get('note').trim(); save(); }
+  const note = fd.get('note').trim();
+  if (h) {
+    h.effort = readEffort(fd);
+    h.note = note;
+    const r = h.routineId && routine(h.routineId);
+    if (r) r.nextNote = note;
+    save();
+  }
   closeModal(); render(); toast('Saved. A little time for you.');
 };
 
@@ -347,7 +434,6 @@ function renderSession() {
       ${move && e.instructions.length ? `<details class="how-to" ${howToOpen ? 'open' : ''}><summary>How to do it</summary><ol class="instructions">${e.instructions.map(x => `<li>${esc(x)}</li>`).join('')}</ol></details>` : ''}
       ${!move && upcoming && upcoming === next ? '' : next ? `<p class="note up-next">Up next: <strong>${esc(stepTitle(next))}</strong>${next.kind === 'move' ? ' · ' + esc(targetText(next)) : ` · ${fmtDuration(next.value)}`}</p>` : '<p class="note up-next">Last step. Finish at your own pace.</p>'}
     </div>
-    <p class="muted small session-help">Timed steps move on by themselves; reps and holds wait for you. Space pauses, Enter completes. <span data-save-status>Saved on this device</span></p>
   </section>`;
   updateLiveParts();
   updateSaveBadges();
@@ -373,10 +459,25 @@ function updateLiveParts() {
 
 // ------------------------------------------------------------- actions ----
 
-actions.start = el => {
-  const r = routine(el.dataset.id);
-  if (r) startSession(r);
+actions.start = el => startRoutine(routine(el.dataset.id));
+
+/** Start a saved routine, first showing the note left for this session if there is one. */
+function startRoutine(r) {
+  if (!r) return;
+  if (!r.nextNote?.trim()) { startSession(r); return; }
+  showModal(modalHead('Note from last time', esc(r.name)) + `<form id="prestart-form" data-id="${r.id}">
+    <textarea id="prestart-note" name="note" maxlength="2000" aria-label="Note for this session">${esc(r.nextNote)}</textarea>
+    <p class="muted small">You can edit it now, or after the session.</p>
+    <div class="modal-actions"><button type="button" class="btn light" data-action="prestart-clear">Clear note</button><button class="btn">Start session</button></div></form>`);
+}
+forms['prestart-form'] = (f, fd) => {
+  const r = routine(f.dataset.id);
+  if (!r) return;
+  r.nextNote = fd.get('note').trim();
+  save();
+  startSession(r);
 };
+actions['prestart-clear'] = () => { const t = $('#prestart-note'); if (t) { t.value = ''; t.focus(); } };
 actions['toggle-timer'] = () => toggleTimer();
 actions['complete-step'] = () => advance(false);
 actions['skip-step'] = () => advance(true);

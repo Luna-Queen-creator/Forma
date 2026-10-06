@@ -167,6 +167,20 @@ function buildTemplates() {
         tplGroup(3, [tplStep('x-push-up', 'Main', { value: 10 }), tplStep('x-negative-pull-up', 'Main', { value: 4 }),
           tplStep('x-split-squat', 'Main', { value: 8 }), tplStep('x-hollow-hold', 'Main', { value: 20 }), tplRest(60)], 'Circuit')] },
 
+    // --- Core (two short sessions to alternate) ---
+    { id: 'tpl-core-a', name: 'Core A: front & deep core', category: 'Strength', transition: 10,
+      description: 'About 15 minutes. Alternate with Core B. Progress by adding reps, seconds or a light dumbbell.',
+      steps: [tplStep('cat', 'Warm-up', { value: 40 }), tplStep('x-hip-circles', 'Warm-up', { value: 30 }),
+        tplGroup(3, [tplStep('lib-dead-bug', 'Main', { value: 10 }), tplStep('x-reverse-crunch', 'Main', { value: 10 }),
+          tplStep('x-hollow-hold', 'Main', { value: 20 }), tplStep('x-mountain-climbers', 'Main', { value: 30 }), tplRest(40)], 'Core A'),
+        tplStep('lib-sphinx-pose', 'Cool-down', { value: 30 }), tplStep('child', 'Cool-down', { value: 30 })] },
+    { id: 'tpl-core-b', name: 'Core B: sides & rotation', category: 'Strength', transition: 10,
+      description: 'About 15 minutes. Alternate with Core A. Obliques and anti-rotation for a strong, firm waist.',
+      steps: [tplStep('cat', 'Warm-up', { value: 40 }), tplStep('x-hip-circles', 'Warm-up', { value: 30 }),
+        tplGroup(3, [tplStep('x-side-plank', 'Main', { value: 20, sideSwitch: 5 }), tplStep('lib-standing-resistance-band-press-out', 'Main', { value: 8, sideSwitch: 5 }),
+          tplStep('x-russian-twist', 'Main', { value: 12 }), tplStep('bird', 'Main', { value: 8 }), tplRest(30)], 'Core B'),
+        tplStep('x-supine-twist', 'Cool-down', { value: 30, sideSwitch: 5 }), tplStep('child', 'Cool-down', { value: 30 })] },
+
     // --- Conditioning ---
     { id: 'tpl-tabata', name: 'Tabata: 4 hard minutes', category: 'HIIT', transition: 0,
       description: 'Eight rounds of 20 seconds on, 10 seconds off, alternating two moves.',

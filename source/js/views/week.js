@@ -64,7 +64,7 @@ function todayPanel() {
   const ring = planned ? progressRing(done / planned, `${done}/${planned}`, 'planned sessions<br>done this week')
     : progressRing(minutes ? 1 : 0, minutes, 'minutes<br>this week');
 
-  return `<section class="hero today"><div class="today-main">
+  return `<section class="hero today">${peekKitty()}<div class="today-main">
     <p class="eyebrow">TODAY · ${esc(longDate(today).toUpperCase())}</p>
     <h2>${title}</h2>
     ${items ? `<div class="today-list">${items}</div>` : '<p class="hero-sub">Pick a routine, start something quick, or log what you did elsewhere.</p>'}

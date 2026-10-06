@@ -53,7 +53,7 @@ actions['new-routine'] = () => editRoutine();
 actions['edit-routine'] = el => editRoutine(el.dataset.id);
 actions['duplicate-routine'] = el => {
   const r = routine(el.dataset.id);
-  state.routines.push({ ...structuredClone(r), id: uid(), name: (r.name + ' (copy)').slice(0, 90), steps: freshIds(r.steps) });
+  state.routines.push({ ...structuredClone(r), id: uid(), name: (r.name + ' (copy)').slice(0, 90), steps: freshIds(r.steps), nextNote: '' });
   save(); render(); toast('Routine duplicated.');
 };
 actions['delete-routine'] = el => {

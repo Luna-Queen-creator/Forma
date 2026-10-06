@@ -5,10 +5,20 @@ const STORAGE_KEY = 'forma-v2';
 const SESSION_KEY = 'forma-v2-session';
 const LEGACY_KEY = 'forma-v1';
 
+/** Colour themes: id, name, and the two colours shown on the swatch. */
+const PALETTES = [
+  { id: 'forest', name: 'Forest', a: '#123c39', b: '#d5f580' },
+  { id: 'rose', name: 'Rose', a: '#8a1d4e', b: '#ffc9de' },
+  { id: 'lavender', name: 'Lavender', a: '#45318c', b: '#dccfff' },
+  { id: 'ocean', name: 'Ocean', a: '#0f4c75', b: '#a9e8ff' },
+  { id: 'kitty', name: 'Kitty', a: '#ff8fbd', b: '#ffd6e7' },
+];
+
 const DEFAULT_SETTINGS = {
   units: 'metric',        // metric | imperial
   weekStart: 1,           // 1 = Monday, 0 = Sunday
   theme: 'system',        // system | light | dark
+  palette: 'forest',      // colour theme, see PALETTES
   sounds: true,           // bell at the end of timed steps
   countdown: true,        // short beeps for the last three seconds
   wakeLock: true,         // keep the screen on while a session runs
@@ -59,6 +69,7 @@ function normalizeState(raw) {
     units: pick('units', x => ['metric', 'imperial'].includes(x)),
     weekStart: pick('weekStart', x => x === 0 || x === 1),
     theme: pick('theme', x => ['system', 'light', 'dark'].includes(x)),
+    palette: pick('palette', x => PALETTES.some(p => p.id === x)),
     sounds: pick('sounds', bool), countdown: pick('countdown', bool), wakeLock: pick('wakeLock', bool),
     defaultRest: pick('defaultRest', x => int(x, 0, 600)),
     gear: Array.isArray(st.gear) ? st.gear.filter(g => GEAR.includes(g)) : [...DEFAULT_GEAR],
@@ -130,7 +141,8 @@ function normalizeState(raw) {
       || !CATEGORIES.includes(r.category) || !optional(r.transition, x => int(x, 0, 600))) fail('a routine has an invalid name, id or activity');
     routineIds.add(r.id);
     checkBlocks(r.steps, 0, r.name);
-    out.routines.push({ id: r.id, name: r.name, description: r.description || '', category: r.category,
+    if (!optional(r.nextNote, x => str(x, 2000))) fail(`routine “${r.name}” has an invalid note`);
+    out.routines.push({ id: r.id, name: r.name, description: r.description || '', category: r.category, nextNote: r.nextNote || '',
       transition: r.transition ?? 10, steps: r.steps.map(b => normalizeBlock(b, lookup)), createdAt: str(r.createdAt, 50) ? r.createdAt : undefined });
   }
 

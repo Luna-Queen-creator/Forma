@@ -4,7 +4,7 @@
 document.addEventListener('click', ev => {
   const el = ev.target.closest('[data-action],[data-view]');
   if (!el || el.disabled) return;
-  if (el.dataset.view && !el.dataset.action) { go(el.dataset.view); return; }
+  if (el.dataset.view && !el.dataset.action) { ev.preventDefault(); go(el.dataset.view); return; }
   const handler = actions[el.dataset.action];
   if (handler) { ev.preventDefault(); handler(el, ev); }
 });
@@ -80,10 +80,8 @@ document.addEventListener('visibilitychange', () => {
   else if (session) { if (session.running) accountTime(); renderSession(); }
   updateWakeLock();
 });
-window.addEventListener('hashchange', () => {
-  const name = location.hash.slice(1);
-  if (VIEWS[name] && name !== view && !session) go(name);
-});
+// Opening or closing any dialog may change what the phone's back button should do.
+for (const id of ['modal', 'picker']) new MutationObserver(syncBackGuard).observe(document.getElementById(id), { attributes: true, attributeFilter: ['open'] });
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyTheme);
 
 // ---------------------------------------------------------------- start ----
