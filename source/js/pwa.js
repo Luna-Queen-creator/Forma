@@ -100,6 +100,7 @@ function appPanelHTML() {
       ${canShareFiles() ? '<button class="btn" data-action="share-backup">Share backup (Drive, email…)</button>' : ''}
       <button class="btn ${canShareFiles() ? 'light' : ''}" data-action="export">↓ Download backup</button>
       <button class="btn light" data-action="import">↑ Restore backup</button>
+      <button class="btn light" data-action="open-shared-file">Open a shared routine file</button>
       <button class="btn light" data-action="export-csv">Export history as CSV</button>
     </div>
     <p class="muted small">Your data lives only in this browser on this device. Nobody else can see it, including whoever hosts the app. A backup is also how you move it to another device.</p>

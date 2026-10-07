@@ -5,10 +5,9 @@
 // installs as a new worker. The page then offers "Update" (it never reloads on its own).
 'use strict';
 
-const VERSION = '835da0e635ea';
-const PRECACHE = ["index.html", "style.css", "manifest.webmanifest", "js/library.js", "js/main.js", "js/model.js", "js/photos.js", "js/player.js", "js/pwa.js", "js/stats.js", "js/stickers.js", "js/store.js", "js/ui.js", "js/util.js", "js/views/body.js", "js/views/exercises.js", "js/views/progress.js", "js/views/quick.js", "js/views/routines.js", "js/views/settings.js", "js/views/week.js", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon.svg", "icons/maskable-512.png", "icons/maskable.svg"];
+const VERSION = '78442431646a';
+const PRECACHE = ["index.html", "style.css", "manifest.webmanifest", "js/library.js", "js/main.js", "js/model.js", "js/photos.js", "js/player.js", "js/pwa.js", "js/share.js", "js/stats.js", "js/stickers.js", "js/store.js", "js/ui.js", "js/util.js", "js/views/body.js", "js/views/exercises.js", "js/views/progress.js", "js/views/quick.js", "js/views/routines.js", "js/views/settings.js", "js/views/week.js", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon.svg", "icons/maskable-512.png", "icons/maskable.svg"];
 const APP_CACHE = 'forma-app-' + VERSION;
-const FONT_CACHE = 'forma-fonts';
 
 self.addEventListener('install', event => {
   // cache: 'reload' skips the browser's HTTP cache so a release never mixes old and new files.
@@ -18,7 +17,8 @@ self.addEventListener('install', event => {
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
     const keys = await caches.keys();
-    await Promise.all(keys.filter(k => k.startsWith('forma-app-') && k !== APP_CACHE).map(k => caches.delete(k)));
+    // Old app versions go, and so do web fonts cached by versions before 0.8 (Forma no longer loads any).
+    await Promise.all(keys.filter(k => (k.startsWith('forma-app-') && k !== APP_CACHE) || k === 'forma-fonts').map(k => caches.delete(k)));
     await self.clients.claim();
   })());
 });
@@ -31,12 +31,6 @@ self.addEventListener('fetch', event => {
   const request = event.request;
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
-
-  // Web fonts: serve from cache, refresh in the background.
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    event.respondWith(staleWhileRevalidate(request, FONT_CACHE));
-    return;
-  }
   if (url.origin !== self.location.origin) return;
 
   // Opening the app (any path or query inside the scope) always gets the cached page.
@@ -58,13 +52,3 @@ self.addEventListener('fetch', event => {
     return response;
   })());
 });
-
-async function staleWhileRevalidate(request, cacheName) {
-  const cache = await caches.open(cacheName);
-  const hit = await cache.match(request);
-  const refresh = fetch(request).then(response => {
-    if (response.ok || response.type === 'opaque') cache.put(request, response.clone());
-    return response;
-  }).catch(() => hit);
-  return hit || refresh;
-}

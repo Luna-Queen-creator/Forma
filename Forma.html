@@ -12,9 +12,7 @@
   <meta name="apple-mobile-web-app-title" content="Forma">
   <!-- A personal app: ask search engines not to list it. -->
   <meta name="robots" content="noindex, nofollow">
-  <!-- Web fonts load when online; offline the app falls back to system fonts. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap">
+  <!-- No outside connections: Forma uses fonts bundled with it or the device's own. -->
   <style>
 /* Forma — styles.
    Colours are tokens on :root so the dark theme only redefines them. */
@@ -807,6 +805,19 @@ body.in-session .topbar-settings { display: none !important; }
   .stats.body-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .stats.body-stats .stat:last-child:nth-child(odd) { grid-column: span 2; }
 }
+
+/* ------------------------------------------------- welcome & developer --- */
+.welcome-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.welcome-head h2 { margin: 0 0 2px; font-size: 1.5rem; }
+.welcome-head p { margin: 0; }
+.welcome-head .mark { flex-shrink: 0; }
+.welcome-list { list-style: none; padding: 0; margin: 0 0 6px; display: grid; gap: 12px; }
+.welcome-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
+.welcome-list .icon { width: 22px; height: 22px; color: var(--focus); margin-top: 1px; }
+.welcome .palette-picker { margin-bottom: 4px; }
+.version-tap { padding: 0; font-weight: 600; color: inherit; }
+.dev-panel { border-style: dashed; }
+.share-hint { display: block; font-size: 12px; }
 
 /* ------------------------------------------------- app feel (no select) --- */
 /* Tapping text should never highlight it, like a native app. Fields you type in still select. */
@@ -1706,8 +1717,10 @@ const PALETTES = [
   { id: 'rose', name: 'Rose', a: '#8a1d4e', b: '#ffc9de' },
   { id: 'lavender', name: 'Lavender', a: '#45318c', b: '#dccfff' },
   { id: 'ocean', name: 'Ocean', a: '#0f4c75', b: '#a9e8ff' },
-  { id: 'kitty', name: 'Kitty', a: '#ff8fbd', b: '#ffd6e7' },
+  { id: 'kitty', name: 'Kitty', a: '#ff8fbd', b: '#ffd6e7', secret: true },   // developer options only
 ];
+/** Themes this device may use: secret ones only once developer options are on. */
+const availablePalettes = () => PALETTES.filter(p => !p.secret || state.settings.dev);
 
 const DEFAULT_SETTINGS = {
   units: 'metric',        // metric | imperial
@@ -1721,6 +1734,8 @@ const DEFAULT_SETTINGS = {
   gear: [...DEFAULT_GEAR],
   onlyMyGear: false,
   lastBackupAt: '',       // when a backup was last exported or shared
+  shareName: '',          // optional name shown on routines you share
+  dev: false,             // developer options unlocked on this device
 };
 
 /** Body tracking: which spots to measure, preferences, and one entry per measured day. */
@@ -1746,6 +1761,7 @@ function freshState() {
 let state = freshState();
 let storageOK = true;
 let storageProblem = '';
+let firstRun = false;   // nothing was saved on this device before (shows the welcome once)
 
 // ---------------------------------------------------------- validation ----
 
@@ -1780,13 +1796,17 @@ function normalizeState(raw) {
     units: pick('units', x => ['metric', 'imperial'].includes(x)),
     weekStart: pick('weekStart', x => x === 0 || x === 1),
     theme: pick('theme', x => ['system', 'light', 'dark'].includes(x)),
-    palette: pick('palette', x => PALETTES.some(p => p.id === x)),
+    // Developer options; devices already using a secret theme (from before it was secret) keep it.
+    dev: st.dev === true || (st.dev === undefined && PALETTES.some(p => p.secret && p.id === st.palette)),
+    palette: 'forest',
     sounds: pick('sounds', bool), countdown: pick('countdown', bool), wakeLock: pick('wakeLock', bool),
     defaultRest: pick('defaultRest', x => int(x, 0, 600)),
     gear: Array.isArray(st.gear) ? st.gear.filter(g => GEAR.includes(g)) : [...DEFAULT_GEAR],
     onlyMyGear: pick('onlyMyGear', bool),
     lastBackupAt: pick('lastBackupAt', x => typeof x === 'string' && x.length <= 40),
+    shareName: pick('shareName', x => typeof x === 'string' && x.length <= 40),
   };
+  out.settings.palette = PALETTES.some(p => p.id === st.palette && (!p.secret || out.settings.dev)) ? st.palette : 'forest';
 
   // Custom exercises.
   const ids = new Set(BUILTIN_EXERCISES.map(e => e.id));
@@ -2031,6 +2051,7 @@ function loadState() {
   }
   if (lastError) { storageOK = false; storageProblem = 'unreadable'; }
   else {
+    firstRun = true;
     try { localStorage.setItem('forma-probe', '1'); localStorage.removeItem('forma-probe'); }
     catch { storageOK = false; storageProblem = 'blocked'; }
   }
@@ -2648,6 +2669,7 @@ function handleBack() {
   if (view !== 'week') go('week');
 }
 window.addEventListener('popstate', ev => {
+  if (location.hash.startsWith('#share=')) { openIncomingShare(takeShareFromURL()); syncBackGuard(); return; }
   if (ignoreNextPop) { ignoreNextPop = false; keepHashInStep(); return; }
   backGuard = ev.state?.formaGuard === true;
   handleBack();
@@ -2745,6 +2767,7 @@ const ICONS = {
   camera: '<path d="M4 8.5h3.2L8.8 6h6.4l1.6 2.5H20v10H4z"/><circle cx="12" cy="13.3" r="3.3"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>',
   unlink: '<path d="M15.5 12.5 18.7 9.3a4 4 0 0 0-5.66-5.66L10 6.7M8.5 11.5 5.3 14.7a4 4 0 0 0 5.66 5.66L14 17.3M4 4l16 16"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
 };
@@ -3069,7 +3092,8 @@ function routineCard(r, template = false) {
     : `<button class="btn" data-action="start" data-id="${r.id}">Start</button>
        <button class="btn light" data-action="edit-routine" data-id="${r.id}">Edit</button>
        <button class="text-btn" data-action="schedule-routine" data-id="${r.id}">Schedule</button>
-       <button class="text-btn" data-action="duplicate-routine" data-id="${r.id}">Duplicate</button>`;
+       <button class="text-btn" data-action="duplicate-routine" data-id="${r.id}">Duplicate</button>
+       <button class="text-btn" data-action="share-routine" data-id="${r.id}">Share</button>`;
   return `<article class="card">
     <div class="card-band cat-${catClass(r.category)}"><span class="category">${esc(r.category)}</span><span class="activity-symbol" aria-hidden="true">${catIcon(r.category)}</span></div>
     <div class="card-content">
@@ -3928,7 +3952,7 @@ function exerciseDetail(id) {
   if (!e) return;
   showModal(modalHead(e.name) + exerciseInfoHTML(e) + `
     <div class="modal-actions spread"><div class="row">
-      ${e.custom ? `<button class="btn light" data-action="edit-exercise" data-id="${e.id}">Edit</button><button class="btn danger" data-action="delete-exercise" data-id="${e.id}">Delete</button>`
+      ${e.custom ? `<button class="btn light" data-action="edit-exercise" data-id="${e.id}">Edit</button><button class="btn light" data-action="share-exercise" data-id="${e.id}">Share</button><button class="btn danger" data-action="delete-exercise" data-id="${e.id}">Delete</button>`
         : `<button class="btn light" data-action="copy-exercise" data-id="${e.id}" title="Create an editable copy with your own defaults and notes">Make my own version</button>`}</div>
       <div class="row"><button class="btn light" data-action="add-to-routine" data-id="${e.id}">Add to routine</button><button class="btn" data-action="close">Done</button></div></div>`);
 }
@@ -5356,15 +5380,270 @@ function exportBodyCSV() {
 actions['export-body-csv'] = () => exportBodyCSV();
 
 </script>
+<script>/* js/share.js */
+// Sharing routines and your own exercises with friends.
+// Everything travels inside the link itself, after the "#", which browsers never send to a
+// server: nothing is uploaded, and only someone with the link can see what's in it.
+'use strict';
+
+/** Where links point when Forma was opened as a file (a file path is useless to a friend). */
+const PUBLIC_URL = 'https://luna-queen-creator.github.io/Forma/';
+const SHARE_PREFIX = '#share=';
+const SHARE_FILE_KIND = 'forma-share';
+
+// --------------------------------------------------------------- packing ----
+
+const toBase64url = bytes => {
+  let bin = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+};
+function fromBase64url(text) {
+  if (!/^[A-Za-z0-9_-]*$/.test(text)) throw new Error('bad characters');
+  const bin = atob(text.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((text.length + 3) % 4));
+  return Uint8Array.from(bin, c => c.charCodeAt(0));
+}
+
+/** Object -> short text for a link: "z" + compressed, or "j" + plain where compression is missing. */
+async function packShare(obj) {
+  const bytes = new TextEncoder().encode(JSON.stringify(obj));
+  if (window.CompressionStream) {
+    const stream = new Blob([bytes]).stream().pipeThrough(new CompressionStream('deflate-raw'));
+    return 'z' + toBase64url(new Uint8Array(await new Response(stream).arrayBuffer()));
+  }
+  return 'j' + toBase64url(bytes);
+}
+/** The reverse, with a size limit so a strange link can't eat the phone's memory. */
+async function unpackShare(text) {
+  const LIMIT = 1_000_000;
+  const raw = fromBase64url(text.slice(1));
+  let bytes;
+  if (text[0] === 'j') bytes = raw;
+  else if (text[0] === 'z') {
+    if (!window.DecompressionStream) throw new Error('This browser is too old to open shared links. Update it and try again.');
+    const reader = new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw')).getReader();
+    const parts = [];
+    let total = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      total += value.length;
+      if (total > LIMIT) { reader.cancel(); throw new Error('too big'); }
+      parts.push(value);
+    }
+    bytes = new Uint8Array(total);
+    let at = 0;
+    for (const p of parts) { bytes.set(p, at); at += p.length; }
+  } else throw new Error('unknown format');
+  if (bytes.length > LIMIT) throw new Error('too big');
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
+/** Check a shared payload with the same rules as a backup. Returns clean { kind, from, routine, exercises }. */
+function readSharePayload(p) {
+  if (!p || p.app !== 'forma' || p.v !== 1 || !['routine', 'exercise'].includes(p.kind)) throw new Error('not a Forma share');
+  const exercises = Array.isArray(p.exercises) ? p.exercises.slice(0, 200) : [];
+  const routines = p.kind === 'routine' ? [p.routine] : [];
+  const clean = normalizeState({ version: 2, settings: {}, exercises, routines, schedule: [], history: [] });
+  if (p.kind === 'routine' && !clean.routines.length) throw new Error('no routine');
+  if (p.kind === 'exercise' && !clean.exercises.length) throw new Error('no exercise');
+  const from = typeof p.from === 'string' ? p.from.trim().slice(0, 40) : '';
+  return { kind: p.kind, from, routine: clean.routines[0] || null, exercises: clean.exercises };
+}
+
+// --------------------------------------------------------------- sending ----
+
+/** Your own exercises a routine uses (built-in ones are in everyone's Forma already). */
+function customExercisesIn(r) {
+  const ids = new Set(routineMoves(r).map(b => b.exerciseId));
+  return state.exercises.filter(e => ids.has(e.id));
+}
+const stripExercise = e => {
+  const { custom, ...rest } = e;
+  return rest;
+};
+function sharePayload(kind, id, { weights = false } = {}) {
+  const from = (state.settings.shareName || '').trim();
+  if (kind === 'exercise') return { app: 'forma', v: 1, kind, from, exercises: [stripExercise(exercise(id))] };
+  const r = routine(id);
+  const clearWeights = blocks => blocks.map(b => (b.kind === 'group' ? { ...b, steps: clearWeights(b.steps) } : b.kind === 'exercise' && !weights ? { ...b, weight: 0 } : b));
+  const { nextNote, createdAt, ...rest } = structuredClone(r);   // your personal note stays with you
+  return { app: 'forma', v: 1, kind, from, routine: { ...rest, steps: clearWeights(rest.steps) }, exercises: customExercisesIn(r).map(stripExercise) };
+}
+async function shareLink(payload) {
+  const base = /^https?:$/.test(location.protocol) && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1'
+    ? location.origin + location.pathname : PUBLIC_URL;
+  return base + SHARE_PREFIX + await packShare(payload);
+}
+
+let shareTarget = null;   // { kind, id }
+actions['share-routine'] = el => openShare('routine', el.dataset.id);
+actions['share-exercise'] = el => openShare('exercise', el.dataset.id);
+
+function openShare(kind, id) {
+  const item = kind === 'routine' ? routine(id) : exercise(id);
+  if (!item) return;
+  shareTarget = { kind, id };
+  const hasWeights = kind === 'routine' && routineMoves(item).some(b => b.weight > 0);
+  const mine = kind === 'routine' ? customExercisesIn(item) : [];
+  showModal(modalHead(`Share “${item.name}”`, kind === 'routine' ? 'Friends open the link and can add the routine to their Forma.' : 'Friends open the link and can add the exercise to their Forma.')
+    + `<form id="share-form">
+      <div class="field"><label for="share-from">Your name (optional)</label><input id="share-from" type="text" maxlength="40" autocomplete="nickname" value="${esc(state.settings.shareName || '')}" placeholder="So they know who it’s from"></div>
+      ${hasWeights ? '<label class="checkrow"><input type="checkbox" id="share-weights"><span>Include my weights<small class="muted share-hint">Off: they start without weights and pick their own.</small></span></label>' : ''}
+      ${mine.length ? `<p class="muted small">Includes ${plural(mine.length, 'exercise')} you made: ${mine.map(e => esc(e.name)).join(', ')}.</p>` : ''}
+      <p class="note small">${icon('link')} The ${kind} travels inside the link itself. Nothing is uploaded, and your notes, history and progress stay private.</p>
+      <div class="modal-actions">
+        <button type="button" class="btn light" data-action="share-file">Save as file</button>
+        <button type="button" class="btn light" data-action="share-copy">Copy link</button>
+        ${navigator.share ? '<button type="button" class="btn" data-action="share-send">Share…</button>' : ''}
+      </div></form>`);
+}
+function shareOptions() {
+  const name = ($('#share-from')?.value || '').trim().slice(0, 40);
+  if (name !== (state.settings.shareName || '')) { state.settings.shareName = name; save(); }
+  return { weights: !!$('#share-weights')?.checked };
+}
+forms['share-form'] = () => actions[navigator.share ? 'share-send' : 'share-copy']();
+actions['share-send'] = async () => {
+  const opts = shareOptions();
+  const { kind, id } = shareTarget;
+  const item = kind === 'routine' ? routine(id) : exercise(id);
+  try {
+    const url = await shareLink(sharePayload(kind, id, opts));
+    await navigator.share({ title: `Forma: ${item.name}`, text: `Here’s my ${kind} “${item.name}” for Forma 💪`, url });
+    closeModal(); toast('Shared.');
+  } catch (err) { if (err?.name !== 'AbortError') toast('Sharing didn’t work here. Use Copy link instead.'); }
+};
+actions['share-copy'] = async () => {
+  const opts = shareOptions();
+  const { kind, id } = shareTarget;
+  try {
+    const url = await shareLink(sharePayload(kind, id, opts));
+    await navigator.clipboard.writeText(url);
+    closeModal(); toast('Link copied. Paste it into a message.');
+  } catch { toast('Copying didn’t work here. Try Share or Save as file.'); }
+};
+actions['share-file'] = () => {
+  const opts = shareOptions();
+  const { kind, id } = shareTarget;
+  const item = kind === 'routine' ? routine(id) : exercise(id);
+  const data = { ...sharePayload(kind, id, opts), type: SHARE_FILE_KIND };
+  const slug = item.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || kind;
+  download(`forma-${kind}-${slug}.json`, JSON.stringify(data, null, 2), 'application/json');
+  closeModal(); toast('Saved. Send the file; they open it in Forma under Settings › App & backups.');
+};
+actions['open-shared-file'] = () => $('#backup-file').click();
+
+// ------------------------------------------------------------- receiving ----
+
+/** Take a shared link out of the address (so it doesn't linger in history) and return its data. */
+function takeShareFromURL() {
+  if (!location.hash.startsWith(SHARE_PREFIX)) return '';
+  const data = location.hash.slice(SHARE_PREFIX.length);
+  history.replaceState(history.state, '', location.pathname + location.search + '#' + (typeof view === 'string' ? view : 'week'));
+  return data;
+}
+
+let incoming = null;
+async function openIncomingShare(text) {
+  if (!text) return;
+  try { showIncoming(readSharePayload(await unpackShare(text))); }
+  catch (err) { toast(err.message?.startsWith('This browser') ? err.message : 'This shared link looks broken or incomplete. Ask for it again.'); }
+}
+function showIncomingFile(parsed) {
+  try { showIncoming(readSharePayload(parsed)); }
+  catch { toast('This file is not a routine or exercise shared from Forma.'); }
+}
+
+/** Run fn with the shared exercises temporarily known, so names and durations can be shown. */
+function withExercises(list, fn) {
+  const before = state.exercises;
+  state.exercises = [...before, ...list.filter(e => !before.some(x => x.id === e.id))];
+  try { return fn(); } finally { state.exercises = before; }
+}
+
+function showIncoming(share) {
+  incoming = share;
+  const who = share.from ? esc(share.from) : 'Someone';
+  if (share.kind === 'routine') {
+    const r = share.routine;
+    const body = withExercises(share.exercises, () => `
+      <p>${pill(esc(r.category))} <span class="muted">About ${duration(r)} min · ${plural(routineMoves(r).length, 'exercise')}</span></p>
+      ${r.description ? `<p>${esc(r.description)}</p>` : ''}
+      <ol class="plan-preview">${r.steps.map(b => `<li>${esc(blockSummary(b))}</li>`).join('')}</ol>`);
+    showModal(modalHead(`${who} shared a routine`, esc(r.name)) + body
+      + (share.exercises.length ? `<p class="muted small">Comes with ${plural(share.exercises.length, 'exercise')} they made, which will be added to your library.</p>` : '')
+      + `<div class="modal-actions"><button class="btn light" data-action="close">Not now</button><button class="btn" data-action="accept-share">Add to my routines</button></div>`);
+  } else {
+    const e = share.exercises[0];
+    const body = withExercises(share.exercises, () => exerciseInfoHTML(e));
+    showModal(modalHead(`${who} shared an exercise`, esc(e.name)) + body
+      + `<div class="modal-actions"><button class="btn light" data-action="close">Not now</button><button class="btn" data-action="accept-share">Add to my exercises</button></div>`);
+  }
+}
+
+const sameExercise = (a, b) => ['name', 'category', 'mode', 'value', 'equipment', 'level', 'bilateral', 'image', 'video']
+  .every(k => (a[k] ?? '') === (b[k] ?? '')) && JSON.stringify(a.instructions) === JSON.stringify(b.instructions)
+  && JSON.stringify(a.primary) === JSON.stringify(b.primary);
+const uniqueName = (name, taken, from) => {
+  if (!taken.some(n => n.toLowerCase() === name.toLowerCase())) return name;
+  const tag = from ? ` (from ${from})` : ' (shared)';
+  let candidate = (name.slice(0, 90 - tag.length) + tag);
+  for (let i = 2; taken.some(n => n.toLowerCase() === candidate.toLowerCase()); i++) candidate = `${name.slice(0, 80)} (${i})`;
+  return candidate;
+};
+
+actions['accept-share'] = () => {
+  const share = incoming;
+  if (!share) return;
+  // Your own exercises: reuse an identical one you already have, otherwise add it with a fresh id.
+  const idMap = new Map();
+  const added = [];
+  for (const e of share.exercises) {
+    const twin = state.exercises.find(x => sameExercise(x, e));
+    if (twin) { idMap.set(e.id, twin.id); continue; }
+    const id = uid();
+    idMap.set(e.id, id);
+    added.push({ ...e, id, custom: true, name: uniqueName(e.name, [...allExercises().map(x => x.name), ...added.map(x => x.name)], share.from) });
+  }
+  let newRoutine = null;
+  if (share.kind === 'routine') {
+    const remap = blocks => blocks.map(b => (b.kind === 'group' ? { ...b, id: uid(), steps: remap(b.steps) }
+      : { ...structuredClone(b), id: uid(), ...(b.kind === 'exercise' ? { exerciseId: idMap.get(b.exerciseId) || b.exerciseId } : {}) }));
+    const r = share.routine;
+    newRoutine = { ...structuredClone(r), id: uid(), name: uniqueName(r.name, state.routines.map(x => x.name), share.from), steps: remap(r.steps), nextNote: '', createdAt: new Date().toISOString() };
+  }
+  try { normalizeState({ ...state, exercises: [...state.exercises, ...added], routines: newRoutine ? [...state.routines, newRoutine] : state.routines }); }
+  catch { toast('This share could not be added. Ask for it again.'); return; }
+  state.exercises.push(...added);
+  if (newRoutine) state.routines.push(newRoutine);
+  incoming = null;
+  save();
+  closeModal();
+  if (!session) go(newRoutine ? 'routines' : 'library');
+  toast(newRoutine ? `“${newRoutine.name}” is now in your routines.` : added.length ? `“${added[0].name}” is now in your exercises.` : 'You already have this exercise.');
+};
+
+</script>
 <script>/* js/views/settings.js */
 // Settings: units, calendar, theme, session behaviour, equipment and data.
 'use strict';
 
-const APP_VERSION = '0.7';
+const APP_VERSION = '0.8';
+
+/** A segmented-control option bound to a setting. */
+function settingRadio(name, value, label) {
+  return `<label class="seg-option"><input type="radio" name="${name}" value="${value}" data-bind="setting" ${String(state.settings[name]) === String(value) ? 'checked' : ''}><span>${label}</span></label>`;
+}
+function palettePicker() {
+  const s = state.settings;
+  return `<div class="palette-picker">${availablePalettes().map(p => `<label class="palette-option"><input type="radio" name="palette" value="${p.id}" data-bind="setting" ${s.palette === p.id ? 'checked' : ''}>
+    <span class="palette-swatch" style="--sa:${p.a};--sb:${p.b}">${p.id === 'kitty' ? stickerSVG('face', 'swatch-kitty') : ''}</span><span class="palette-name">${p.name}</span></label>`).join('')}</div>`;
+}
 
 renderers.settings = () => {
   const s = state.settings;
-  const radio = (name, value, label) => `<label class="seg-option"><input type="radio" name="${name}" value="${value}" data-bind="setting" ${String(s[name]) === String(value) ? 'checked' : ''}><span>${label}</span></label>`;
+  const radio = settingRadio;
   const toggle = (name, label, hint = '') => `<label class="toggle-row"><span><strong>${label}</strong>${hint ? `<small>${hint}</small>` : ''}</span><input type="checkbox" class="switch" name="${name}" data-bind="setting" ${s[name] ? 'checked' : ''}></label>`;
   app().innerHTML = heading('Make it yours.', 'Preferences are saved on this device and included in backups.')
     + `<div class="settings-grid">
@@ -5372,8 +5651,7 @@ renderers.settings = () => {
         <p class="label">Units</p><div class="segmented">${radio('units', 'metric', 'Metric (kg, km)')}${radio('units', 'imperial', 'Imperial (lb, mi)')}</div>
         <p class="label">Week starts on</p><div class="segmented">${radio('weekStart', 1, 'Monday')}${radio('weekStart', 0, 'Sunday')}</div>
         <p class="label">Colours</p>
-        <div class="palette-picker">${PALETTES.map(p => `<label class="palette-option"><input type="radio" name="palette" value="${p.id}" data-bind="setting" ${s.palette === p.id ? 'checked' : ''}>
-          <span class="palette-swatch" style="--sa:${p.a};--sb:${p.b}">${p.id === 'kitty' ? stickerSVG('face', 'swatch-kitty') : ''}</span><span class="palette-name">${p.name}</span></label>`).join('')}</div>
+        ${palettePicker()}
         <p class="label">Light or dark</p><div class="segmented">${radio('theme', 'system', 'Match device')}${radio('theme', 'light', 'Light')}${radio('theme', 'dark', 'Dark')}</div>
       </section>
 
@@ -5394,11 +5672,12 @@ renderers.settings = () => {
       ${appPanelHTML()}
 
       <section class="panel"><h2>About</h2>
-        <p class="small">Forma ${APP_VERSION} · a personal planner and tracker for strength, cardio, yoga, mobility and meditation.</p>
+        <p class="small"><button type="button" class="version-tap" data-action="version-tap">Forma ${APP_VERSION}</button> · a personal planner and tracker for strength, cardio, yoga, mobility, meditation and body measurements.</p>
         <p class="muted small">Exercise instructions are general guidance, not medical or personal training advice. Warm up, move within a range you control, and stop if something hurts.</p>
         <div class="stack"><button class="btn light" data-action="test-player">Try the player demo</button>
         <button class="btn danger" data-action="erase-all">Erase all data on this device</button></div>
       </section>
+      ${s.dev ? devPanelHTML() : ''}
     </div>`;
 };
 
@@ -5410,6 +5689,7 @@ binds.setting = el => {
     value = Number(value);
     if (!Number.isInteger(value) || value < 0 || value > 600) return;
   }
+  if (key === 'palette' && !availablePalettes().some(x => x.id === value)) return;
   state.settings[key] = value;
   save();
   if (key === 'theme' || key === 'palette') applyTheme();
@@ -5435,6 +5715,8 @@ async function handleBackupFile(file) {
     if (file.size > 300e6) throw new Error('Choose a backup smaller than 300 MB.');
     let parsed;
     try { parsed = JSON.parse(await file.text()); } catch { throw new Error('This file is not a Forma backup (it is not JSON).'); }
+    if (parsed?.type === SHARE_FILE_KIND) { showIncomingFile(parsed); return; }
+    if (session) throw new Error('End your current session before restoring a backup.');
     pendingBackup = normalizeState(parsed);
     pendingPhotos = backupPhotosFrom(parsed.photos);
     const b = pendingBackup;
@@ -5470,6 +5752,81 @@ actions['erase-all'] = () => confirmDialog({
     try { [STORAGE_KEY, STORAGE_KEY + '-recovery', SESSION_KEY, LEGACY_KEY, LEGACY_KEY + '-recovery'].forEach(k => localStorage.removeItem(k)); } catch { /* ignore */ }
     save(); applyTheme(); go('week'); toast('All data erased.');
     photoClearAll().catch(() => {});
+  },
+});
+
+// ------------------------------------------------------------- welcome ----
+// Shown once, the very first time Forma opens on a device (it is marked as seen right away).
+
+function showWelcome() {
+  const install = isServed() && !isInstalled()
+    ? `<li>${icon('plus')}<span><strong>Install it</strong> from the browser menu: <em>Install app</em> or <em>Add to Home screen</em>. Then it opens like an app and works offline.</span></li>` : '';
+  showModal(`<div class="welcome">
+    <div class="welcome-head"><span class="mark">f</span><div><h2>Welcome to Forma</h2><p class="muted">Your workouts, your week and your progress, all in one place.</p></div></div>
+    <ul class="welcome-list">
+      <li>${icon('routines')}<span><strong>Routines</strong> for strength, cardio, yoga, mobility and more. Start from a template or build your own; a guided timer leads you through.</span></li>
+      <li>${icon('progress')}<span><strong>Tracking</strong> of weights, reps and runs. Next time starts from what you did last time.</span></li>
+      <li>${icon('body')}<span><strong>Body</strong>: weight and measurements over time, with photos if you like.</span></li>
+      <li>${icon('lock')}<span><strong>Private</strong>: no account and no cloud. Everything stays on this phone, so make a backup now and then in Settings › App &amp; backups.</span></li>
+      ${install}
+    </ul>
+    <p class="label">Units</p><div class="segmented">${settingRadio('units', 'metric', 'Metric (kg, cm)')}${settingRadio('units', 'imperial', 'Imperial (lb, in)')}</div>
+    <p class="label">Pick your colours</p>${palettePicker()}
+    <p class="muted small">You can change all of this later in Settings.</p>
+    <div class="modal-actions"><button class="btn" data-action="welcome-done">Let’s go</button></div></div>`);
+}
+actions['welcome-done'] = () => closeModal();
+
+// ---------------------------------------------------- developer options ----
+// Tap the version number seven times, then enter the code. This hides things from curious
+// friends, nothing more: the app's code is public, so it is not real security.
+
+const DEV_CODE_HASH = '007afb91983c4c1d11ef97532c2319230d304234a402e49e3b91750934008681';
+let devTaps = 0, devTapTimer = 0;
+actions['version-tap'] = () => {
+  if (state.settings.dev) { toast('Developer options are already on. They’re at the bottom of Settings.'); return; }
+  clearTimeout(devTapTimer);
+  devTapTimer = setTimeout(() => { devTaps = 0; }, 1500);
+  devTaps++;
+  if (devTaps >= 7) { devTaps = 0; devCodeDialog(); }
+  else if (devTaps >= 4) toast(`${7 - devTaps} more…`);
+};
+function devCodeDialog() {
+  showModal(modalHead('Developer options', 'Enter the developer code.') + `<form id="dev-form">
+    <div class="field"><label for="dev-code">Code</label><input id="dev-code" name="code" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="100" required></div>
+    <div class="modal-actions"><button type="button" class="btn light" data-action="close">Cancel</button><button class="btn">Unlock</button></div></form>`);
+  setTimeout(() => $('#dev-code')?.focus(), 50);
+}
+async function sha256Hex(text) {
+  const bytes = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)));
+  return [...bytes].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+forms['dev-form'] = async (f, fd) => {
+  let ok = false;
+  try { ok = (await sha256Hex('forma-dev:' + String(fd.get('code')).trim().toLowerCase())) === DEV_CODE_HASH; }
+  catch { toast('This browser can’t check the code here.'); return; }
+  if (!ok) { toast('That’s not it.'); $('#dev-code').select(); return; }
+  state.settings.dev = true;
+  save(); closeModal(); render();
+  toast('Developer options unlocked. The Kitty theme is yours 🐾');
+};
+function devPanelHTML() {
+  let bytes = 0;
+  try { for (const k of Object.keys(localStorage)) if (k.startsWith('forma')) bytes += (localStorage.getItem(k) || '').length * 2; } catch { /* blocked */ }
+  return `<section class="panel dev-panel"><h2>Developer options</h2>
+    <p class="muted small">Only on this device. Secret themes unlocked: ${PALETTES.filter(p => p.secret).map(p => p.name).join(', ')}.</p>
+    <p class="small">Saved data in this browser: about ${Math.max(1, Math.round(bytes / 1024))} KB${usedPhotoIds().length ? ` · ${plural(usedPhotoIds().length, 'progress photo')}` : ''}.</p>
+    <div class="stack"><button class="btn light" data-action="dev-welcome">Show the welcome screen</button>
+      <button class="btn light" data-action="dev-off">Turn off developer options</button></div></section>`;
+}
+actions['dev-welcome'] = () => showWelcome();
+actions['dev-off'] = () => confirmDialog({
+  title: 'Turn off developer options?', yes: 'Turn off', danger: false,
+  body: '<p>Secret themes are hidden again (Kitty switches to Rose). Tap the version number seven times to come back.</p>',
+  onYes: () => {
+    state.settings.dev = false;
+    if (PALETTES.some(p => p.secret && p.id === state.settings.palette)) state.settings.palette = 'rose';
+    save(); applyTheme(); render(); toast('Developer options off.');
   },
 });
 
@@ -5995,24 +6352,39 @@ function setPending(key, raw) {
 
 // --------------------------------------------------------------- sound ----
 
+// Phones pause a page's sound when another app (music, a call) takes over or Forma goes to the
+// background, and they don't wake it up again by themselves. So every sound first makes sure
+// the audio is running, and any tap or return to Forma during a session wakes it too.
 let audioCtx;
-function initAudio() {
-  try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch { /* no audio */ }
-}
-function tone(freq, length, volume) {
-  if (!audioCtx) return;
+function audio() {
   try {
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
-    o.type = 'sine';
-    o.frequency.value = freq;
-    g.gain.setValueAtTime(volume, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + length);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); o.stop(t + length);
-  } catch { /* ignore */ }
+    if (!audioCtx || audioCtx.state === 'closed') audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state !== 'running') audioCtx.resume().catch(() => {});
+  } catch { audioCtx = null; }
+  return audioCtx;
 }
-const beep = () => tone(880, 0.14, 0.07);
-const bell = () => tone(660, 1.2, 0.08);
+function initAudio() { audio(); }
+function tone(freq, length, volume, delay = 0) {
+  const ctx = audio();
+  if (!ctx) return;
+  const play = () => {
+    try {
+      const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + delay;
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(volume, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + length);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + length + 0.05);
+    } catch { /* ignore */ }
+  };
+  if (ctx.state === 'running') play();
+  else ctx.resume().then(play).catch(() => {});
+}
+const beep = () => tone(880, 0.15, 0.12);
+/** A soft bell: a base note with a quieter overtone, loud enough to hear over music. */
+const bell = () => { tone(660, 1.4, 0.2); tone(1320, 0.9, 0.06); tone(1980, 0.5, 0.025); };
 
 // ----------------------------------------------------------- wake lock ----
 
@@ -6136,6 +6508,7 @@ function appPanelHTML() {
       ${canShareFiles() ? '<button class="btn" data-action="share-backup">Share backup (Drive, email…)</button>' : ''}
       <button class="btn ${canShareFiles() ? 'light' : ''}" data-action="export">↓ Download backup</button>
       <button class="btn light" data-action="import">↑ Restore backup</button>
+      <button class="btn light" data-action="open-shared-file">Open a shared routine file</button>
       <button class="btn light" data-action="export-csv">Export history as CSV</button>
     </div>
     <p class="muted small">Your data lives only in this browser on this device. Nobody else can see it, including whoever hosts the app. A backup is also how you move it to another device.</p>
@@ -6234,9 +6607,11 @@ $('#backup-file').addEventListener('change', async ev => {
 window.addEventListener('pagehide', pauseForBackground);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) pauseForBackground();
-  else if (session) { if (session.running) accountTime(); renderSession(); }
+  else if (session) { if (session.running) accountTime(); initAudio(); renderSession(); }
   updateWakeLock();
 });
+// Any tap during a session counts as permission to (re)start the sound.
+document.addEventListener('pointerdown', () => { if (session) initAudio(); }, { capture: true, passive: true });
 // Opening or closing any dialog may change what the phone's back button should do.
 for (const id of ['modal', 'picker']) new MutationObserver(syncBackGuard).observe(document.getElementById(id), { attributes: true, attributeFilter: ['open'] });
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyTheme);
@@ -6247,11 +6622,17 @@ loadState();
 applyTheme();
 const recovered = loadSession();
 if (recovered) resumeSession(recovered);
+const sharedText = takeShareFromURL();   // a routine or exercise someone sent (#share=…)
 view = VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'week';
 if (storageProblem === 'migrated') save();   // write the upgraded copy; the old key is left untouched
 render();
 handleLaunchAction();
 initPWA();
+if (firstRun) { save(); showWelcome(); }   // saved straight away, so the welcome only ever shows once
+if (sharedText) {
+  if ($('#modal').open) $('#modal').addEventListener('close', () => openIncomingShare(sharedText), { once: true });
+  else openIncomingShare(sharedText);
+}
 
 // --------------------------------------- tools for in-browser AI agents ----
 // Browsers that support WebMCP can let an assistant read the plan and schedule routines.

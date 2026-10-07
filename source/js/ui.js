@@ -67,6 +67,7 @@ function handleBack() {
   if (view !== 'week') go('week');
 }
 window.addEventListener('popstate', ev => {
+  if (location.hash.startsWith('#share=')) { openIncomingShare(takeShareFromURL()); syncBackGuard(); return; }
   if (ignoreNextPop) { ignoreNextPop = false; keepHashInStep(); return; }
   backGuard = ev.state?.formaGuard === true;
   handleBack();
@@ -164,6 +165,7 @@ const ICONS = {
   camera: '<path d="M4 8.5h3.2L8.8 6h6.4l1.6 2.5H20v10H4z"/><circle cx="12" cy="13.3" r="3.3"/>',
   link: '<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>',
   unlink: '<path d="M15.5 12.5 18.7 9.3a4 4 0 0 0-5.66-5.66L10 6.7M8.5 11.5 5.3 14.7a4 4 0 0 0 5.66 5.66L14 17.3M4 4l16 16"/>',
+  lock: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8.5 10.5V8a3.5 3.5 0 0 1 7 0v2.5"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
 };

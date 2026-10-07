@@ -1,4 +1,4 @@
-FORMA 0.7
+FORMA 0.8
 
 INSTALL ON YOUR PHONE (recommended)
 1. Open Forma's web address on your phone in Chrome or Samsung Internet.
@@ -50,8 +50,9 @@ WHAT'S NEW IN 0.3
 - Settings: kg/lb, week start, light/dark theme, sounds, default rest.
 
 OFFLINE
-Everything works offline. Web fonts and any image/video links you add to
-custom exercises need internet; without it the app uses system fonts.
+Everything works offline. Forma makes no connections to other websites
+(it uses the device's own font). Only image/video links you add to custom
+exercises load from the internet.
 
 WHAT'S NEW IN 0.4
 - Installable app with its own icon, offline mode, update notice,
@@ -97,6 +98,20 @@ WHAT'S NEW IN 0.7
   turned off). Export measurements as CSV.
 - On phones, Settings moved to the gear at the top right.
 
+WHAT'S NEW IN 0.8
+- Share routines and your own exercises: Share on a routine card or on
+  your exercise. Send the link (or a file). Friends open it, see a
+  preview and add it with one tap. The routine travels inside the link
+  after the "#", which is never sent to any server. Your private notes
+  are left out, and weights only if you tick "Include my weights".
+- A welcome screen the very first time Forma opens on a device (never
+  again after that), with units and colours.
+- No outside connections: the Google web fonts are gone, Forma uses the
+  device's own font.
+- Fix: the bell and beeps went silent after switching to a music app.
+- Developer options: tap the version number in Settings > About seven
+  times and enter the code. Unlocks secret themes (Kitty) on that device.
+
 FOR WHOEVER EDITS THE CODE NEXT
 source/ is the real app and runs as-is: open source/index.html.
 Build with:   python3 build.py
@@ -114,6 +129,7 @@ Build with:   python3 build.py
   source/js/views/*.js     one file per screen
   source/js/player.js      the session player (also carry-over and notes)
   source/js/views/body.js  body measurements: figure, charts, check-ins
+  source/js/share.js       share links and files for routines and exercises
   source/js/stickers.js    the Kitty theme's drawings and their layout
   tools/palettes.py        the colour themes (Forest is the base tokens in
                            style.css). Edit, then: python3 tools/palettes.py

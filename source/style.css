@@ -790,6 +790,19 @@ body.in-session .topbar-settings { display: none !important; }
   .stats.body-stats .stat:last-child:nth-child(odd) { grid-column: span 2; }
 }
 
+/* ------------------------------------------------- welcome & developer --- */
+.welcome-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.welcome-head h2 { margin: 0 0 2px; font-size: 1.5rem; }
+.welcome-head p { margin: 0; }
+.welcome-head .mark { flex-shrink: 0; }
+.welcome-list { list-style: none; padding: 0; margin: 0 0 6px; display: grid; gap: 12px; }
+.welcome-list li { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; line-height: 1.5; }
+.welcome-list .icon { width: 22px; height: 22px; color: var(--focus); margin-top: 1px; }
+.welcome .palette-picker { margin-bottom: 4px; }
+.version-tap { padding: 0; font-weight: 600; color: inherit; }
+.dev-panel { border-style: dashed; }
+.share-hint { display: block; font-size: 12px; }
+
 /* ------------------------------------------------- app feel (no select) --- */
 /* Tapping text should never highlight it, like a native app. Fields you type in still select. */
 body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; }

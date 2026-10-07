@@ -14,7 +14,8 @@ function routineCard(r, template = false) {
     : `<button class="btn" data-action="start" data-id="${r.id}">Start</button>
        <button class="btn light" data-action="edit-routine" data-id="${r.id}">Edit</button>
        <button class="text-btn" data-action="schedule-routine" data-id="${r.id}">Schedule</button>
-       <button class="text-btn" data-action="duplicate-routine" data-id="${r.id}">Duplicate</button>`;
+       <button class="text-btn" data-action="duplicate-routine" data-id="${r.id}">Duplicate</button>
+       <button class="text-btn" data-action="share-routine" data-id="${r.id}">Share</button>`;
   return `<article class="card">
     <div class="card-band cat-${catClass(r.category)}"><span class="category">${esc(r.category)}</span><span class="activity-symbol" aria-hidden="true">${catIcon(r.category)}</span></div>
     <div class="card-content">

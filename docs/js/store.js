@@ -11,8 +11,10 @@ const PALETTES = [
   { id: 'rose', name: 'Rose', a: '#8a1d4e', b: '#ffc9de' },
   { id: 'lavender', name: 'Lavender', a: '#45318c', b: '#dccfff' },
   { id: 'ocean', name: 'Ocean', a: '#0f4c75', b: '#a9e8ff' },
-  { id: 'kitty', name: 'Kitty', a: '#ff8fbd', b: '#ffd6e7' },
+  { id: 'kitty', name: 'Kitty', a: '#ff8fbd', b: '#ffd6e7', secret: true },   // developer options only
 ];
+/** Themes this device may use: secret ones only once developer options are on. */
+const availablePalettes = () => PALETTES.filter(p => !p.secret || state.settings.dev);
 
 const DEFAULT_SETTINGS = {
   units: 'metric',        // metric | imperial
@@ -26,6 +28,8 @@ const DEFAULT_SETTINGS = {
   gear: [...DEFAULT_GEAR],
   onlyMyGear: false,
   lastBackupAt: '',       // when a backup was last exported or shared
+  shareName: '',          // optional name shown on routines you share
+  dev: false,             // developer options unlocked on this device
 };
 
 /** Body tracking: which spots to measure, preferences, and one entry per measured day. */
@@ -51,6 +55,7 @@ function freshState() {
 let state = freshState();
 let storageOK = true;
 let storageProblem = '';
+let firstRun = false;   // nothing was saved on this device before (shows the welcome once)
 
 // ---------------------------------------------------------- validation ----
 
@@ -85,13 +90,17 @@ function normalizeState(raw) {
     units: pick('units', x => ['metric', 'imperial'].includes(x)),
     weekStart: pick('weekStart', x => x === 0 || x === 1),
     theme: pick('theme', x => ['system', 'light', 'dark'].includes(x)),
-    palette: pick('palette', x => PALETTES.some(p => p.id === x)),
+    // Developer options; devices already using a secret theme (from before it was secret) keep it.
+    dev: st.dev === true || (st.dev === undefined && PALETTES.some(p => p.secret && p.id === st.palette)),
+    palette: 'forest',
     sounds: pick('sounds', bool), countdown: pick('countdown', bool), wakeLock: pick('wakeLock', bool),
     defaultRest: pick('defaultRest', x => int(x, 0, 600)),
     gear: Array.isArray(st.gear) ? st.gear.filter(g => GEAR.includes(g)) : [...DEFAULT_GEAR],
     onlyMyGear: pick('onlyMyGear', bool),
     lastBackupAt: pick('lastBackupAt', x => typeof x === 'string' && x.length <= 40),
+    shareName: pick('shareName', x => typeof x === 'string' && x.length <= 40),
   };
+  out.settings.palette = PALETTES.some(p => p.id === st.palette && (!p.secret || out.settings.dev)) ? st.palette : 'forest';
 
   // Custom exercises.
   const ids = new Set(BUILTIN_EXERCISES.map(e => e.id));
@@ -336,6 +345,7 @@ function loadState() {
   }
   if (lastError) { storageOK = false; storageProblem = 'unreadable'; }
   else {
+    firstRun = true;
     try { localStorage.setItem('forma-probe', '1'); localStorage.removeItem('forma-probe'); }
     catch { storageOK = false; storageProblem = 'blocked'; }
   }

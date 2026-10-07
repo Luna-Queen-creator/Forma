@@ -518,24 +518,39 @@ function setPending(key, raw) {
 
 // --------------------------------------------------------------- sound ----
 
+// Phones pause a page's sound when another app (music, a call) takes over or Forma goes to the
+// background, and they don't wake it up again by themselves. So every sound first makes sure
+// the audio is running, and any tap or return to Forma during a session wakes it too.
 let audioCtx;
-function initAudio() {
-  try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch { /* no audio */ }
-}
-function tone(freq, length, volume) {
-  if (!audioCtx) return;
+function audio() {
   try {
-    const o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime;
-    o.type = 'sine';
-    o.frequency.value = freq;
-    g.gain.setValueAtTime(volume, t);
-    g.gain.exponentialRampToValueAtTime(0.001, t + length);
-    o.connect(g); g.connect(audioCtx.destination);
-    o.start(); o.stop(t + length);
-  } catch { /* ignore */ }
+    if (!audioCtx || audioCtx.state === 'closed') audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state !== 'running') audioCtx.resume().catch(() => {});
+  } catch { audioCtx = null; }
+  return audioCtx;
 }
-const beep = () => tone(880, 0.14, 0.07);
-const bell = () => tone(660, 1.2, 0.08);
+function initAudio() { audio(); }
+function tone(freq, length, volume, delay = 0) {
+  const ctx = audio();
+  if (!ctx) return;
+  const play = () => {
+    try {
+      const o = ctx.createOscillator(), g = ctx.createGain(), t = ctx.currentTime + delay;
+      o.type = 'sine';
+      o.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(volume, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + length);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(t); o.stop(t + length + 0.05);
+    } catch { /* ignore */ }
+  };
+  if (ctx.state === 'running') play();
+  else ctx.resume().then(play).catch(() => {});
+}
+const beep = () => tone(880, 0.15, 0.12);
+/** A soft bell: a base note with a quieter overtone, loud enough to hear over music. */
+const bell = () => { tone(660, 1.4, 0.2); tone(1320, 0.9, 0.06); tone(1980, 0.5, 0.025); };
 
 // ----------------------------------------------------------- wake lock ----
 

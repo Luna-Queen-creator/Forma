@@ -79,9 +79,11 @@ $('#backup-file').addEventListener('change', async ev => {
 window.addEventListener('pagehide', pauseForBackground);
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) pauseForBackground();
-  else if (session) { if (session.running) accountTime(); renderSession(); }
+  else if (session) { if (session.running) accountTime(); initAudio(); renderSession(); }
   updateWakeLock();
 });
+// Any tap during a session counts as permission to (re)start the sound.
+document.addEventListener('pointerdown', () => { if (session) initAudio(); }, { capture: true, passive: true });
 // Opening or closing any dialog may change what the phone's back button should do.
 for (const id of ['modal', 'picker']) new MutationObserver(syncBackGuard).observe(document.getElementById(id), { attributes: true, attributeFilter: ['open'] });
 matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change', applyTheme);
@@ -92,11 +94,17 @@ loadState();
 applyTheme();
 const recovered = loadSession();
 if (recovered) resumeSession(recovered);
+const sharedText = takeShareFromURL();   // a routine or exercise someone sent (#share=…)
 view = VIEWS[location.hash.slice(1)] ? location.hash.slice(1) : 'week';
 if (storageProblem === 'migrated') save();   // write the upgraded copy; the old key is left untouched
 render();
 handleLaunchAction();
 initPWA();
+if (firstRun) { save(); showWelcome(); }   // saved straight away, so the welcome only ever shows once
+if (sharedText) {
+  if ($('#modal').open) $('#modal').addEventListener('close', () => openIncomingShare(sharedText), { once: true });
+  else openIncomingShare(sharedText);
+}
 
 // --------------------------------------- tools for in-browser AI agents ----
 // Browsers that support WebMCP can let an assistant read the plan and schedule routines.

@@ -14,9 +14,7 @@
   <meta name="apple-mobile-web-app-title" content="Forma">
   <!-- A personal app: ask search engines not to list it. -->
   <meta name="robots" content="noindex, nofollow">
-  <!-- Web fonts load when online; offline the app falls back to system fonts. -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap">
+  <!-- No outside connections: Forma uses fonts bundled with it or the device's own. -->
   <link rel="stylesheet" href="style.css">
   <script>
     // Apply the saved theme before first paint to avoid a flash.
@@ -43,6 +41,7 @@
   <script defer src="js/views/quick.js"></script>
   <script defer src="js/views/progress.js"></script>
   <script defer src="js/views/body.js"></script>
+  <script defer src="js/share.js"></script>
   <script defer src="js/views/settings.js"></script>
   <script defer src="js/player.js"></script>
   <script defer src="js/pwa.js"></script>

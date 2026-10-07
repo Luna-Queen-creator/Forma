@@ -209,7 +209,7 @@ function exerciseDetail(id) {
   if (!e) return;
   showModal(modalHead(e.name) + exerciseInfoHTML(e) + `
     <div class="modal-actions spread"><div class="row">
-      ${e.custom ? `<button class="btn light" data-action="edit-exercise" data-id="${e.id}">Edit</button><button class="btn danger" data-action="delete-exercise" data-id="${e.id}">Delete</button>`
+      ${e.custom ? `<button class="btn light" data-action="edit-exercise" data-id="${e.id}">Edit</button><button class="btn light" data-action="share-exercise" data-id="${e.id}">Share</button><button class="btn danger" data-action="delete-exercise" data-id="${e.id}">Delete</button>`
         : `<button class="btn light" data-action="copy-exercise" data-id="${e.id}" title="Create an editable copy with your own defaults and notes">Make my own version</button>`}</div>
       <div class="row"><button class="btn light" data-action="add-to-routine" data-id="${e.id}">Add to routine</button><button class="btn" data-action="close">Done</button></div></div>`);
 }
