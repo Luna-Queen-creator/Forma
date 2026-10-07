@@ -11,7 +11,9 @@ document.addEventListener('click', ev => {
 
 document.addEventListener('keydown', ev => {
   // Rows that act like buttons (e.g. in tables) respond to Enter.
-  if (ev.key === 'Enter' && ev.target.matches?.('tr[data-action]')) { actions[ev.target.dataset.action]?.(ev.target, ev); return; }
+  if ((ev.key === 'Enter' || (ev.key === ' ' && ev.target.matches?.('g[data-action]'))) && ev.target.matches?.('tr[data-action], g[role=button][data-action]')) {
+    ev.preventDefault(); actions[ev.target.dataset.action]?.(ev.target, ev); return;
+  }
   if (!session || $('#modal').open || $('#picker').open) return;
   const typing = ev.target.closest?.('input,textarea,select,button,summary');
   if (typing) return;
@@ -63,7 +65,7 @@ for (const id of ['modal', 'picker']) {
     else actions.close();
   });
   dlg.addEventListener('cancel', ev => {
-    if (id === 'modal' && guardEditorClose()) ev.preventDefault();
+    if (id === 'modal' && (guardEditorClose() || guardMeasureClose())) ev.preventDefault();
     if (id === 'picker') { ev.preventDefault(); actions['close-picker'](); }
   });
 }

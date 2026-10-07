@@ -1,4 +1,4 @@
-FORMA 0.6
+FORMA 0.7
 
 INSTALL ON YOUR PHONE (recommended)
 1. Open Forma's web address on your phone in Chrome or Samsung Internet.
@@ -23,7 +23,7 @@ BRINGING YOUR DATA ACROSS
 
 SAVING AND PRIVACY
 Everything autosaves in this browser on this device, and nowhere else:
-there is no server and no account. The installed app asks the browser to
+there is no server and no account. Progress photos too. The installed app asks the browser to
 protect its data from automatic clean-up. Back up now and then from
 Settings > App & backups ("Share backup" sends it to Google Drive, email
 and so on). A backup is also how you move your data to another device.
@@ -81,6 +81,22 @@ WHAT'S NEW IN 0.6
   rotation), about 15 minutes each. Alternate them twice a week.
 - The player no longer shows the help line under the controls.
 
+WHAT'S NEW IN 0.7
+- Body: a new tab for weight and body measurements on a figure. Each
+  spot shows your latest number and how it changed (since the start,
+  3 months, 1 month or last time). Tap a spot for its chart and history.
+- Check-ins walk you through weight, each spot, optional photos and a
+  note, one step at a time. Left and right copy each other until you
+  type a different number for one side.
+- Weight chart with a trend line that smooths out daily ups and downs.
+- Customize: choose spots, one side or both, your own extra spots, body
+  fat %, a curvy or straight figure, and measuring days (they appear on
+  My week with a Measure button).
+- Progress photos (front, side, back), stored only on this device, shown
+  side by side to compare. Optional blur; included in backups (can be
+  turned off). Export measurements as CSV.
+- On phones, Settings moved to the gear at the top right.
+
 FOR WHOEVER EDITS THE CODE NEXT
 source/ is the real app and runs as-is: open source/index.html.
 Build with:   python3 build.py
@@ -93,9 +109,11 @@ Build with:   python3 build.py
   source/js/model.js       categories, equipment, templates, routine compiler
   source/js/store.js       saving, loading, validation, v1 migration, backups
   source/js/stats.js       history maths: weekly totals, streaks, records
+  source/js/photos.js      progress photos in IndexedDB (not in the main save)
   source/js/ui.js          routing, dialogs, toasts, icons, body map
   source/js/views/*.js     one file per screen
   source/js/player.js      the session player (also carry-over and notes)
+  source/js/views/body.js  body measurements: figure, charts, check-ins
   source/js/stickers.js    the Kitty theme's drawings and their layout
   tools/palettes.py        the colour themes (Forest is the base tokens in
                            style.css). Edit, then: python3 tools/palettes.py

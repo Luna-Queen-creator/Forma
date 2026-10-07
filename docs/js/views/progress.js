@@ -95,7 +95,7 @@ function showChartTip(col) {
   const [title, total, ...rows] = col.dataset.tip.split('|');
   tip.innerHTML = `<strong>${esc(title)}</strong><span>${esc(total)}</span>${rows.map(r => {
     const g = r.split(':')[0];
-    return `<span><i class="key s${STAT_GROUPS.indexOf(g) + 1}"></i>${esc(r)}</span>`;
+    return `<span>${STAT_GROUPS.includes(g) ? `<i class="key s${STAT_GROUPS.indexOf(g) + 1}"></i>` : ''}${esc(r)}</span>`;
   }).join('')}`;
   tip.hidden = false;
   const box = col.getBoundingClientRect(), outer = wrap.getBoundingClientRect();

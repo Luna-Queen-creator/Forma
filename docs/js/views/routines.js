@@ -304,7 +304,7 @@ function guardEditorClose() {
   });
   return true;
 }
-actions.close = () => { if (!guardEditorClose()) closeModal(); };
+actions.close = () => { if (!guardEditorClose() && !guardMeasureClose()) closeModal(); };
 
 // --------------------------------------------------------------- picker ----
 // A compact version of the library: same search, filters and sorting, details on tap,

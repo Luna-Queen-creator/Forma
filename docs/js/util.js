@@ -84,6 +84,21 @@ function fmtDistance(m) {
   if (!imperial() && m < 1000) return `${Math.round(m)} m`;
   return `${fmtNum(mToDisplay(m), 2)} ${distanceUnit()}`;
 }
+// Body measurements are stored in centimetres.
+const CM_PER_IN = 2.54;
+const lengthUnit = () => (imperial() ? 'in' : 'cm');
+function cmToDisplay(cm) { return imperial() ? cm / CM_PER_IN : cm; }
+function displayToCm(v) { return imperial() ? v * CM_PER_IN : v; }
+function fmtLength(cm) { return `${fmtNum(cmToDisplay(cm), 1)} ${lengthUnit()}`; }
+
+/** Read a typed decimal, accepting a comma ("72,5"). null when empty, NaN when not a number. */
+function parseDecimal(text) {
+  const t = String(text ?? '').trim();
+  if (!t) return null;
+  if (!/^(\d+([.,]\d*)?|[.,]\d+)$/.test(t)) return NaN;
+  return Number(t.replace(',', '.'));
+}
+
 /** Pace as m:ss per km/mi. */
 function fmtPace(seconds, metres) {
   if (!seconds || !metres) return '';

@@ -1,8 +1,8 @@
 # Forma
 
-A personal planner and tracker for strength training, cardio, HIIT, yoga, mobility and meditation, all in one app.
+A personal planner and tracker for strength training, cardio, HIIT, yoga, mobility and meditation, plus body measurements, all in one app.
 
-**Privacy:** Forma has no accounts, no server, no analytics and no tracking. Everything you enter is stored only in your own browser, on your own device. This repository and the published site contain nothing but the app itself. Anyone opening the site gets an empty app with their own private storage.
+**Privacy:** Forma has no accounts, no server, no analytics and no tracking. Everything you enter, including body measurements and progress photos, is stored only in your own browser, on your own device. This repository and the published site contain nothing but the app itself. Anyone opening the site gets an empty app with their own private storage.
 
 ## Use it
 Open the published site on your phone and choose **Install app** (Chrome / Samsung Internet) or **Add to Home Screen** (Safari). It works offline once installed. Back up your data from **Settings → App & backups**.

@@ -1,7 +1,7 @@
 // Settings: units, calendar, theme, session behaviour, equipment and data.
 'use strict';
 
-const APP_VERSION = '0.6';
+const APP_VERSION = '0.7';
 
 renderers.settings = () => {
   const s = state.settings;
@@ -70,22 +70,26 @@ actions.import = () => {
 };
 
 let pendingBackup = null;
+let pendingPhotos = {};
 async function handleBackupFile(file) {
   try {
-    if (file.size > 20e6) throw new Error('Choose a backup smaller than 20 MB.');
+    if (file.size > 300e6) throw new Error('Choose a backup smaller than 300 MB.');
     let parsed;
     try { parsed = JSON.parse(await file.text()); } catch { throw new Error('This file is not a Forma backup (it is not JSON).'); }
     pendingBackup = normalizeState(parsed);
+    pendingPhotos = backupPhotosFrom(parsed.photos);
     const b = pendingBackup;
-    showModal(modalHead('Restore this backup?') + `<p>It contains ${plural(b.routines.length, 'routine')}, ${plural(b.exercises.length, 'custom exercise')}, ${plural(b.schedule.length, 'plan')} and ${plural(b.history.length, 'history entry', 'history entries')}${b.activeSession ? ', plus an unfinished session you can resume' : ''}.</p>
+    const photos = Object.keys(pendingPhotos).length;
+    const body = b.body.entries.length ? `, ${plural(b.body.entries.length, 'body check-in')}${photos ? ` with ${plural(photos, 'photo')}` : ''}` : '';
+    showModal(modalHead('Restore this backup?') + `<p>It contains ${plural(b.routines.length, 'routine')}, ${plural(b.exercises.length, 'custom exercise')}, ${plural(b.schedule.length, 'plan')}, ${plural(b.history.length, 'history entry', 'history entries')}${body}${b.activeSession ? ', plus an unfinished session you can resume' : ''}.</p>
       <p class="note warning">Restoring replaces everything currently saved in this browser. Export first if you want to keep it.</p>
       <div class="modal-actions"><button class="btn light" data-action="export">Export current data</button><button class="btn danger" data-action="confirm-restore">Replace with backup</button></div>`);
   } catch (err) { toast(err.message || 'Could not read this backup.'); }
 }
-actions['confirm-restore'] = () => {
+actions['confirm-restore'] = async () => {
   if (!pendingBackup) return;
-  const b = pendingBackup;
-  pendingBackup = null;
+  const b = pendingBackup, photos = pendingPhotos;
+  pendingBackup = null; pendingPhotos = {};
   const snapshot = b.activeSession;
   delete b.activeSession;
   state = b;
@@ -94,15 +98,18 @@ actions['confirm-restore'] = () => {
   applyTheme();
   if (snapshot) { resumeSession(snapshot); saveSession(); }
   closeModal(); render(); toast('Backup restored.');
+  try { await restorePhotos(photos); render(); }
+  catch { if (Object.keys(photos).length) toast('Backup restored, but its photos could not be stored on this device.'); }
 };
 
 actions['erase-all'] = () => confirmDialog({
   title: 'Erase everything?', yes: 'Erase all data',
-  body: '<p>This deletes all routines, plans, custom exercises, history and settings from this browser. It cannot be undone.</p><p class="note warning">Export a backup first if there is anything you might want back.</p>',
+  body: '<p>This deletes all routines, plans, custom exercises, history, body measurements, photos and settings from this browser. It cannot be undone.</p><p class="note warning">Export a backup first if there is anything you might want back.</p>',
   onYes: () => {
     state = freshState();
     session = null;
     try { [STORAGE_KEY, STORAGE_KEY + '-recovery', SESSION_KEY, LEGACY_KEY, LEGACY_KEY + '-recovery'].forEach(k => localStorage.removeItem(k)); } catch { /* ignore */ }
     save(); applyTheme(); go('week'); toast('All data erased.');
+    photoClearAll().catch(() => {});
   },
 });

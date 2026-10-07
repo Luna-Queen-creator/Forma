@@ -14,6 +14,7 @@ const VIEWS = {
   library: { label: 'Exercises', crumb: 'EXERCISE LIBRARY' },
   quick: { label: 'Quick start', crumb: 'QUICK START' },
   progress: { label: 'Progress', crumb: 'PROGRESS' },
+  body: { label: 'Body', crumb: 'BODY' },
   settings: { label: 'Settings', crumb: 'SETTINGS' },
 };
 const renderers = {};
@@ -57,7 +58,11 @@ function keepHashInStep() {
 function handleBack() {
   if (typeof drag !== 'undefined' && drag) return;
   if ($('#picker').open) { actions['close-picker'](); return; }
-  if ($('#modal').open) { if (pendingConfirm) actions['confirm-no'](); else actions.close(); return; }
+  if ($('#modal').open) {
+    if (pendingConfirm) actions['confirm-no']();
+    else if (!measureStepBack()) actions.close();
+    return;
+  }
   if (session) { exitSession(); return; }
   if (view !== 'week') go('week');
 }
@@ -78,6 +83,7 @@ function render() {
     b.classList.toggle('active', active);
     if (active) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
+  $('.topbar-settings')?.classList.toggle('active', view === 'settings');
   $('#breadcrumb').textContent = VIEWS[view].crumb;
   renderers[view]();
   if (!storageOK || storageProblem) app().insertAdjacentHTML('afterbegin', storageNotice());
@@ -154,6 +160,10 @@ const ICONS = {
   quick: '<circle cx="12" cy="12" r="8.5"/><path d="M10.2 8.6 15.4 12l-5.2 3.4z"/>',
   progress: '<path d="M4 20V11M10 20V5M16 20v-6M2.5 20.5h19"/>',
   settings: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/>',
+  body: '<circle cx="12" cy="4.4" r="2.2"/><path d="M8.3 21l1.3-7.6-1.2-4.1c2.3-1.2 4.9-1.2 7.2 0l-1.2 4.1 1.3 7.6"/><path d="M6.6 12.6c3.5 1.5 7.3 1.5 10.8 0" stroke-dasharray="1.6 1.6"/>',
+  camera: '<path d="M4 8.5h3.2L8.8 6h6.4l1.6 2.5H20v10H4z"/><circle cx="12" cy="13.3" r="3.3"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>',
+  unlink: '<path d="M15.5 12.5 18.7 9.3a4 4 0 0 0-5.66-5.66L10 6.7M8.5 11.5 5.3 14.7a4 4 0 0 0 5.66 5.66L14 17.3M4 4l16 16"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
 };

@@ -44,9 +44,10 @@ function todayPanel() {
   const today = new Date();
   const { plans, logged } = dayItems(today);
   const open = plans.filter(p => !p.done);
+  const bodyItem = measureTodayItem();
   const title = plans.length && !open.length ? 'All done for today. Nicely done.'
     : open.length ? `${plural(open.length, 'session')} planned`
-      : logged.length ? 'You moved today.' : 'Nothing planned yet.';
+      : logged.length ? 'You moved today.' : bodyItem && !bodyEntry(todayKey()) ? 'Measuring day today.' : 'Nothing planned yet.';
   const items = [
     ...plans.map(p => `<div class="today-item ${p.done ? 'done' : ''}">
       <div><strong>${esc(p.routine.name)}</strong><small>${[p.plan.time, `about ${duration(p.routine)} min`, p.routine.category].filter(Boolean).map(esc).join(' · ')}</small></div>
@@ -54,6 +55,7 @@ function todayPanel() {
         : `<button class="btn lime" data-action="start" data-id="${p.routine.id}">Start</button>`}</div>`),
     ...logged.map(h => `<div class="today-item done"><div><strong>${esc(h.name)}</strong><small>${fmtDuration(h.seconds)} · ${esc(h.category)}</small></div>
       <button class="done-badge" data-action="history-detail" data-id="${h.id}">${icon('check')} Logged</button></div>`),
+    bodyItem,
   ].join('');
 
   // The ring covers the current calendar week.
@@ -87,7 +89,7 @@ renderers.week = () => {
         ${icon('check', 'event-check')}${esc(h.name)}<small>${fmtDuration(h.seconds)}${h.distance ? ' · ' + fmtDistance(h.distance) : ''}</small></button>`).join('');
     return `<article class="day ${key === today ? 'today' : ''} ${key < today ? 'past' : ''}">
       <div class="day-label"><span>${weekdayShort(d)}</span><strong>${d.getDate()}</strong></div>
-      ${events}<button class="add-day" data-action="schedule" data-date="${key}" aria-label="Plan a session on ${shortDate(d)}">＋</button></article>`;
+      ${events}${bodyDayMark(d)}<button class="add-day" data-action="schedule" data-date="${key}" aria-label="Plan a session on ${shortDate(d)}">＋</button></article>`;
   }).join('');
 
   const mine = state.routines.slice().sort((a, b) => lastDoneTime(b) - lastDoneTime(a)).slice(0, 3);

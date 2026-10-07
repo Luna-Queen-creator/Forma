@@ -5,8 +5,8 @@
 // installs as a new worker. The page then offers "Update" (it never reloads on its own).
 'use strict';
 
-const VERSION = '774ee3932bc5';
-const PRECACHE = ["index.html", "style.css", "manifest.webmanifest", "js/library.js", "js/main.js", "js/model.js", "js/player.js", "js/pwa.js", "js/stats.js", "js/stickers.js", "js/store.js", "js/ui.js", "js/util.js", "js/views/exercises.js", "js/views/progress.js", "js/views/quick.js", "js/views/routines.js", "js/views/settings.js", "js/views/week.js", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon.svg", "icons/maskable-512.png", "icons/maskable.svg"];
+const VERSION = '835da0e635ea';
+const PRECACHE = ["index.html", "style.css", "manifest.webmanifest", "js/library.js", "js/main.js", "js/model.js", "js/photos.js", "js/player.js", "js/pwa.js", "js/stats.js", "js/stickers.js", "js/store.js", "js/ui.js", "js/util.js", "js/views/body.js", "js/views/exercises.js", "js/views/progress.js", "js/views/quick.js", "js/views/routines.js", "js/views/settings.js", "js/views/week.js", "icons/apple-touch-icon.png", "icons/icon-192.png", "icons/icon-512.png", "icons/icon.svg", "icons/maskable-512.png", "icons/maskable.svg"];
 const APP_CACHE = 'forma-app-' + VERSION;
 const FONT_CACHE = 'forma-fonts';
 

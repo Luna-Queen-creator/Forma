@@ -528,7 +528,7 @@ tr.clickable:hover td { background: var(--surface-2); }
 .stepper { display: flex; align-items: stretch; border: 1px solid var(--line-strong); border-radius: 11px; overflow: hidden; background: var(--surface); }
 .stepper button { width: 46px; font-size: 22px; background: var(--surface-2); }
 .stepper button:hover { background: var(--surface-3); }
-.stepper input { width: 86px; border: 0; border-radius: 0; text-align: center; font-size: 20px; font-weight: 600; min-height: 50px; -moz-appearance: textfield; }
+.stepper input { width: 86px; border: 0; border-radius: 0; padding: 0 4px; text-align: center; font-size: 20px; font-weight: 600; min-height: 50px; -moz-appearance: textfield; }
 .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .step-note { font-style: italic; color: var(--muted); }
 .player-controls { display: flex; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 12px 0 6px; }
@@ -662,6 +662,150 @@ body.in-session .topbar .btn { display: none; }
 }
 @media (display-mode: standalone) and (max-width: 640px) {
   .topbar { height: calc(58px + env(safe-area-inset-top)); }
+}
+
+/* -------------------------------------------------------------- body --- */
+.topbar-actions { display: flex; align-items: center; gap: 8px; }
+.topbar-settings { display: none; width: 38px; height: 38px; place-items: center; padding: 0; }
+.topbar-settings.active { background: var(--surface-3); }
+body.in-session .topbar-settings { display: none !important; }
+.visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; opacity: 0; }
+.danger-text { color: var(--danger); }
+.chips.compact { margin: 2px 0 10px; gap: 6px; }
+.chips.compact .chip { padding: 5px 11px; font-size: 12px; }
+
+.body-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+.body-side { min-width: 0; }
+.body-intro ul { margin: 6px 0 0; }
+.stats.body-stats { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); }
+.body-figure { display: block; width: 100%; max-width: 470px; height: auto; margin: 4px auto 0; overflow: visible; font-family: var(--font); }
+.fig-stroke > * { fill: var(--bm-stroke); stroke: var(--bm-stroke); stroke-width: 4; stroke-linejoin: round; }
+.fig-fill > * { fill: var(--bm-base); }
+.tape { fill: none; stroke: var(--line-strong); stroke-width: 2.4; stroke-linecap: round; }
+.tape.has, .tape.hl { stroke: var(--accent); }
+.tape.hl { stroke-width: 3.6; }
+.tape-back { fill: none; stroke: var(--line-strong); stroke-width: 1.2; stroke-dasharray: 2 3; opacity: .8; }
+.tape-back.has, .tape-back.hl { stroke: var(--accent); opacity: .45; }
+.tape-hit { fill: none; stroke: transparent; stroke-width: 16; }
+.leader { fill: none; stroke: var(--line-strong); stroke-width: 1; }
+.leader-dot { fill: var(--line-strong); }
+.fl.has .leader-dot { fill: var(--accent); }
+.fl { cursor: pointer; outline: none; }
+.fl-hit { fill: transparent; }
+.fl:hover .fl-hit { fill: var(--surface-2); }
+.fl:focus-visible .fl-hit { fill: var(--surface-2); stroke: var(--focus); stroke-width: 2; }
+.fl:hover .tape, .fl:focus-visible .tape { stroke-width: 3.6; }
+.fl-name { font-size: 11.5px; fill: var(--muted); }
+.fl-val { font-size: 15px; fill: var(--ink-strong); }
+.fl-num { font-weight: 700; }
+.fl-unit { font-size: 11px; fill: var(--muted); }
+.fl-delta { font-size: 11.5px; font-weight: 600; fill: var(--ink); }
+.fl-add { font-size: 12.5px; font-weight: 600; fill: var(--focus); }
+.fig-side { font-size: 9px; letter-spacing: .14em; fill: var(--muted); }
+.own-spots { margin-top: 16px; display: grid; gap: 6px; }
+.own-spots h3 { font-size: 14px; margin: 0 0 2px; }
+.own-spot { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; text-align: left; width: 100%; }
+.own-spot:hover { background: var(--surface-2); }
+.own-name { font-weight: 600; font-size: 14px; }
+.own-vals { display: flex; gap: 14px; font-size: 14px; flex-wrap: wrap; justify-content: flex-end; }
+.how-measure { margin-top: 16px; border-top: 1px solid var(--line); padding-top: 10px; }
+.how-measure summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+.how-measure ul { margin: 8px 0 0; padding-left: 18px; color: var(--muted); }
+.how-measure li { margin-bottom: 4px; }
+.dot.body-dot { background: var(--accent); }
+.history-list.compact .history-row { padding: 10px 14px; }
+.event.body-mark { background: transparent; border: 1px dashed var(--line-strong); color: var(--muted); }
+.event.body-mark.done { border-style: solid; background: var(--surface-2); color: var(--ink); opacity: 1; }
+.event.body-mark .event-check { color: currentColor; }
+.event.body-mark.done .event-check { color: var(--good); }
+
+/* Line charts (weight, spots). */
+.line-chart .lc { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.line-chart .lc.b { stroke: var(--bm-primary); stroke-dasharray: 5 4; }
+.line-chart .lc.trend { stroke-width: 3; }
+.line-chart .ld { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+.line-chart .ld.b { stroke: var(--bm-primary); }
+.line-chart .ld.dots { fill: var(--bm-secondary); stroke: var(--surface); stroke-width: 1; }
+.line-chart .hover-line { stroke: var(--line-strong); stroke-width: 1; opacity: 0; }
+.line-chart .col:hover .hover-line, .line-chart .col:focus-visible .hover-line { opacity: 1; }
+.key.dot-key { border-radius: 50%; background: var(--bm-secondary); }
+.key.line-key { width: 16px; height: 3px; border-radius: 2px; background: var(--accent); }
+.key.line-key.b { background: repeating-linear-gradient(90deg, var(--bm-primary) 0 5px, transparent 5px 8px); }
+.spot-table td:first-child { white-space: nowrap; }
+
+/* Check-in steps. */
+.m-progress { display: flex; gap: 4px; margin: -8px 0 14px; }
+.m-dot { flex: 1; min-width: 0; height: 22px; padding: 8px 0; background: var(--surface-3); background-clip: content-box; border-radius: 4px; }
+.m-dot.filled { background-color: color-mix(in srgb, var(--accent) 40%, var(--surface-3)); }
+.m-dot.on { background-color: var(--accent); }
+.m-step { min-height: 160px; }
+.m-spot { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 18px; align-items: start; }
+.m-figure { background: var(--surface-2); border-radius: 14px; padding: 8px 6px; }
+.mini-figure { display: block; width: 100%; height: auto; }
+.own-badge { display: grid; place-items: center; aspect-ratio: 3 / 5; color: var(--muted); }
+.own-badge .icon { width: 44px; height: 44px; }
+.m-hint { margin: 0 0 14px; }
+.m-date { max-width: 220px; }
+.m-fields { display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: flex-end; }
+.m-fields.pair { flex-direction: column; align-items: flex-start; gap: 6px; }
+.m-field { display: grid; grid-template-columns: auto auto; justify-content: start; align-items: center; gap: 5px 8px; margin-bottom: 4px; }
+.m-field .stepper input { width: 76px; }
+.m-label { grid-column: 1 / -1; font-size: 12px; font-weight: 600; color: var(--muted); margin: 0; }
+.m-unit { font-size: 13px; color: var(--muted); }
+.m-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 4px 11px 4px 9px; border-radius: 20px; border: 1px dashed var(--line-strong); color: var(--muted); margin-left: 40px; }
+.m-link .icon { width: 15px; height: 15px; }
+.m-link.on { border-style: solid; border-color: var(--line); background: var(--surface-2); color: var(--ink); }
+.m-last { margin: 12px 0 0; }
+.m-last strong { color: var(--ink); }
+
+/* Photos. */
+.photo-slots { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 12px 0; }
+.photo-slot { display: grid; gap: 4px; justify-items: center; }
+.photo-pose { font-size: 12px; font-weight: 600; }
+.photo-frame { position: relative; display: block; width: 100%; aspect-ratio: 3 / 4; border-radius: 12px; overflow: hidden; background: var(--surface-2); border: 1px solid var(--line); padding: 0; margin: 0; cursor: pointer; }
+.photo-frame.empty { display: grid; place-items: center; border: 1.5px dashed var(--line-strong); }
+.photo-frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.photo-add { display: grid; justify-items: center; gap: 4px; color: var(--muted); font-size: 13px; font-weight: 600; }
+.photo-add .icon { width: 26px; height: 26px; }
+.photo-veil { display: none; position: absolute; inset: 0; place-items: center; font-size: 12px; font-weight: 600; color: var(--ink); }
+.photo-frame.blurred img { filter: blur(18px); transform: scale(1.12); }
+.photo-frame.blurred:not(.revealed) .photo-veil { display: grid; }
+.photo-frame.blurred.revealed img { filter: none; transform: none; }
+.photo-frame.missing img { visibility: hidden; }
+.photo-frame.missing::after { content: 'Not on this device'; position: absolute; inset: 0; display: grid; place-items: center; padding: 8px; font-size: 12px; color: var(--muted); text-align: center; }
+.photo-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.photo-row figure { margin: 0; display: grid; gap: 4px; }
+.photo-row figcaption { font-size: 12px; color: var(--muted); text-align: center; }
+.photo-strip { display: flex; flex-wrap: wrap; gap: 2px 14px; margin-top: 10px; }
+.photo-strip .text-btn { font-size: 13px; }
+.compare-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.compare-col { display: grid; gap: 8px; align-content: start; }
+
+/* Customize. */
+.customize h3 { margin: 24px 0 6px; font-size: 16px; }
+.customize > h3:first-child { margin-top: 0; }
+.customize .label { margin-top: 12px; }
+.side-rows { display: grid; gap: 8px; margin-top: 8px; }
+.side-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 14px; }
+.own-list { display: grid; gap: 2px; margin-bottom: 10px; }
+.own-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--line); }
+.own-item .checkrow { margin: 8px 0; }
+.own-add { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.own-add input[type="text"] { flex: 1; min-width: 160px; width: auto; }
+.own-add .checkrow { margin: 0; }
+
+@media (max-width: 1180px) { .body-grid { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .topbar-settings { display: grid; }
+  .sidebar nav .nav-settings { display: none; }
+  .m-spot { grid-template-columns: 84px minmax(0, 1fr); gap: 12px; }
+  .m-field .stepper input { width: 68px; }
+  .m-figure { padding: 4px 2px; }
+  .m-link { margin-left: 30px; }
+  .compare-grid { gap: 8px; }
+  .photo-slots, .photo-row { gap: 8px; }
+  .stats.body-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .stats.body-stats .stat:last-child:nth-child(odd) { grid-column: span 2; }
 }
 
 /* ------------------------------------------------- app feel (no select) --- */
@@ -849,7 +993,8 @@ main { position: relative; z-index: 1; }
       <button data-view="library"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg><span>Exercises</span></button>
       <button data-view="quick"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M10.2 8.6 15.4 12l-5.2 3.4z"/></svg><span>Quick start</span></button>
       <button data-view="progress"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M2.5 20.5h19"/></svg><span>Progress</span></button>
-      <button data-view="settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg><span>Settings</span></button>
+      <button data-view="body"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.4" r="2.2"/><path d="M8.3 21l1.3-7.6-1.2-4.1c2.3-1.2 4.9-1.2 7.2 0l-1.2 4.1 1.3 7.6"/><path d="M6.6 12.6c3.5 1.5 7.3 1.5 10.8 0" stroke-dasharray="1.6 1.6"/></svg><span>Body</span></button>
+      <button data-view="settings" class="nav-settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg><span>Settings</span></button>
     </nav>
     <div class="side-bottom">
       <div class="save-badge" data-save-status>Saved on this device</div>
@@ -860,7 +1005,8 @@ main { position: relative; z-index: 1; }
   <main>
     <header class="topbar">
       <span id="breadcrumb">MY WEEK</span>
-      <button class="btn small light" data-action="log-activity">+ Log activity</button>
+      <div class="topbar-actions"><button class="btn small light" data-action="log-activity">+ Log activity</button>
+        <button class="icon-btn topbar-settings" data-view="settings" aria-label="Settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg></button></div>
     </header>
     <div id="app"></div>
     <footer>Make room for movement. Make it your own.</footer>
@@ -1197,6 +1343,21 @@ function fmtDistance(m) {
   if (!imperial() && m < 1000) return `${Math.round(m)} m`;
   return `${fmtNum(mToDisplay(m), 2)} ${distanceUnit()}`;
 }
+// Body measurements are stored in centimetres.
+const CM_PER_IN = 2.54;
+const lengthUnit = () => (imperial() ? 'in' : 'cm');
+function cmToDisplay(cm) { return imperial() ? cm / CM_PER_IN : cm; }
+function displayToCm(v) { return imperial() ? v * CM_PER_IN : v; }
+function fmtLength(cm) { return `${fmtNum(cmToDisplay(cm), 1)} ${lengthUnit()}`; }
+
+/** Read a typed decimal, accepting a comma ("72,5"). null when empty, NaN when not a number. */
+function parseDecimal(text) {
+  const t = String(text ?? '').trim();
+  if (!t) return null;
+  if (!/^(\d+([.,]\d*)?|[.,]\d+)$/.test(t)) return NaN;
+  return Number(t.replace(',', '.'));
+}
+
 /** Pace as m:ss per km/mi. */
 function fmtPace(seconds, metres) {
   if (!seconds || !metres) return '';
@@ -1249,6 +1410,28 @@ const GEAR = ['Mat', 'Chair or bench', 'Wall or support', 'Yoga props', 'Dumbbel
   'Squat rack', 'Weight bench', 'Resistance band', 'Pull-up bar', 'Dip bars', 'Rings / suspension',
   'Cable / machines', 'Cardio machine', 'Bike', 'Pool', 'Box or step', 'Jump rope', 'Battle ropes'];
 const DEFAULT_GEAR = ['Mat', 'Chair or bench', 'Wall or support'];
+
+/**
+ * Body measurement spots. Paired spots are stored per side as "<id>-r" and "<id>-l".
+ * `col` is the side of the figure a centre spot's label sits on.
+ */
+const BODY_SPOTS = [
+  { id: 'neck', name: 'Neck', group: 'Upper body', col: 'r', hint: 'Around the middle of the neck, tape level, without pressing.' },
+  { id: 'shoulders', name: 'Shoulders', group: 'Upper body', col: 'l', hint: 'Around the widest part of both shoulders, arms relaxed at your sides.' },
+  { id: 'chest', name: 'Chest / bust', group: 'Upper body', col: 'r', hint: 'Around the fullest part of the chest, tape level under the arms. Breathe normally.' },
+  { id: 'underbust', name: 'Under-bust', group: 'Upper body', col: 'l', hint: 'Snug, directly under the chest, where a bra band sits.' },
+  { id: 'arm', name: 'Upper arm', group: 'Arms', paired: true, hint: 'Halfway between shoulder and elbow, arm hanging relaxed.' },
+  { id: 'forearm', name: 'Forearm', group: 'Arms', paired: true, hint: 'The widest part, just below the elbow, arm relaxed.' },
+  { id: 'waist', name: 'Waist', group: 'Middle', col: 'r', hint: 'The narrowest point, usually a little above the belly button. Breathe out normally, don’t pull in.' },
+  { id: 'belly', name: 'Belly', group: 'Middle', col: 'l', hint: 'Around the belly button, standing relaxed, after a normal breath out.' },
+  { id: 'hips', name: 'Hips & glutes', group: 'Middle', col: 'r', hint: 'The widest point of the glutes, feet together.' },
+  { id: 'thigh', name: 'Upper thigh', group: 'Legs', paired: true, hint: 'Just below the glute fold, standing with weight on both legs.' },
+  { id: 'midthigh', name: 'Mid thigh', group: 'Legs', paired: true, hint: 'Halfway between the hip crease and the top of the kneecap.' },
+  { id: 'calf', name: 'Calf', group: 'Legs', paired: true, hint: 'The widest part of the calf, standing with weight on both feet.' },
+];
+const BODY_SPOT_IDS = BODY_SPOTS.map(s => s.id);
+const DEFAULT_BODY_SPOTS = ['chest', 'arm', 'waist', 'belly', 'hips', 'thigh', 'calf'];
+const PHOTO_POSES = ['front', 'side', 'back'];
 
 const SECTIONS = ['Warm-up', 'Main', 'Cool-down'];
 const SIDES = ['Not applicable', 'Both sides', 'Alternating', 'Left', 'Right'];
@@ -1540,8 +1723,24 @@ const DEFAULT_SETTINGS = {
   lastBackupAt: '',       // when a backup was last exported or shared
 };
 
+/** Body tracking: which spots to measure, preferences, and one entry per measured day. */
+function freshBody() {
+  return {
+    spots: [...DEFAULT_BODY_SPOTS],   // measured spots, built-in ids and custom ids
+    sides: {},                       // paired spot id -> 'both' | 'right' | 'left'
+    custom: [],                      // your own spots: { id, name, paired }
+    figure: 'curvy',                 // 'curvy' | 'straight'
+    fat: false,                      // also track body fat %
+    photos: true,                    // offer progress photos
+    blur: false,                     // blur photos until tapped
+    backupPhotos: true,              // put photos into backups
+    days: [],                        // weekdays (0 = Sunday) shown as measuring days on My week
+    entries: [],                     // { date, weight (kg), fat (%), m: { key: cm }, photos: { pose: id }, note }
+  };
+}
+
 function freshState() {
-  return { version: 2, settings: structuredClone(DEFAULT_SETTINGS), exercises: [], routines: [], schedule: [], history: [] };
+  return { version: 2, settings: structuredClone(DEFAULT_SETTINGS), exercises: [], routines: [], schedule: [], history: [], body: freshBody() };
 }
 
 let state = freshState();
@@ -1709,8 +1908,69 @@ function normalizeState(raw) {
   }
   out.history.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 
+  // Body measurements (added in 0.7; older backups simply have none).
+  if (s.body !== undefined) out.body = normalizeBody(s.body, fail);
+
   // An unfinished session (backups include one; version 1 kept it inside the state).
   if (s.activeSession) out.activeSession = normalizeSession(s.activeSession, checkExercise, checkSet, fail);
+  return out;
+}
+
+function normalizeBody(b, fail) {
+  const str = (x, n) => typeof x === 'string' && x.length <= n;
+  const num = (x, min, max) => Number.isFinite(x) && x >= min && x <= max;
+  const idOk = x => str(x, 100) && /^[a-zA-Z0-9_-]+$/.test(x);
+  const bool = (x, d) => (typeof x === 'boolean' ? x : d);
+  if (!b || typeof b !== 'object') fail('the body measurements are invalid');
+  const out = freshBody();
+  const custom = Array.isArray(b.custom) ? b.custom : [];
+  if (custom.length > 40) fail('there are too many custom body spots');
+  for (const c of custom) {
+    if (!c || !idOk(c.id) || !c.id.startsWith('c-') || !str(c.name, 40) || !c.name.trim() || out.custom.some(x => x.id === c.id)) fail('a custom body spot is invalid');
+    out.custom.push({ id: c.id, name: c.name.trim(), paired: c.paired === true });
+  }
+  const known = new Set([...BODY_SPOT_IDS, ...out.custom.map(c => c.id)]);
+  if (Array.isArray(b.spots)) out.spots = [...new Set(b.spots.filter(id => known.has(id)))];
+  const pairedIds = [...BODY_SPOTS.filter(s => s.paired).map(s => s.id), ...out.custom.filter(c => c.paired).map(c => c.id)];
+  for (const id of pairedIds) if (['both', 'right', 'left'].includes(b.sides?.[id])) out.sides[id] = b.sides[id];
+  out.figure = b.figure === 'straight' ? 'straight' : 'curvy';
+  out.fat = bool(b.fat, false); out.photos = bool(b.photos, true); out.blur = bool(b.blur, false); out.backupPhotos = bool(b.backupPhotos, true);
+  out.days = Array.isArray(b.days) ? [...new Set(b.days.filter(d => Number.isInteger(d) && d >= 0 && d <= 6))].sort() : [];
+  const entries = Array.isArray(b.entries) ? b.entries : [];
+  if (entries.length > 20000) fail('there are too many body measurements');
+  const dates = new Set();
+  for (const e of entries) {
+    if (!e || !isValidDateKey(e.date) || dates.has(e.date)) fail('a body measurement has an invalid or repeated date');
+    dates.add(e.date);
+    const entry = { date: e.date, m: {} };
+    if (e.weight !== undefined && e.weight !== null) { if (!num(e.weight, 20, 400)) fail(`the weight on ${e.date} is out of range`); entry.weight = e.weight; }
+    if (e.fat !== undefined && e.fat !== null) { if (!num(e.fat, 1, 75)) fail(`the body fat on ${e.date} is out of range`); entry.fat = e.fat; }
+    const m = e.m ?? {};
+    if (typeof m !== 'object' || Array.isArray(m) || Object.keys(m).length > 200) fail(`the measurements on ${e.date} are invalid`);
+    for (const [k, v] of Object.entries(m)) {
+      if (!/^[a-zA-Z0-9_-]{1,100}$/.test(k) || !num(v, 3, 400)) fail(`a measurement on ${e.date} is invalid`);
+      entry.m[k] = v;
+    }
+    if (e.photos !== undefined && e.photos !== null) {
+      if (typeof e.photos !== 'object' || !Object.entries(e.photos).every(([p, id]) => PHOTO_POSES.includes(p) && idOk(id))) fail(`the photos on ${e.date} are invalid`);
+      if (Object.keys(e.photos).length) entry.photos = { ...e.photos };
+    }
+    if (e.note !== undefined && e.note !== null) { if (!str(e.note, 1000)) fail(`the note on ${e.date} is too long`); if (e.note.trim()) entry.note = e.note.trim(); }
+    out.entries.push(entry);
+  }
+  out.entries.sort((x, y) => x.date.localeCompare(y.date));
+  return out;
+}
+
+/** Photos inside a backup file: { id: "data:image/jpeg;base64,…" }. Invalid ones are dropped. */
+function backupPhotosFrom(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [id, url] of Object.entries(raw).slice(0, 5000)) {
+    if (!/^[a-zA-Z0-9_-]{1,100}$/.test(id) || typeof url !== 'string' || url.length > 20e6) continue;
+    const head = /^data:image\/(jpeg|png|webp);base64,/.exec(url);
+    if (head && /^[A-Za-z0-9+/]+={0,2}$/.test(url.slice(head[0].length))) out[id] = url;
+  }
   return out;
 }
 
@@ -1818,11 +2078,16 @@ function updateSaveBadges() {
 
 // ------------------------------------------------------------- backups ----
 
-function backupText() {
+/** The whole backup as text. Progress photos are added from the photo store when wanted. */
+async function backupText() {
   if (session) { accountTime(); saveSession(); }
   const data = { ...state, exportedAt: new Date().toISOString(), app: 'Forma' };
   if (session && !session.isDemo) data.activeSession = sessionSnapshot();
-  return JSON.stringify(data, null, 2);
+  const ids = state.body.backupPhotos ? usedPhotoIds() : [];
+  if (ids.length) {
+    try { data.photos = await photosAsDataURLs(ids); } catch { toast('The photos could not be read, so this backup has none.'); }
+  }
+  return JSON.stringify(data, null, ids.length ? 0 : 2);
 }
 const backupName = () => `forma-backup-${todayKey()}.json`;
 
@@ -1831,8 +2096,8 @@ function markBackedUp() {
   save();
 }
 
-function exportBackup() {
-  download(backupName(), backupText(), 'application/json');
+async function exportBackup() {
+  download(backupName(), await backupText(), 'application/json');
   markBackedUp();
   toast('Backup downloaded. Keep it somewhere safe.');
 }
@@ -1842,7 +2107,7 @@ function canShareFiles() {
   try { return !!navigator.canShare?.({ files: [new File(['{}'], 'test.json', { type: 'application/json' })] }); } catch { return false; }
 }
 async function shareBackup() {
-  const file = new File([backupText()], backupName(), { type: 'application/json' });
+  const file = new File([await backupText()], backupName(), { type: 'application/json' });
   try {
     await navigator.share({ files: [file], title: 'Forma backup' });
     markBackedUp();
@@ -2031,6 +2296,165 @@ function newRecords(entry) {
 }
 
 </script>
+<script>/* js/photos.js */
+// Progress photos. They are too big for the main save, so they live in the browser's
+// IndexedDB on this device; the saved data only keeps their ids. Nothing is uploaded.
+'use strict';
+
+const PHOTO_DB = 'forma-photos';
+let photoDBPromise = null;
+const photoURLs = new Map();   // id -> object URL for showing on screen
+
+function openPhotoDB() {
+  if (!photoDBPromise) {
+    photoDBPromise = new Promise((resolve, reject) => {
+      if (!window.indexedDB) { reject(new Error('This browser cannot store photos.')); return; }
+      const req = indexedDB.open(PHOTO_DB, 1);
+      req.onupgradeneeded = () => req.result.createObjectStore('photos');
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error || new Error('Photo storage is not available.'));
+      req.onblocked = () => reject(new Error('Photo storage is busy. Close other Forma tabs and try again.'));
+    });
+    photoDBPromise.catch(() => { photoDBPromise = null; });
+  }
+  return photoDBPromise;
+}
+const idbDone = tx => new Promise((resolve, reject) => { tx.oncomplete = () => resolve(); tx.onerror = tx.onabort = () => reject(tx.error); });
+const idbResult = req => new Promise((resolve, reject) => { req.onsuccess = () => resolve(req.result); req.onerror = () => reject(req.error); });
+
+async function photoGet(id) {
+  const db = await openPhotoDB();
+  return idbResult(db.transaction('photos').objectStore('photos').get(id));
+}
+async function photoPutMany(map) {   // { id: Blob }
+  const db = await openPhotoDB();
+  const tx = db.transaction('photos', 'readwrite');
+  for (const [id, blob] of Object.entries(map)) tx.objectStore('photos').put(blob, id);
+  return idbDone(tx);
+}
+async function photoDeleteMany(ids) {
+  if (!ids.length) return;
+  const db = await openPhotoDB();
+  const tx = db.transaction('photos', 'readwrite');
+  for (const id of ids) { tx.objectStore('photos').delete(id); forgetPhotoURL(id); }
+  return idbDone(tx);
+}
+async function photoKeys() {
+  const db = await openPhotoDB();
+  return idbResult(db.transaction('photos').objectStore('photos').getAllKeys());
+}
+async function photoStats() {
+  const db = await openPhotoDB();
+  const all = await idbResult(db.transaction('photos').objectStore('photos').getAll());
+  return { count: all.length, bytes: sum(all, b => b?.size || 0) };
+}
+async function photoClearAll() {
+  const db = await openPhotoDB();
+  const tx = db.transaction('photos', 'readwrite');
+  tx.objectStore('photos').clear();
+  photoURLs.forEach(url => URL.revokeObjectURL(url));
+  photoURLs.clear();
+  return idbDone(tx);
+}
+function forgetPhotoURL(id) {
+  const url = photoURLs.get(id);
+  if (url) { URL.revokeObjectURL(url); photoURLs.delete(id); }
+}
+
+/** Every photo id the body entries refer to. */
+function usedPhotoIds() {
+  return [...new Set(state.body.entries.flatMap(e => Object.values(e.photos || {})))];
+}
+
+/** Remove stored photos that no entry refers to any more (after deletes and restores). */
+async function prunePhotos() {
+  try {
+    const used = new Set(usedPhotoIds());
+    await photoDeleteMany((await photoKeys()).filter(id => !used.has(id)));
+  } catch { /* nothing stored, or storage unavailable */ }
+}
+
+/** Fill <img data-photo-id> elements inside root with the stored photos. */
+async function hydratePhotos(root = document) {
+  for (const img of $$('img[data-photo-id]', root)) {
+    const id = img.dataset.photoId;
+    if (img.dataset.loaded === id) continue;
+    img.dataset.loaded = id;
+    try {
+      let url = photoURLs.get(id);
+      if (!url) {
+        const blob = await photoGet(id);
+        if (!blob) throw new Error('missing');
+        url = URL.createObjectURL(blob);
+        photoURLs.set(id, url);
+      }
+      img.src = url;
+    } catch {
+      img.closest('.photo-frame')?.classList.add('missing');
+      img.alt = 'Photo not on this device';
+    }
+  }
+}
+
+// ------------------------------------------------------------ resizing ----
+
+/** Shrink a camera photo to at most `max` pixels on its long side as a JPEG (about 100–200 KB). */
+async function shrinkPhoto(file, max = 1080, quality = 0.8) {
+  if (!file || !/^image\//.test(file.type || 'image/')) throw new Error('Choose a photo.');
+  let source;
+  try { source = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch {
+    source = await new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = () => reject(new Error('This photo could not be opened.'));
+      img.src = URL.createObjectURL(file);
+    });
+  }
+  const w0 = source.width, h0 = source.height;
+  if (!w0 || !h0) throw new Error('This photo could not be opened.');
+  const scale = Math.min(1, max / Math.max(w0, h0));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(w0 * scale);
+  canvas.height = Math.round(h0 * scale);
+  canvas.getContext('2d').drawImage(source, 0, 0, canvas.width, canvas.height);
+  source.close?.();
+  return new Promise((resolve, reject) => canvas.toBlob(b => (b ? resolve(b) : reject(new Error('This photo could not be saved.'))), 'image/jpeg', quality));
+}
+
+// ------------------------------------------------------------- backups ----
+
+const blobToDataURL = blob => new Promise((resolve, reject) => {
+  const r = new FileReader();
+  r.onload = () => resolve(r.result);
+  r.onerror = () => reject(r.error);
+  r.readAsDataURL(blob);
+});
+function dataURLToBlob(url) {
+  const comma = url.indexOf(',');
+  const type = url.slice(5, url.indexOf(';'));
+  const bin = atob(url.slice(comma + 1));
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new Blob([bytes], { type });
+}
+async function photosAsDataURLs(ids) {
+  const out = {};
+  for (const id of ids) {
+    const blob = await photoGet(id);
+    if (blob) out[id] = await blobToDataURL(blob);
+  }
+  return out;
+}
+/** After a restore: store the backup's photos, then drop any the restored data no longer uses. */
+async function restorePhotos(map) {
+  const blobs = {};
+  for (const [id, url] of Object.entries(map)) blobs[id] = dataURLToBlob(url);
+  if (Object.keys(blobs).length) await photoPutMany(blobs);
+  await prunePhotos();
+}
+
+</script>
 <script>/* js/stickers.js */
 // Kitty theme stickers: small original drawings scattered behind the content,
 // plus a kitten peeking over the "Today" card. Only rendered when the Kitty theme is on.
@@ -2171,6 +2595,7 @@ const VIEWS = {
   library: { label: 'Exercises', crumb: 'EXERCISE LIBRARY' },
   quick: { label: 'Quick start', crumb: 'QUICK START' },
   progress: { label: 'Progress', crumb: 'PROGRESS' },
+  body: { label: 'Body', crumb: 'BODY' },
   settings: { label: 'Settings', crumb: 'SETTINGS' },
 };
 const renderers = {};
@@ -2214,7 +2639,11 @@ function keepHashInStep() {
 function handleBack() {
   if (typeof drag !== 'undefined' && drag) return;
   if ($('#picker').open) { actions['close-picker'](); return; }
-  if ($('#modal').open) { if (pendingConfirm) actions['confirm-no'](); else actions.close(); return; }
+  if ($('#modal').open) {
+    if (pendingConfirm) actions['confirm-no']();
+    else if (!measureStepBack()) actions.close();
+    return;
+  }
   if (session) { exitSession(); return; }
   if (view !== 'week') go('week');
 }
@@ -2235,6 +2664,7 @@ function render() {
     b.classList.toggle('active', active);
     if (active) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current');
   });
+  $('.topbar-settings')?.classList.toggle('active', view === 'settings');
   $('#breadcrumb').textContent = VIEWS[view].crumb;
   renderers[view]();
   if (!storageOK || storageProblem) app().insertAdjacentHTML('afterbegin', storageNotice());
@@ -2311,6 +2741,10 @@ const ICONS = {
   quick: '<circle cx="12" cy="12" r="8.5"/><path d="M10.2 8.6 15.4 12l-5.2 3.4z"/>',
   progress: '<path d="M4 20V11M10 20V5M16 20v-6M2.5 20.5h19"/>',
   settings: '<path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/>',
+  body: '<circle cx="12" cy="4.4" r="2.2"/><path d="M8.3 21l1.3-7.6-1.2-4.1c2.3-1.2 4.9-1.2 7.2 0l-1.2 4.1 1.3 7.6"/><path d="M6.6 12.6c3.5 1.5 7.3 1.5 10.8 0" stroke-dasharray="1.6 1.6"/>',
+  camera: '<path d="M4 8.5h3.2L8.8 6h6.4l1.6 2.5H20v10H4z"/><circle cx="12" cy="13.3" r="3.3"/>',
+  link: '<path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/>',
+  unlink: '<path d="M15.5 12.5 18.7 9.3a4 4 0 0 0-5.66-5.66L10 6.7M8.5 11.5 5.3 14.7a4 4 0 0 0 5.66 5.66L14 17.3M4 4l16 16"/>',
   plus: '<path d="M12 5v14M5 12h14"/>',
   check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
 };
@@ -2409,9 +2843,10 @@ function todayPanel() {
   const today = new Date();
   const { plans, logged } = dayItems(today);
   const open = plans.filter(p => !p.done);
+  const bodyItem = measureTodayItem();
   const title = plans.length && !open.length ? 'All done for today. Nicely done.'
     : open.length ? `${plural(open.length, 'session')} planned`
-      : logged.length ? 'You moved today.' : 'Nothing planned yet.';
+      : logged.length ? 'You moved today.' : bodyItem && !bodyEntry(todayKey()) ? 'Measuring day today.' : 'Nothing planned yet.';
   const items = [
     ...plans.map(p => `<div class="today-item ${p.done ? 'done' : ''}">
       <div><strong>${esc(p.routine.name)}</strong><small>${[p.plan.time, `about ${duration(p.routine)} min`, p.routine.category].filter(Boolean).map(esc).join(' · ')}</small></div>
@@ -2419,6 +2854,7 @@ function todayPanel() {
         : `<button class="btn lime" data-action="start" data-id="${p.routine.id}">Start</button>`}</div>`),
     ...logged.map(h => `<div class="today-item done"><div><strong>${esc(h.name)}</strong><small>${fmtDuration(h.seconds)} · ${esc(h.category)}</small></div>
       <button class="done-badge" data-action="history-detail" data-id="${h.id}">${icon('check')} Logged</button></div>`),
+    bodyItem,
   ].join('');
 
   // The ring covers the current calendar week.
@@ -2452,7 +2888,7 @@ renderers.week = () => {
         ${icon('check', 'event-check')}${esc(h.name)}<small>${fmtDuration(h.seconds)}${h.distance ? ' · ' + fmtDistance(h.distance) : ''}</small></button>`).join('');
     return `<article class="day ${key === today ? 'today' : ''} ${key < today ? 'past' : ''}">
       <div class="day-label"><span>${weekdayShort(d)}</span><strong>${d.getDate()}</strong></div>
-      ${events}<button class="add-day" data-action="schedule" data-date="${key}" aria-label="Plan a session on ${shortDate(d)}">＋</button></article>`;
+      ${events}${bodyDayMark(d)}<button class="add-day" data-action="schedule" data-date="${key}" aria-label="Plan a session on ${shortDate(d)}">＋</button></article>`;
   }).join('');
 
   const mine = state.routines.slice().sort((a, b) => lastDoneTime(b) - lastDoneTime(a)).slice(0, 3);
@@ -2923,7 +3359,7 @@ function guardEditorClose() {
   });
   return true;
 }
-actions.close = () => { if (!guardEditorClose()) closeModal(); };
+actions.close = () => { if (!guardEditorClose() && !guardMeasureClose()) closeModal(); };
 
 // --------------------------------------------------------------- picker ----
 // A compact version of the library: same search, filters and sorting, details on tap,
@@ -3811,7 +4247,7 @@ function showChartTip(col) {
   const [title, total, ...rows] = col.dataset.tip.split('|');
   tip.innerHTML = `<strong>${esc(title)}</strong><span>${esc(total)}</span>${rows.map(r => {
     const g = r.split(':')[0];
-    return `<span><i class="key s${STAT_GROUPS.indexOf(g) + 1}"></i>${esc(r)}</span>`;
+    return `<span>${STAT_GROUPS.includes(g) ? `<i class="key s${STAT_GROUPS.indexOf(g) + 1}"></i>` : ''}${esc(r)}</span>`;
   }).join('')}`;
   tip.hidden = false;
   const box = col.getBoundingClientRect(), outer = wrap.getBoundingClientRect();
@@ -3925,11 +4361,1006 @@ actions['delete-entry'] = el => {
 };
 
 </script>
+<script>/* js/views/body.js */
+// Body: measurements on a figure, weight with a trend line, and optional progress photos.
+// Measurements are stored in cm, weight in kg; one entry per day in state.body.entries.
+'use strict';
+
+let bodyCompare = 'start';   // what the changes on the figure compare with: start | 90 | 30 | last
+let weightRange = '90';      // days shown on the weight chart, or 'all'
+
+const bodyEntry = date => state.body.entries.find(e => e.date === date);
+const SIDE_NAMES = { r: 'Right', l: 'Left' };
+const COMPARE_ORDER = ['start', '90', '30', 'last'];
+const COMPARE_LABELS = { start: 'Start', 90: '3 months', 30: '1 month', last: 'Last' };
+const COMPARE_CAPTION = { start: 'since start', 90: 'over 3 months', 30: 'over 1 month', last: 'since last time' };
+let bodyHistoryLimit = 8;
+
+// ------------------------------------------------------------ spots ----
+
+function spotDef(id) { return BODY_SPOTS.find(s => s.id === id) || state.body.custom.find(c => c.id === id); }
+/** Spots being measured, in figure order (built-in first, then your own). */
+function activeSpots() {
+  const on = new Set(state.body.spots);
+  return [...BODY_SPOTS.filter(s => on.has(s.id)), ...state.body.custom.filter(c => on.has(c.id))];
+}
+/** Which sides of a spot are measured: ['r','l'], ['r'], ['l'] or [''] for a single number. */
+function spotSides(s) {
+  if (!s.paired) return [''];
+  const v = state.body.sides[s.id] || 'both';
+  return v === 'right' ? ['r'] : v === 'left' ? ['l'] : ['r', 'l'];
+}
+const spotKey = (id, side) => (side ? `${id}-${side}` : id);
+function keyInfo(key) {
+  const m = /^(.*)-([rl])$/.exec(key);
+  const s = m && spotDef(m[1])?.paired ? spotDef(m[1]) : spotDef(key);
+  return s ? { spot: s, side: m && s.paired ? m[2] : '' } : null;
+}
+function keyLabel(key) {
+  const k = keyInfo(key);
+  if (!k) return key;
+  return k.side ? `${k.spot.name} (${SIDE_NAMES[k.side].toLowerCase()})` : k.spot.name;
+}
+/** Every value key currently measured, e.g. ['chest', 'arm-r', 'arm-l', …]. */
+function activeKeys() { return activeSpots().flatMap(s => spotSides(s).map(side => spotKey(s.id, side))); }
+
+// ----------------------------------------------------------- numbers ----
+
+/** How a value is shown, typed and stepped, by key. */
+function valueKind(key) {
+  if (key === 'weight') return { unit: weightUnit(), step: imperial() ? 0.2 : 0.1, dec: 1, min: 20, max: 400, toShow: kgToDisplay, toStore: displayToKg };
+  if (key === 'fat') return { unit: '%', step: 0.5, dec: 1, min: 1, max: 75, toShow: x => x, toStore: x => x };
+  return { unit: lengthUnit(), step: imperial() ? 0.25 : 0.5, dec: imperial() ? 2 : 1, min: 3, max: 300, toShow: cmToDisplay, toStore: displayToCm };
+}
+const showNum = (key, v) => fmtNum(valueKind(key).toShow(v), valueKind(key).dec);
+const showVal = (key, v) => `${showNum(key, v)} ${valueKind(key).unit}`;
+
+function seriesOf(key) {
+  return state.body.entries.filter(e => (key === 'weight' || key === 'fat' ? e[key] : e.m[key]) != null)
+    .map(e => ({ d: e.date, v: key === 'weight' || key === 'fat' ? e[key] : e.m[key] }));
+}
+/** The point a change is measured from, following the "compare with" choice. */
+function baselineOf(series) {
+  if (series.length < 2) return null;
+  const last = series.at(-1);
+  if (bodyCompare === 'start') return series[0];
+  if (bodyCompare === 'last') return series.at(-2);
+  const cutoff = dateKey(addDays(parseDate(last.d), -Number(bodyCompare)));
+  let base = null;
+  for (const p of series) if (p.d <= cutoff) base = p;
+  return base || series[0];
+}
+function changeText(key, diff) {
+  const shown = valueKind(key).toShow(Math.abs(diff));
+  if (shown < 0.05) return '±0';
+  return `${diff > 0 ? '▲' : '▼'}${fmtNum(shown, valueKind(key).dec)}`;
+}
+/** Smoothed weight: each weigh-in pulls the trend 10% per day of gap towards it. */
+function trendOf(series) {
+  const out = [];
+  let t = null, prev = null;
+  for (const p of series) {
+    if (t === null) t = p.v;
+    else t += (1 - 0.9 ** Math.max(1, (parseDate(p.d) - parseDate(prev)) / 864e5)) * (p.v - t);
+    prev = p.d;
+    out.push({ d: p.d, v: t });
+  }
+  return out;
+}
+function previousValue(key, before) {
+  const s = seriesOf(key).filter(p => p.d < before);
+  return s.at(-1) || null;
+}
+
+// ------------------------------------------------------------ figure ----
+// A simple front-view figure drawn from a few widths, so two body shapes are easy to offer.
+
+const FIG_SHAPES = {
+  curvy: { neck: 9, sh: 40, chest: 36, under: 31, waist: 26, belly: 31, hips: 45, thigh: 20, delt: 11, arm: 9.5, fore: 8 },
+  straight: { neck: 11, sh: 46, chest: 40, under: 37, waist: 34, belly: 35, hips: 40, thigh: 19, delt: 12.5, arm: 10.5, fore: 9 },
+};
+const FIG_CX = 100;
+const pt = p => `${p[0].toFixed(1)} ${p[1].toFixed(1)}`;
+
+/** Closed smooth curve through points (Catmull-Rom turned into cubic Béziers). */
+function smoothClosed(pts) {
+  const n = pts.length;
+  let d = `M${pt(pts[0])}`;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n], p3 = pts[(i + 2) % n];
+    d += ` C${pt([p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6])} ${pt([p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6])} ${pt(p2)}`;
+  }
+  return d + 'Z';
+}
+
+const figureCache = new Map();
+function figureGeometry(shape) {
+  if (figureCache.has(shape)) return figureCache.get(shape);
+  const p = FIG_SHAPES[shape] || FIG_SHAPES.curvy;
+  const torso = [[p.neck, 54], [p.neck, 71], [p.sh * 0.62, 79], [p.sh, 89], [p.sh - 3, 106], [p.chest, 122], [p.under, 142],
+    [p.waist, 168], [p.belly, 192], [p.hips, 222], [p.hips - 1, 240]];
+  const legs = [[264, p.hips / 2 - 1, p.thigh], [294, p.hips / 2 - 3.5, p.thigh - 3.5], [328, 17, 10], [360, 17.5, 11.5], [402, 17, 6]];
+  const right = [...torso, ...legs.map(([y, c, w]) => [c + w, y]), [25, 416], [22, 426], [12, 426],
+    ...legs.slice().reverse().map(([y, c, w]) => [c - w, y]), [0, 252]];
+  const outline = [...right, ...right.map(([x, y]) => [-x, y]).reverse().slice(1)].map(([x, y]) => [FIG_CX + x, y]);
+  // Arms hang slightly away from the body. Offsets are along (t) and across (w) the arm.
+  const a = 13 * Math.PI / 180, u = [Math.sin(a), Math.cos(a)], n = [Math.cos(a), -Math.sin(a)], J = [p.sh - 7, 95];
+  const at = (t, w) => [J[0] + u[0] * t + n[0] * w, J[1] + u[1] * t + n[1] * w];
+  const rows = [[-9, p.delt - 5], [4, p.delt], [20, p.delt - 0.5], [42, p.arm], [70, p.arm - 2], [96, p.fore], [128, p.fore - 2.5], [144, p.fore - 0.5], [156, 3.5]];
+  const arm = [...rows.map(([t, w]) => at(t, w)), ...rows.slice().reverse().map(([t, w]) => at(t, -w))];
+  const mirror = (pts, side) => pts.map(([x, y]) => [side === 'r' ? FIG_CX - x : FIG_CX + x, y]);
+
+  // Tapes: where each spot is measured, as a line across the body or a limb.
+  const across = (y, w) => ({ a: [FIG_CX - w - 1, y], b: [FIG_CX + w + 1, y] });
+  const limb = (pa, pb, side) => { const [m1, m2] = mirror([pa, pb], side); return { a: m1, b: m2 }; };
+  const delt = at(8, p.delt)[0] + 1;
+  const tapes = {
+    neck: across(64, p.neck), shoulders: across(100, delt), chest: across(122, p.chest), underbust: across(142, p.under),
+    waist: across(168, p.waist), belly: across(192, p.belly), hips: across(222, p.hips),
+  };
+  for (const side of ['r', 'l']) {
+    tapes[`arm-${side}`] = limb(at(42, -p.arm - 1), at(42, p.arm + 1), side);
+    tapes[`forearm-${side}`] = limb(at(96, -p.fore - 1), at(96, p.fore + 1), side);
+    for (const [id, i] of [['thigh', 0], ['midthigh', 1], ['calf', 3]]) {
+      const [y, c, w] = legs[i];
+      tapes[`${id}-${side}`] = limb([c - w - 1, y], [c + w + 1, y], side);
+    }
+  }
+  const g = { body: smoothClosed(outline), arms: { r: smoothClosed(mirror(arm, 'r')), l: smoothClosed(mirror(arm, 'l')) }, tapes };
+  figureCache.set(shape, g);
+  return g;
+}
+
+/** A tape as two arcs: the front (solid) and the back of the body (faint, dashed). */
+function tapePaths(t, cls = '') {
+  const [x1, y1] = t.a, [x2, y2] = t.b;
+  const len = Math.hypot(x2 - x1, y2 - y1) || 1;
+  let nx = -(y2 - y1) / len, ny = (x2 - x1) / len;
+  if (ny < 0) { nx = -nx; ny = -ny; }
+  const bulge = Math.min(7, len * 0.09);
+  const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+  return `<path class="tape-back ${cls}" d="M${pt(t.a)} Q${pt([mx - nx * bulge, my - ny * bulge])} ${pt(t.b)}"/>
+    <path class="tape ${cls}" d="M${pt(t.a)} Q${pt([mx + nx * bulge, my + ny * bulge])} ${pt(t.b)}"/>`;
+}
+
+function figureShapes(g) {
+  const shapes = `<path d="${g.body}"/><path d="${g.arms.r}"/><path d="${g.arms.l}"/><ellipse cx="${FIG_CX}" cy="32" rx="19" ry="23"/>`;
+  return `<g class="fig-stroke">${shapes}</g><g class="fig-fill">${shapes}</g>`;
+}
+
+/** Small figure with one spot highlighted, used in the check-in. */
+function miniFigure(highlightKeys = []) {
+  const g = figureGeometry(state.body.figure);
+  const tapes = highlightKeys.map(k => g.tapes[k]).filter(Boolean).map(t => tapePaths(t, 'hl')).join('');
+  return `<svg class="mini-figure" viewBox="20 4 160 428" aria-hidden="true">${figureShapes(g)}${tapes}</svg>`;
+}
+
+/** The big figure: every measured spot with its latest value and the change, labels on both sides. */
+function bodyFigure() {
+  const g = figureGeometry(state.body.figure);
+  const OX = 80, GAP = 41;
+  const items = [];
+  for (const s of activeSpots()) {
+    if (!BODY_SPOT_IDS.includes(s.id)) continue;   // your own spots are listed under the figure
+    for (const side of spotSides(s)) {
+      const key = spotKey(s.id, side);
+      const t = g.tapes[key];
+      const col = side || s.col;
+      const anchor = col === 'r' ? (t.a[0] < t.b[0] ? t.a : t.b) : (t.a[0] > t.b[0] ? t.a : t.b);
+      items.push({ s, side, key, t, col, ax: anchor[0] + OX, ay: anchor[1] });
+    }
+  }
+  let H = 452;
+  for (const col of ['r', 'l']) {
+    const list = items.filter(i => i.col === col).sort((a, b) => a.ay - b.ay);
+    list.forEach((it, i) => { it.ly = Math.max(it.ay - 8, i ? list[i - 1].ly + GAP : 14); });
+    for (let i = list.length - 1; i >= 0; i--) if (i < list.length - 1) list[i].ly = Math.min(list[i].ly, list[i + 1].ly - GAP);
+    if (list.length) H = Math.max(H, list.at(-1).ly + 34);
+  }
+  const labels = items.map(it => {
+    const series = seriesOf(it.key), last = series.at(-1), base = baselineOf(series);
+    const left = it.col === 'r';
+    const x = left ? 4 : 356, anchor = left ? 'start' : 'end';
+    const name = `${it.s.name}${it.side ? ` · ${it.side.toUpperCase()}` : ''}`;
+    const value = last
+      ? `<tspan class="fl-num">${showNum(it.key, last.v)}</tspan><tspan class="fl-unit"> ${lengthUnit()}</tspan>${base ? `<tspan class="fl-delta" dx="5">${changeText(it.key, last.v - base.v)}</tspan>` : ''}`
+      : '<tspan class="fl-add">+ add</tspan>';
+    const lx = left ? 98 : 262;
+    const aria = `${name}: ${last ? showVal(it.key, last.v) + (base ? `, ${changeText(it.key, last.v - base.v)} ${COMPARE_CAPTION[bodyCompare]}` : '') : 'not measured yet'}`;
+    return `<g class="fl ${last ? 'has' : ''}" role="button" tabindex="0" data-action="body-spot" data-id="${it.s.id}" aria-label="${esc(aria)}">
+      <g transform="translate(${OX} 0)">${tapePaths(it.t, last ? 'has' : '')}<path class="tape-hit" d="M${pt(it.t.a)} L${pt(it.t.b)}"/></g>
+      <path class="leader" d="M${lx} ${it.ly + 5} L${it.ax + (left ? -3 : 3)} ${it.ay}"/><circle class="leader-dot" cx="${it.ax}" cy="${it.ay}" r="2"/>
+      <rect class="fl-hit" x="${left ? 0 : 258}" y="${it.ly - 14}" width="102" height="38" rx="8"/>
+      <text class="fl-name" x="${x}" y="${it.ly}" text-anchor="${anchor}">${esc(name)}</text>
+      <text class="fl-val" x="${x}" y="${it.ly + 18}" text-anchor="${anchor}">${value}</text></g>`;
+  }).join('');
+  return `<svg class="body-figure" viewBox="0 0 360 ${H}" role="group" aria-label="Your measurements on a body figure">
+    <g transform="translate(${OX} 0)">${figureShapes(g)}</g>
+    <text class="fig-side" x="${OX + 62}" y="446" text-anchor="middle">RIGHT</text><text class="fig-side" x="${OX + 138}" y="446" text-anchor="middle">LEFT</text>
+    ${labels}</svg>`;
+}
+
+// ------------------------------------------------------------- view ----
+
+renderers.body = () => {
+  const b = state.body;
+  const has = b.entries.length > 0;
+  app().innerHTML = heading('Your body, your progress.', 'Measure once or twice a week. Small changes add up.',
+    `<button class="btn light" data-action="body-customize">${icon('settings')} Customize</button><button class="btn" data-action="measure">${icon('plus')} Measure now</button>`)
+    + (has ? bodyStats() : bodyIntro())
+    + `<div class="body-grid"><section class="panel figure-panel">
+        <div class="panel-head"><h2>Measurements</h2>${has ? `<span class="muted small">${esc(lengthUnit())} · changes ${esc(COMPARE_CAPTION[bodyCompare])}</span>` : ''}</div>
+        ${has ? chips('body-compare', COMPARE_ORDER, bodyCompare, COMPARE_LABELS, 'compact') : ''}
+        ${activeSpots().some(s => BODY_SPOT_IDS.includes(s.id)) ? bodyFigure() : '<p class="muted">No spots on the figure are switched on. Choose them in Customize.</p>'}
+        ${customSpotsList()}
+        <details class="how-measure"><summary>How to measure well</summary><ul class="small">
+          <li>Use a soft tape on bare skin: snug, but not pressing in.</li>
+          <li>Keep the tape level all the way around. A mirror helps.</li>
+          <li>Same time of day each time, ideally in the morning before eating.</li>
+          <li>Measure each spot twice. If they differ, take the average.</li>
+          <li>Water, salt and your cycle can shift numbers by a centimetre or two. Watch the direction over weeks, not single days.</li></ul></details>
+      </section>
+      <div class="body-side">${weightPanel()}${b.photos ? photosPanel() : ''}</div></div>`
+    + bodyHistory();
+  hydratePhotos(app());
+};
+chipHandlers['body-compare'] = v => { bodyCompare = v; render(); };
+chipHandlers['weight-range'] = v => { weightRange = v; render(); };
+
+function bodyIntro() {
+  return `<div class="note body-intro"><strong>How it works</strong><ul>
+    <li>Tap <strong>Measure now</strong>. Forma walks you through weight and each spot, one at a time.</li>
+    <li>Left and right copy each other until you type a different number for one side.</li>
+    <li>Pick your spots, your own extra spots, body fat and measuring days in <strong>Customize</strong>.</li>
+    <li>Everything stays on this device, photos included.</li></ul></div>`;
+}
+
+function bodyStats() {
+  const tile = (label, value, sub = '') => `<div class="stat"><span class="stat-label">${label}</span><strong class="stat-value">${value}</strong>${sub ? `<span class="stat-sub">${sub}</span>` : ''}</div>`;
+  const tiles = [];
+  const w = seriesOf('weight');
+  if (w.length) {
+    const base = baselineOf(w);
+    tiles.push(tile('Weight', esc(showVal('weight', w.at(-1).v)), base ? `${changeText('weight', w.at(-1).v - base.v)} since ${esc(shortDate(parseDate(base.d)))}` : esc(shortDate(parseDate(w.at(-1).d)))));
+    const tr = trendOf(w);
+    const span = (parseDate(w.at(-1).d) - parseDate(w[0].d)) / 864e5;
+    if (w.length >= 3 && span >= 13) {
+      const back = dateKey(addDays(parseDate(w.at(-1).d), -28));
+      const from = tr.filter(p => p.d <= back).at(-1) || tr[0];
+      const weeks = Math.max(1, (parseDate(w.at(-1).d) - parseDate(from.d)) / (7 * 864e5));
+      const rate = (tr.at(-1).v - from.v) / weeks;
+      tiles.push(tile('Weight trend', esc(showVal('weight', tr.at(-1).v)), `${changeText('weight', rate)} ${esc(weightUnit())} a week lately`));
+    }
+  } else tiles.push(tile('Weight', '–', 'not weighed yet'));
+  const f = seriesOf('fat');
+  if (state.body.fat && f.length) {
+    const base = baselineOf(f);
+    tiles.push(tile('Body fat', `${fmtNum(f.at(-1).v, 1)} %`, base ? `${changeText('fat', f.at(-1).v - base.v)} since ${esc(shortDate(parseDate(base.d)))}` : ''));
+  }
+  const waist = seriesOf('waist').at(-1), hips = seriesOf('hips').at(-1);
+  if (waist && hips) tiles.push(tile('Waist ÷ hips', (waist.v / hips.v).toFixed(2), 'lower = more waist definition'));
+  const last = state.body.entries.at(-1);
+  if (tiles.length < 4) tiles.push(tile('Check-ins', state.body.entries.length, `last on ${esc(shortDate(parseDate(last.date)))}`));
+  return `<section class="stats body-stats">${tiles.slice(0, 4).join('')}</section>`;
+}
+
+function customSpotsList() {
+  const mine = activeSpots().filter(s => !BODY_SPOT_IDS.includes(s.id));
+  if (!mine.length) return '';
+  return `<div class="own-spots"><h3>Your own spots</h3>${mine.map(s => {
+    const parts = spotSides(s).map(side => {
+      const key = spotKey(s.id, side), series = seriesOf(key), last = series.at(-1), base = baselineOf(series);
+      return `<span>${side ? `<small>${side.toUpperCase()}</small> ` : ''}${last ? `<strong>${showVal(key, last.v)}</strong>${base ? ` <small class="muted">${changeText(key, last.v - base.v)}</small>` : ''}` : '<span class="muted">+ add</span>'}</span>`;
+    }).join('');
+    return `<button class="own-spot" data-action="body-spot" data-id="${s.id}"><span class="own-name">${esc(s.name)}</span><span class="own-vals">${parts}</span></button>`;
+  }).join('')}</div>`;
+}
+
+function weightPanel() {
+  const w = seriesOf('weight');
+  if (!w.length) {
+    return `<section class="panel"><div class="panel-head"><h2>Weight</h2></div><p class="muted">Weigh in during a check-in and your weight and its trend appear here.</p></section>`;
+  }
+  const days = weightRange === 'all' ? Infinity : Number(weightRange);
+  const from = days === Infinity ? '' : dateKey(addDays(new Date(), -days));
+  const shown = w.filter(p => p.d >= from);
+  const trend = trendOf(w).filter(p => p.d >= from);
+  const ranges = { 30: '1M', 90: '3M', 182: '6M', 365: '1Y', all: 'All' };
+  const toShow = p => ({ d: p.d, v: kgToDisplay(p.v) });
+  const chart = shown.length
+    ? bodyChart({ series: [{ name: 'Weigh-in', cls: 'dots', points: shown.map(toShow) }], trend: w.length >= 2 ? trend.map(toShow) : null, unit: weightUnit(), dec: 1 })
+    : '<p class="muted small">No weigh-ins in this period.</p>';
+  return `<section class="panel chart-panel"><div class="panel-head"><h2>Weight</h2><span class="muted small">${esc(weightUnit())}</span></div>
+    ${chips('weight-range', Object.keys(ranges), weightRange, ranges, 'compact')}
+    ${w.length >= 2 ? `<div class="legend-row"><span class="legend-item"><i class="key dot-key"></i>Weigh-ins</span><span class="legend-item"><i class="key line-key"></i>Trend (smooths out daily ups and downs)</span></div>` : ''}
+    ${chart}</section>`;
+}
+
+// ------------------------------------------------------------ charts ----
+
+/** Round axis steps for any range of values. */
+function niceRange(min, max) {
+  if (max - min < 0.5) { min -= 0.5; max += 0.5; }
+  const span = max - min, raw = span / 4;
+  const mag = 10 ** Math.floor(Math.log10(raw));
+  const step = [1, 2, 2.5, 5, 10].map(f => f * mag).find(s => s >= raw);
+  return { lo: Math.floor((min - span * 0.06) / step) * step, hi: Math.ceil((max + span * 0.06) / step) * step, step };
+}
+
+/** Line chart over time. Series points are { d: 'YYYY-MM-DD', v } in display units. */
+function bodyChart({ series, trend = null, unit, dec = 1, width }) {
+  const all = [...series.flatMap(s => s.points), ...(trend || [])];
+  if (!all.length) return '';
+  const W = width || clamp(($('#app')?.clientWidth || 640) > 900 ? ($('#app').clientWidth - 18) / 2 - 46 : ($('#app')?.clientWidth || 640) - 46, 280, 760);
+  const H = W < 480 ? 210 : 240, left = 42, right = 14, top = 14, bottom = 28;
+  const time = d => parseDate(d).getTime();
+  let x0 = Math.min(...all.map(p => time(p.d))), x1 = Math.max(...all.map(p => time(p.d)));
+  if (x1 - x0 < 6 * 864e5) { const mid = (x0 + x1) / 2; x0 = mid - 3 * 864e5; x1 = mid + 3 * 864e5; }
+  const { lo, hi, step } = niceRange(Math.min(...all.map(p => p.v)), Math.max(...all.map(p => p.v)));
+  const X = d => left + ((time(d) - x0) / (x1 - x0)) * (W - left - right);
+  const Y = v => top + (1 - (v - lo) / (hi - lo)) * (H - top - bottom);
+  const tickDec = step < 1 ? (step < 0.5 ? 2 : 1) : 0;
+  const yTicks = [];
+  for (let v = lo; v <= hi + step / 2; v += step) yTicks.push(v);
+  const grid = yTicks.map(v => `<line class="grid" x1="${left}" x2="${W - right}" y1="${Y(v).toFixed(1)}" y2="${Y(v).toFixed(1)}"/><text class="tick" x="${left - 7}" y="${(Y(v) + 4).toFixed(1)}" text-anchor="end">${fmtNum(v, tickDec)}</text>`).join('');
+  // Date ticks: months for longer spans, weeks for short ones.
+  const spanDays = (x1 - x0) / 864e5;
+  const xt = [];
+  if (spanDays > 75) {
+    let d = new Date(x0); d = new Date(d.getFullYear(), d.getMonth() + 1, 1, 12);
+    while (d.getTime() <= x1) { xt.push(new Date(d)); d = new Date(d.getFullYear(), d.getMonth() + 1, 1, 12); }
+  } else {
+    let d = startOfWeek(new Date(x0));
+    if (d.getTime() < x0) d = addDays(d, 7);
+    const every = spanDays > 35 ? 14 : 7;
+    while (d.getTime() <= x1) { xt.push(d); d = addDays(d, every); }
+  }
+  const keep = Math.ceil(xt.length / (W < 480 ? 4 : 6));
+  const multiYear = new Date(x0).getFullYear() !== new Date(x1).getFullYear();
+  const xLabels = xt.filter((_, i) => i % keep === 0).map(d => {
+    const label = spanDays > 75 ? d.toLocaleDateString(undefined, multiYear ? { month: 'short', year: '2-digit' } : { month: 'short' }) : shortDate(d);
+    return `<text class="tick" x="${X(dateKey(d)).toFixed(1)}" y="${H - 8}" text-anchor="middle">${esc(label)}</text>`;
+  }).join('');
+  const line = pts => pts.map((p, i) => `${i ? 'L' : 'M'}${X(p.d).toFixed(1)} ${Y(p.v).toFixed(1)}`).join(' ');
+  const paths = series.map(s => `${s.cls === 'dots' ? '' : `<path class="lc ${s.cls}" d="${line(s.points)}"/>`}
+    ${s.points.map(p => `<circle class="ld ${s.cls}" cx="${X(p.d).toFixed(1)}" cy="${Y(p.v).toFixed(1)}" r="${s.points.length > 60 ? 2.5 : 3.5}"/>`).join('')}`).join('');
+  const trendPath = trend && trend.length > 1 ? `<path class="lc trend" d="${line(trend)}"/>` : '';
+  // Hover/tap bands, one per date.
+  const dates = [...new Set(all.map(p => p.d))].sort();
+  const cols = dates.map((d, i) => {
+    const xa = i ? (X(dates[i - 1]) + X(d)) / 2 : left, xb = i < dates.length - 1 ? (X(d) + X(dates[i + 1])) / 2 : W - right;
+    const rows = series.map(s => { const p = s.points.find(q => q.d === d); return p ? `${series.length > 1 ? s.name + ': ' : ''}${fmtNum(p.v, dec)} ${unit}` : ''; }).filter(Boolean);
+    const tp = trend?.find(q => q.d === d);
+    if (tp) rows.push(`Trend: ${fmtNum(tp.v, dec)} ${unit}`);
+    const tip = [longDate(parseDate(d)), ...rows].join('|');
+    return `<g class="col" data-tip="${esc(tip)}" tabindex="0" role="img" aria-label="${esc(tip.replace(/\|/g, ', '))}"><rect class="hit" x="${xa.toFixed(1)}" y="${top}" width="${Math.max(1, xb - xa).toFixed(1)}" height="${H - top - bottom}"/><line class="hover-line" x1="${X(d).toFixed(1)}" x2="${X(d).toFixed(1)}" y1="${top}" y2="${H - bottom}"/></g>`;
+  }).join('');
+  return `<div class="chart-wrap"><svg class="chart line-chart" viewBox="0 0 ${W} ${H}" role="group" aria-label="Chart over time">
+    ${grid}<line class="axis" x1="${left}" x2="${W - right}" y1="${H - bottom}" y2="${H - bottom}"/>${xLabels}${trendPath}${paths}${cols}</svg>
+    <div class="chart-tip" hidden></div></div>`;
+}
+
+// ---------------------------------------------------------- spot detail ----
+
+actions['body-spot'] = el => spotDetail(el.dataset.id);
+function spotDetail(id) {
+  const s = spotDef(id);
+  if (!s) return;
+  const sides = spotSides(s);
+  const keys = sides.map(side => spotKey(s.id, side));
+  const series = keys.map(k => seriesOf(k));
+  const tile = (label, value, sub = '') => `<div class="stat small-stat"><span class="stat-label">${label}</span><strong class="stat-value">${value}</strong>${sub ? `<span class="stat-sub">${sub}</span>` : ''}</div>`;
+  const tiles = keys.map((k, i) => {
+    const sr = series[i], last = sr.at(-1), first = sr[0];
+    const label = sides[i] ? SIDE_NAMES[sides[i]] : 'Latest';
+    return tile(label, last ? esc(showVal(k, last.v)) : '–', last && sr.length > 1 ? `${changeText(k, last.v - first.v)} since ${esc(shortDate(parseDate(first.d)))}` : last ? esc(shortDate(parseDate(last.d))) : 'not measured yet');
+  }).join('');
+  const chartSeries = keys.map((k, i) => ({ name: sides[i] ? SIDE_NAMES[sides[i]] : s.name, cls: i ? 'b' : 'a', points: series[i].map(p => ({ d: p.d, v: cmToDisplay(p.v) })) })).filter(x => x.points.length);
+  const chart = chartSeries.some(x => x.points.length > 1)
+    ? `${chartSeries.length > 1 ? `<div class="legend-row">${chartSeries.map(x => `<span class="legend-item"><i class="key line-key ${x.cls}"></i>${esc(x.name)}</span>`).join('')}</div>` : ''}${bodyChart({ series: chartSeries, unit: lengthUnit(), dec: imperial() ? 2 : 1, width: Math.min(640, innerWidth - 72) })}`
+    : '<p class="muted small">Measure this spot a couple of times to see a chart.</p>';
+  const dates = [...new Set(series.flat().map(p => p.d))].sort().reverse();
+  const rows = dates.slice(0, 60).map(d => `<tr><td>${esc(shortDate(parseDate(d)))} <small class="muted">${parseDate(d).getFullYear()}</small></td>${keys.map(k => {
+    const v = bodyEntry(d)?.m[k];
+    const prev = v != null ? previousValue(k, d) : null;
+    return `<td>${v != null ? `<strong>${esc(showVal(k, v))}</strong>${prev ? ` <small class="muted">${changeText(k, v - prev.v)}</small>` : ''}` : '<span class="muted">–</span>'}</td>`;
+  }).join('')}</tr>`).join('');
+  const head = sides[0] ? `<thead><tr><th>Date</th>${sides.map(x => `<th>${SIDE_NAMES[x]}</th>`).join('')}</tr></thead>` : '';
+  showModal(modalHead(s.name, esc(s.hint || 'Measure at the same spot and the same time of day each time.'))
+    + `<div class="stats compact">${tiles}</div>${chart}
+    ${rows ? `<div class="table-scroll"><table class="sets spot-table">${head}<tbody>${rows}</tbody></table></div>` : ''}
+    <div class="modal-actions"><button class="btn light" data-action="close">Close</button>
+      <button class="btn" data-action="measure-spot" data-id="${s.id}">${bodyEntry(todayKey())?.m[keys[0]] != null ? 'Change today’s' : 'Add today’s'}</button></div>`);
+}
+actions['measure-spot'] = el => openMeasure({ only: el.dataset.id });
+
+// ----------------------------------------------------------- photos ----
+
+function photoFrame(id, { label = '', action = '', date = '', big = false } = {}) {
+  const blur = state.body.blur ? 'blurred' : '';
+  const attrs = action ? `data-action="${action}" data-date="${date}"` : 'data-action="photo-reveal"';
+  return `<button type="button" class="photo-frame ${blur} ${big ? 'big' : ''}" ${attrs} aria-label="${esc(label || 'Progress photo')}">
+    <img class="photo-img" data-photo-id="${esc(id)}" alt="${esc(label)}"><span class="photo-veil">Tap to show</span></button>`;
+}
+actions['photo-reveal'] = el => el.classList.toggle('revealed');
+actions['photo-open'] = el => {
+  if (el.classList.contains('blurred') && !el.classList.contains('revealed')) { el.classList.add('revealed'); return; }
+  openCompare(el.dataset.date);
+};
+
+function photoSets() { return state.body.entries.filter(e => e.photos && Object.keys(e.photos).length); }
+
+function photosPanel() {
+  const sets = photoSets();
+  const last = sets.at(-1);
+  const poseName = p => p[0].toUpperCase() + p.slice(1);
+  const body = last
+    ? `<p class="muted small">Latest: ${esc(longDate(parseDate(last.date)))}${sets.length > 1 ? ` · ${plural(sets.length, 'set')} so far` : ''}</p>
+      <div class="photo-row">${PHOTO_POSES.filter(p => last.photos[p]).map(p => `<figure>${photoFrame(last.photos[p], { label: `${poseName(p)}, ${shortDate(parseDate(last.date))}`, action: 'photo-open', date: last.date })}<figcaption>${poseName(p)}</figcaption></figure>`).join('')}</div>
+      ${sets.length > 1 ? `<div class="photo-strip">${sets.slice().reverse().map(e => `<button class="text-btn" data-action="photo-compare" data-date="${e.date}">${esc(shortDate(parseDate(e.date)))}</button>`).join('')}</div>` : ''}`
+    : '<p class="muted small">Optional. Front, side and back about once a month show changes the tape can’t. They stay on this device.</p>';
+  return `<section class="panel"><div class="panel-head"><h2>Progress photos</h2>
+      <div class="row">${sets.length > 1 ? '<button class="btn small light" data-action="photo-compare">Compare</button>' : ''}<button class="btn small ${last ? 'light' : ''}" data-action="body-photos-add">${icon('camera')} ${last ? 'New photos' : 'Add photos'}</button></div></div>
+    ${body}</section>`;
+}
+actions['body-photos-add'] = () => openMeasure({ only: 'photos' });
+actions['photo-compare'] = el => openCompare(el.dataset.date);
+
+let compareView = { pose: 'front', a: '', b: '' };
+function openCompare(dateB) {
+  const sets = photoSets();
+  if (!sets.length) return;
+  const poses = PHOTO_POSES.filter(p => sets.some(e => e.photos[p]));
+  if (!poses.includes(compareView.pose)) compareView.pose = poses[0];
+  const withPose = sets.filter(e => e.photos[compareView.pose]);
+  if (dateB) compareView.b = dateB;
+  if (!withPose.some(e => e.date === compareView.b)) compareView.b = withPose.at(-1).date;
+  if (!withPose.some(e => e.date === compareView.a) || compareView.a === compareView.b) compareView.a = withPose[0].date === compareView.b && withPose.length > 1 ? withPose[1].date : withPose[0].date;
+  renderCompare();
+}
+function renderCompare() {
+  const sets = photoSets();
+  const pose = compareView.pose;
+  const withPose = sets.filter(e => e.photos[pose]);
+  const poses = PHOTO_POSES.filter(p => sets.some(e => e.photos[p]));
+  const col = which => {
+    const e = bodyEntry(compareView[which]);
+    const facts = [e.weight ? showVal('weight', e.weight) : '', e.m.waist ? `waist ${showVal('waist', e.m.waist)}` : ''].filter(Boolean).join(' · ');
+    return `<div class="compare-col"><select data-bind="compare-${which}" aria-label="${which === 'a' ? 'Earlier' : 'Later'} photo date">${withPose.map(x => `<option value="${x.date}" ${x.date === e.date ? 'selected' : ''}>${esc(parseDate(x.date).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }))}</option>`).join('')}</select>
+      ${photoFrame(e.photos[pose], { label: `${pose}, ${e.date}`, big: true })}<small class="muted">${esc(facts)}</small></div>`;
+  };
+  const labels = Object.fromEntries(PHOTO_POSES.map(p => [p, p[0].toUpperCase() + p.slice(1)]));
+  showModal(modalHead('Compare photos', 'Side by side, so you can see what changed.')
+    + (poses.length > 1 ? chips('compare-pose', poses, pose, labels, 'compact') : '')
+    + `<div class="compare-grid">${col('a')}${col('b')}</div>
+    <div class="modal-actions"><button class="btn" data-action="close">Done</button></div>`, { wide: true, keepScroll: true });
+  hydratePhotos($('#modal'));
+}
+chipHandlers['compare-pose'] = v => { compareView.pose = v; openCompare(); };
+binds['compare-a'] = el => { compareView.a = el.value; renderCompare(); };
+binds['compare-b'] = el => { compareView.b = el.value; renderCompare(); };
+
+// ----------------------------------------------------------- history ----
+
+function bodyHistory() {
+  const list = state.body.entries.slice().reverse();
+  if (!list.length) return '';
+  let month = '';
+  const rows = list.slice(0, bodyHistoryLimit).map(e => {
+    const d = parseDate(e.date);
+    const m = d.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+    const head = m !== month ? `<h3 class="month">${esc(m)}</h3>` : '';
+    month = m;
+    const n = Object.keys(e.m).length, photos = Object.keys(e.photos || {}).length;
+    const facts = [e.weight ? showVal('weight', e.weight) : '', e.fat ? `${fmtNum(e.fat, 1)} % fat` : '', n ? plural(n, 'measurement') : '', photos ? plural(photos, 'photo') : ''].filter(Boolean);
+    return `${head}<button class="history-row" data-action="measure" data-date="${e.date}">
+      <span class="dot body-dot" aria-hidden="true"></span>
+      <span class="history-main"><strong>${esc(d.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' }))}</strong><small>${facts.map(esc).join(' · ')}${e.note ? ` · “${esc(e.note.slice(0, 60))}${e.note.length > 60 ? '…' : ''}”` : ''}</small></span>
+      <span class="history-kind">Edit</span></button>`;
+  }).join('');
+  return `<section class="history-section"><div class="section-head"><h2>Check-ins</h2><button class="text-btn" data-action="export-body-csv">Export as spreadsheet (CSV)</button></div>
+    <div class="history-list compact">${rows}</div>
+    ${list.length > bodyHistoryLimit ? `<button class="btn light" data-action="more-body-history">Show ${list.length - bodyHistoryLimit > 30 ? 'more' : 'all'}</button>` : ''}</section>`;
+}
+actions['more-body-history'] = () => { bodyHistoryLimit += 30; render(); };
+
+// --------------------------------------------------------- check-in ----
+// One step per thing to measure, so a weekly check-in is quick: weight, each spot, photos, done.
+
+let measure = null;
+/** Starting points for the +/− buttons the very first time (cm). */
+const BODY_TYPICAL = { neck: 34, shoulders: 105, chest: 90, underbust: 75, arm: 28, forearm: 24, waist: 72, belly: 82, hips: 98, thigh: 56, midthigh: 48, calf: 36 };
+
+function openMeasure({ date = todayKey(), only = null, at = null } = {}) {
+  if (session) { toast('Finish or end your current session first.'); return; }
+  const steps = only ? [only] : ['weight', ...activeSpots().map(s => s.id), ...(state.body.photos ? ['photos'] : []), 'done'];
+  measure = { date, single: !!only, steps, i: 0, vals: {}, loaded: new Set(), linked: {}, source: {}, photos: {}, previews: {}, note: '', noteLoaded: false, dirty: false, focus: !!only };
+  loadMeasureDate(date);
+  if (at && steps.includes(at)) measure.i = steps.indexOf(at);
+  renderMeasure();
+}
+
+/** Fill the check-in from what is already saved for that date (without overwriting typed values). */
+function loadMeasureDate(date) {
+  const m = measure, e = bodyEntry(date);
+  m.existing = !!e;
+  if (e) {
+    for (const k of ['weight', 'fat']) if (e[k] != null && m.vals[k] == null) { m.vals[k] = e[k]; m.loaded.add(k); }
+    for (const [k, v] of Object.entries(e.m)) if (m.vals[k] == null) { m.vals[k] = v; m.loaded.add(k); }
+    for (const [p, id] of Object.entries(e.photos || {})) if (!(p in m.photos)) m.photos[p] = id;
+    if (!m.note && e.note) { m.note = e.note; m.noteLoaded = true; }
+  }
+  for (const s of activeSpots().filter(x => x.paired)) {
+    const r = m.vals[`${s.id}-r`], l = m.vals[`${s.id}-l`];
+    if (r != null || l != null) m.linked[s.id] = r === l;
+    else {
+      const pr = previousValue(`${s.id}-r`, date), pl = previousValue(`${s.id}-l`, date);
+      m.linked[s.id] = !pr || !pl || pr.d !== pl.d || Math.abs(pr.v - pl.v) < 0.01;
+    }
+  }
+}
+
+function stepKeys(step) {
+  if (step === 'weight') return state.body.fat ? ['weight', 'fat'] : ['weight'];
+  const s = spotDef(step);
+  return s ? spotSides(s).map(side => spotKey(s.id, side)) : [];
+}
+function measureStepTitle(step) {
+  if (step === 'weight') return state.body.fat ? 'Weight & body fat' : 'Weight';
+  if (step === 'photos') return 'Progress photos';
+  if (step === 'done') return 'All set';
+  return spotDef(step)?.name || step;
+}
+function stepFilled(step) {
+  if (step === 'photos') return PHOTO_POSES.some(p => measure.photos[p]);
+  if (step === 'done') return false;
+  return stepKeys(step).some(k => measure.vals[k] != null);
+}
+
+function measureField(key, label) {
+  const k = valueKind(key);
+  const v = measure.vals[key];
+  const prev = previousValue(key, measure.date);
+  return `<div class="m-field"><label class="m-label" for="m-${key}">${esc(label)}</label>
+    <div class="stepper"><button type="button" data-action="m-adj" data-k="${key}" data-d="-1" aria-label="Less ${esc(label)}">−</button>
+    <input id="m-${key}" type="text" inputmode="decimal" autocomplete="off" enterkeyhint="next" data-bind="m-input" data-k="${key}"
+      value="${v != null ? showNum(key, v) : ''}" placeholder="${prev ? showNum(key, prev.v) : ''}">
+    <button type="button" data-action="m-adj" data-k="${key}" data-d="1" aria-label="More ${esc(label)}">+</button></div>
+    <span class="m-unit">${esc(k.unit)}</span></div>`;
+}
+function lastLine(keys) {
+  const prevs = keys.map(k => previousValue(k, measure.date));
+  const any = prevs.find(Boolean);
+  if (!any) return keys[0] === 'weight' && !state.body.entries.length ? '<p class="muted small m-last">Your first check-in! Next time, your last numbers show up here.</p>' : '';
+  const same = keys.length > 1 && prevs.every(p => p && p.d === any.d && Math.abs(p.v - any.v) < 0.01);
+  const parts = same ? [`${showVal(keys[0], any.v)} on both sides`]
+    : keys.map((k, i) => (prevs[i] ? `${keys.length > 1 && keyInfo(k)?.side ? keyInfo(k).side.toUpperCase() + ' ' : ''}${showVal(k, prevs[i].v)}` : '')).filter(Boolean);
+  return `<p class="muted small m-last">Last time (${esc(shortDate(parseDate(any.d)))}): <strong>${esc(parts.join(' · '))}</strong></p>`;
+}
+
+function stepBody(step) {
+  const m = measure;
+  if (step === 'weight') {
+    return `<div class="m-step">
+      ${m.single ? '' : `<div class="field m-date"><label for="m-date">Date</label><input id="m-date" type="date" value="${m.date}" max="${todayKey()}" data-bind="m-date"></div>`}
+      ${measureField('weight', 'Weight')}${lastLine(['weight'])}
+      ${state.body.fat ? measureField('fat', 'Body fat') + lastLine(['fat']) : ''}
+      <p class="muted small m-hint">Weigh yourself under the same conditions each time: ideally in the morning, after the bathroom, before eating or drinking.</p></div>`;
+  }
+  if (step === 'photos') {
+    const last = photoSets().filter(e => e.date < m.date).at(-1);
+    return `<div class="m-step"><p class="muted small">Optional. Once a month is plenty. Same place, light, distance and clothes each time; a timer or a mirror helps. They stay on this device.</p>
+      <div class="photo-slots">${PHOTO_POSES.map(p => photoSlot(p)).join('')}</div>
+      ${last ? `<p class="muted small">Last photos: ${esc(longDate(parseDate(last.date)))}</p>` : ''}</div>`;
+  }
+  if (step === 'done') {
+    const rows = ['weight', 'fat', ...activeKeys()].filter(k => m.vals[k] != null).map(k => {
+      const prev = previousValue(k, m.date);
+      return `<tr><td>${esc(k === 'weight' ? 'Weight' : k === 'fat' ? 'Body fat' : keyLabel(k))}</td><td><strong>${esc(showVal(k, m.vals[k]))}</strong></td><td class="muted">${prev ? changeText(k, m.vals[k] - prev.v) : ''}</td></tr>`;
+    }).join('');
+    const photos = PHOTO_POSES.filter(p => m.photos[p]).length;
+    return `<div class="m-step">
+      ${rows ? `<div class="table-scroll"><table class="sets"><tbody>${rows}</tbody></table></div>` : '<p class="muted">Nothing entered yet. Go back to add numbers, or save just a note.</p>'}
+      ${photos ? `<p class="small">${icon('camera')} ${plural(photos, 'photo')}</p>` : ''}
+      <div class="field"><label for="m-note">Note (optional)</label><textarea id="m-note" maxlength="1000" data-bind="m-note" placeholder="e.g. started Core A/B this week">${esc(m.note)}</textarea></div>
+      ${m.existing ? '<button type="button" class="text-btn danger-text" data-action="m-delete">Delete this check-in</button>' : ''}</div>`;
+  }
+  const s = spotDef(step);
+  const sides = spotSides(s);
+  const keys = sides.map(side => spotKey(s.id, side));
+  const fields = sides.length === 2
+    ? `${measureField(keys[0], 'Right')}${linkButton(s.id)}${measureField(keys[1], 'Left')}`
+    : measureField(keys[0], sides[0] ? SIDE_NAMES[sides[0]] : s.name);
+  return `<div class="m-step m-spot">
+    <div class="m-figure">${BODY_SPOT_IDS.includes(s.id) ? miniFigure(keys) : `<div class="own-badge">${icon('body')}</div>`}</div>
+    <div class="m-main"><p class="muted small m-hint">${esc(s.hint || 'Measure at exactly the same spot each time. A pen dot on the skin the first time helps.')}</p>
+      <div class="m-fields ${sides.length === 2 ? 'pair' : ''}">${fields}</div>${lastLine(keys)}</div></div>`;
+}
+function linkButton(id) {
+  const on = measure.linked[id];
+  return `<button type="button" class="m-link ${on ? 'on' : ''}" data-action="m-link" data-id="${id}" aria-pressed="${on}" title="${on ? 'Left copies right until you change it' : 'Tap to copy one side to the other again'}">
+    ${icon(on ? 'link' : 'unlink')}<span>${on ? 'Same' : 'Separate'}</span></button>`;
+}
+function photoSlot(pose) {
+  const v = measure.photos[pose];
+  const label = pose[0].toUpperCase() + pose.slice(1);
+  const img = v instanceof Blob ? `<img class="photo-img" src="${measure.previews[pose]}" alt="${label}">` : v ? `<img class="photo-img" data-photo-id="${esc(v)}" alt="${label}">` : '';
+  return `<div class="photo-slot"><label class="photo-frame ${v ? '' : 'empty'}">
+      <input type="file" accept="image/*" data-bind="m-photo" data-pose="${pose}" class="visually-hidden">
+      ${img || `<span class="photo-add">${icon('camera')}<span>Add</span></span>`}</label>
+    <span class="photo-pose">${label}</span>${v ? `<button type="button" class="text-btn small" data-action="m-photo-remove" data-pose="${pose}">Remove</button>` : ''}</div>`;
+}
+
+function renderMeasure() {
+  const m = measure, step = m.steps[m.i];
+  const last = m.i === m.steps.length - 1;
+  const dots = m.single ? '' : `<div class="m-progress">${m.steps.map((s, i) => `<button type="button" class="m-dot ${i === m.i ? 'on' : ''} ${stepFilled(s) ? 'filled' : ''}" data-action="m-goto" data-i="${i}" aria-label="${esc(measureStepTitle(s))}${i === m.i ? ' (current)' : ''}"></button>`).join('')}</div>`;
+  const sub = `${m.single ? '' : `Step ${m.i + 1} of ${m.steps.length} · `}${longDate(parseDate(m.date))}`;
+  const back = m.i === 0 ? '<button type="button" class="btn light" data-action="close">Cancel</button>' : '<button type="button" class="btn light" data-action="m-back">Back</button>';
+  const optional = stepKeys(step).length || step === 'photos';
+  const next = m.single || last ? '<button class="btn" data-action="m-save-btn">Save</button>'
+    : `<button class="btn">${optional && !stepFilled(step) ? 'Skip' : 'Next'}</button>`;
+  showModal(modalHead(measureStepTitle(step), esc(sub)) + `<form id="measure-form" class="measure" novalidate data-step="${esc(step)}">${dots}${stepBody(step)}
+    <div class="modal-actions">${m.single ? '<button type="button" class="btn light" data-action="close">Cancel</button>' : back}${next}</div></form>`);
+  hydratePhotos($('#modal'));
+  if (m.focus) {
+    const input = $('#measure-form input[data-bind="m-input"]');
+    if (input && !matchMedia('(pointer: coarse)').matches) input.focus();
+    else if (input && m.i > 0) input.focus({ preventScroll: true });
+  }
+}
+
+/** Check the typed numbers on the current step. Returns false (and says why) if one is off. */
+function checkMeasureStep() {
+  for (const input of $$('#measure-form input[data-bind="m-input"]')) {
+    const key = input.dataset.k, k = valueKind(key);
+    const n = parseDecimal(input.value);
+    if (n === null) continue;
+    const lo = k.toShow(k.min), hi = k.toShow(k.max);
+    if (!Number.isFinite(n) || n < lo || n > hi) {
+      toast(Number.isFinite(n) ? `That looks off. Type a number between ${fmtNum(lo, 0)} and ${fmtNum(hi, 0)} ${k.unit}.` : 'Type a number, like 72.5');
+      input.focus();
+      input.select?.();
+      return false;
+    }
+  }
+  return true;
+}
+
+forms['measure-form'] = () => {
+  if (!measure || !checkMeasureStep()) return;
+  if (measure.single || measure.i === measure.steps.length - 1) { saveMeasure(); return; }
+  measure.i++;
+  measure.focus = true;
+  renderMeasure();
+};
+actions['m-save-btn'] = (el, ev) => { ev.preventDefault?.(); forms['measure-form'](); };
+actions['m-back'] = () => { if (measure && measure.i > 0) { measure.i--; measure.focus = false; renderMeasure(); } };
+actions['m-goto'] = el => { if (!measure || !checkMeasureStep()) return; measure.i = Number(el.dataset.i); measure.focus = false; renderMeasure(); };
+
+/** The phone's back button steps back through the check-in before closing it. */
+function measureStepBack() {
+  if (!measure || measure.single || !$('#measure-form') || measure.i === 0) return false;
+  actions['m-back']();
+  return true;
+}
+function guardMeasureClose() {
+  if (!measure || !$('#measure-form')) return false;
+  if (!measure.dirty) { measure = null; return false; }
+  confirmDialog({
+    title: 'Discard this check-in?', yes: 'Discard', body: '<p>What you entered has not been saved yet.</p>',
+    onYes: () => { measure = null; }, onNo: () => renderMeasure(),
+  });
+  return true;
+}
+
+function setMeasureValue(key, typed) {
+  const n = parseDecimal(typed);
+  measure.vals[key] = n === null || !Number.isFinite(n) ? undefined : Math.round(valueKind(key).toStore(n) * 100) / 100;
+  measure.dirty = true;
+}
+/** Left and right copy each other until the copied side is changed by hand. */
+function mirrorAfterInput(key) {
+  const k = keyInfo(key);
+  if (!k?.side || spotSides(k.spot).length < 2) return;
+  const id = k.spot.id, other = k.side === 'r' ? 'l' : 'r';
+  if (!measure.linked[id]) return;
+  if (!measure.source[id] || measure.source[id] === k.side) {
+    measure.source[id] = k.side;
+    const otherKey = spotKey(id, other);
+    measure.vals[otherKey] = measure.vals[key];
+    const input = $(`#m-${otherKey}`);
+    if (input) input.value = measure.vals[key] != null ? showNum(otherKey, measure.vals[key]) : '';
+  } else {
+    measure.linked[id] = false;
+    const btn = $(`.m-link[data-id="${id}"]`);
+    if (btn) btn.outerHTML = linkButton(id);
+  }
+}
+binds['m-input'] = el => {
+  if (!measure) return;
+  setMeasureValue(el.dataset.k, el.value);
+  mirrorAfterInput(el.dataset.k);
+  updateMeasureDots();
+};
+actions['m-adj'] = el => {
+  const key = el.dataset.k, input = $(`#m-${key}`);
+  if (!input) return;
+  const k = valueKind(key);
+  const typed = parseDecimal(input.value);
+  const typical = key === 'weight' ? 65 : key === 'fat' ? 25 : BODY_TYPICAL[keyInfo(key)?.spot.id] ?? 30;
+  const start = Number.isFinite(typed) && typed !== null ? typed : parseDecimal(input.placeholder) ?? fmtNum(k.toShow(typical), k.dec) * 1;
+  const next = clamp(Math.round((start + Number(el.dataset.d) * k.step) / k.step) * k.step, k.toShow(k.min), k.toShow(k.max));
+  input.value = fmtNum(next, k.dec);
+  binds['m-input'](input);
+};
+actions['m-link'] = el => {
+  const id = el.dataset.id;
+  measure.linked[id] = !measure.linked[id];
+  if (measure.linked[id]) {
+    const r = spotKey(id, 'r'), l = spotKey(id, 'l');
+    const from = measure.vals[r] != null ? 'r' : 'l';
+    measure.source[id] = from;
+    const src = measure.vals[spotKey(id, from)];
+    measure.vals[from === 'r' ? l : r] = src;
+    measure.dirty = true;
+  }
+  renderMeasure();
+};
+binds['m-date'] = el => {
+  if (!isValidDateKey(el.value) || el.value > todayKey()) { el.value = measure.date; toast('Choose today or an earlier date.'); return; }
+  if (el.value === measure.date) return;
+  const typed = measure.dirty;
+  const keep = typed ? { vals: measure.vals, photos: measure.photos, note: measure.note } : null;
+  measure.date = el.value;
+  measure.vals = keep ? Object.fromEntries(Object.entries(keep.vals).filter(([k]) => !measure.loaded.has(k))) : {};
+  measure.photos = keep ? Object.fromEntries(Object.entries(keep.photos).filter(([, v]) => v instanceof Blob)) : {};
+  measure.note = keep && !measure.noteLoaded ? keep.note : '';
+  measure.loaded = new Set();
+  measure.noteLoaded = false;
+  loadMeasureDate(el.value);
+  renderMeasure();
+};
+binds['m-note'] = el => { if (measure) { measure.note = el.value; measure.dirty = true; } };
+binds['m-photo'] = async el => {
+  const file = el.files?.[0];
+  const pose = el.dataset.pose;
+  el.value = '';
+  if (!file || !measure) return;
+  try {
+    const blob = await shrinkPhoto(file);
+    if (measure.previews[pose]) URL.revokeObjectURL(measure.previews[pose]);
+    measure.photos[pose] = blob;
+    measure.previews[pose] = URL.createObjectURL(blob);
+    measure.dirty = true;
+    renderMeasure();
+  } catch (err) { toast(err.message || 'This photo could not be used.'); }
+};
+actions['m-photo-remove'] = el => {
+  const pose = el.dataset.pose;
+  if (measure.previews[pose]) URL.revokeObjectURL(measure.previews[pose]);
+  delete measure.previews[pose];
+  measure.photos[pose] = null;
+  measure.dirty = true;
+  renderMeasure();
+};
+function updateMeasureDots() {
+  const dots = $$('#measure-form .m-dot');
+  measure.steps.forEach((s, i) => dots[i]?.classList.toggle('filled', stepFilled(s)));
+  const step = measure.steps[measure.i];
+  const btn = $('#measure-form .modal-actions .btn:not(.light):not([data-action])');
+  if (btn && (stepKeys(step).length || step === 'photos')) btn.textContent = stepFilled(step) ? 'Next' : 'Skip';
+}
+
+let measureSaving = false;
+async function saveMeasure() {
+  if (measureSaving) return;
+  measureSaving = true;
+  try {
+    const m = measure;
+    const steps = m.steps;
+    const noteEl = $('#m-note');
+    if (noteEl) m.note = noteEl.value;
+    const keys = steps.flatMap(stepKeys);
+    let e = bodyEntry(m.date);
+    if (!e) { e = { date: m.date, m: {} }; state.body.entries.push(e); }
+    for (const k of keys) {
+      const v = m.vals[k];
+      const target = k === 'weight' || k === 'fat' ? e : e.m;
+      if (v != null) target[k] = v;
+      else if (m.loaded.has(k)) delete target[k];
+    }
+    let photoTrouble = false;
+    if (steps.includes('photos')) {
+      const keep = { ...(e.photos || {}) };
+      const puts = {};
+      for (const pose of PHOTO_POSES) {
+        const v = m.photos[pose];
+        if (v instanceof Blob) { const id = 'p-' + uid().replace(/[^a-zA-Z0-9-]/g, ''); puts[id] = v; keep[pose] = id; }
+        else if (v === null) delete keep[pose];
+      }
+      try { if (Object.keys(puts).length) await photoPutMany(puts); }
+      catch {
+        photoTrouble = true;
+        for (const [pose, id] of Object.entries(keep)) if (puts[id]) delete keep[pose];
+      }
+      if (Object.keys(keep).length) e.photos = keep; else delete e.photos;
+    }
+    if (steps.includes('done')) { if (m.note.trim()) e.note = m.note.trim().slice(0, 1000); else delete e.note; }
+    if (e.weight == null && e.fat == null && !Object.keys(e.m).length && !e.photos && !e.note) state.body.entries = state.body.entries.filter(x => x !== e);
+    state.body.entries.sort((a, b) => a.date.localeCompare(b.date));
+    Object.values(m.previews).forEach(url => URL.revokeObjectURL(url));
+    measure = null;
+    save(); closeModal(); render();
+    prunePhotos();
+    toast(photoTrouble ? 'Saved, but the photos could not be stored on this device.' : 'Saved. Look at you, keeping track!');
+  } finally { measureSaving = false; }
+}
+actions['m-delete'] = () => {
+  const date = measure.date;
+  confirmDialog({
+    title: 'Delete this check-in?', yes: 'Delete', body: `<p>Everything measured on ${esc(longDate(parseDate(date)))} will be removed, photos included.</p>`,
+    onYes: () => { state.body.entries = state.body.entries.filter(e => e.date !== date); measure = null; save(); render(); prunePhotos(); toast('Check-in deleted.'); },
+    onNo: () => renderMeasure(),
+  });
+};
+actions.measure = el => openMeasure({ date: el.dataset.date || todayKey() });
+
+// --------------------------------------------------------- customize ----
+
+function openCustomize() {
+  const b = state.body;
+  const on = new Set(b.spots);
+  const groups = [...new Set(BODY_SPOTS.map(s => s.group))];
+  const order = [0, 1, 2, 3, 4, 5, 6].map(i => (i + state.settings.weekStart) % 7);
+  const dayName = i => addDays(parseDate('2026-01-04'), i).toLocaleDateString(undefined, { weekday: 'short' });   // 4 Jan 2026 is a Sunday
+  const sideRow = s => {
+    const v = b.sides[s.id] || 'both';
+    const radio = (val, label) => `<label class="seg-option"><input type="radio" name="side-${s.id}" value="${val}" data-bind="body-side" data-id="${s.id}" ${v === val ? 'checked' : ''}><span>${label}</span></label>`;
+    return `<div class="side-row"><span>${esc(s.name)}</span><div class="segmented">${radio('both', 'Both')}${radio('right', 'Right')}${radio('left', 'Left')}</div></div>`;
+  };
+  const toggle = (name, label, hint = '') => `<label class="toggle-row"><span><strong>${label}</strong>${hint ? `<small>${hint}</small>` : ''}</span><input type="checkbox" class="switch" data-bind="body-pref" name="${name}" ${b[name] ? 'checked' : ''}></label>`;
+  const paired = [...BODY_SPOTS, ...b.custom].filter(s => s.paired && on.has(s.id));
+  showModal(modalHead('Customize body tracking', 'Changes save right away. Past numbers are kept.') + `<div class="customize">
+    <h3>What to measure</h3><p class="muted small">Fewer spots make check-ins quicker.</p>
+    ${groups.map(g => `<p class="label">${esc(g)}</p><div class="gear-grid">${BODY_SPOTS.filter(s => s.group === g).map(s => `<label class="gear-chip"><input type="checkbox" value="${s.id}" data-bind="body-spot-toggle" ${on.has(s.id) ? 'checked' : ''}><span>${esc(s.name)}</span></label>`).join('')}</div>`).join('')}
+    ${paired.length ? `<p class="label">Sides</p><p class="muted small">Measure both sides, or just one if that suits your body better.</p><div class="side-rows">${paired.map(sideRow).join('')}</div>` : ''}
+
+    <h3>Your own spots</h3>
+    ${b.custom.length ? `<div class="own-list">${b.custom.map(c => `<div class="own-item"><label class="checkrow"><input type="checkbox" value="${c.id}" data-bind="body-spot-toggle" ${on.has(c.id) ? 'checked' : ''}> ${esc(c.name)}${c.paired ? ' <small class="muted">(left and right)</small>' : ''}</label>
+      <button type="button" class="text-btn danger-text" data-action="body-remove-spot" data-id="${c.id}">Remove</button></div>`).join('')}</div>` : '<p class="muted small">Anything else you want to track, like knees or wrists.</p>'}
+    <div class="own-add"><input id="cz-name" type="text" maxlength="40" placeholder="Name, e.g. Knee" aria-label="New spot name" data-bind="cz-name">
+      <label class="checkrow"><input id="cz-paired" type="checkbox"> Left and right</label>
+      <button type="button" class="btn light" data-action="body-add-spot">${icon('plus')} Add</button></div>
+
+    <h3>Also track</h3>
+    ${toggle('fat', 'Body fat %', 'For a smart scale or calipers')}
+    ${toggle('photos', 'Progress photos', 'Front, side and back, about once a month')}
+    ${b.photos ? toggle('blur', 'Blur photos until tapped', 'Handy if someone looks over your shoulder') + toggle('backupPhotos', 'Include photos in backups', 'Turn off for smaller backup files') : ''}
+
+    <h3>Figure</h3>
+    <div class="segmented">${['curvy', 'straight'].map(f => `<label class="seg-option"><input type="radio" name="figure" value="${f}" data-bind="body-figure" ${b.figure === f ? 'checked' : ''}><span>${f === 'curvy' ? 'Curvy' : 'Straight'}</span></label>`).join('')}</div>
+
+    <h3>Measuring days</h3>
+    <p class="muted small">They show on My week with a Measure button. Forma can’t send notifications while it’s closed.</p>
+    <div class="weekday-picker">${order.map(i => `<label class="weekday"><input type="checkbox" value="${i}" data-bind="body-days" ${b.days.includes(i) ? 'checked' : ''}><span>${esc(dayName(i))}</span></label>`).join('')}</div>
+
+    <h3>Your data</h3>
+    <p class="muted small" id="photo-usage">${b.entries.length ? plural(b.entries.length, 'check-in') : 'No check-ins yet'}.</p>
+    <div class="row"><button type="button" class="btn light" data-action="export-body-csv">Export as spreadsheet (CSV)</button>
+      ${usedPhotoIds().length ? '<button type="button" class="btn danger" data-action="body-delete-photos">Delete all photos</button>' : ''}</div>
+  </div><div class="modal-actions"><button class="btn" data-action="close">Done</button></div>`, { keepScroll: $('#modal').open && !!$('#modal .customize') });
+  photoStats().then(st => {
+    const el = $('#photo-usage');
+    if (el && st.count) el.textContent += ` ${plural(st.count, 'photo')}, about ${st.bytes < 1e6 ? Math.max(1, Math.round(st.bytes / 1e3)) + ' KB' : fmtNum(st.bytes / 1e6, 1) + ' MB'} on this device.`;
+  }).catch(() => {});
+}
+actions['body-customize'] = () => openCustomize();
+function bodyChanged() { save(); render(); openCustomize(); }
+binds['body-spot-toggle'] = el => {
+  const b = state.body;
+  if (el.checked && !b.spots.includes(el.value)) b.spots.push(el.value);
+  if (!el.checked) b.spots = b.spots.filter(x => x !== el.value);
+  bodyChanged();
+};
+binds['body-side'] = el => { if (el.value === 'both') delete state.body.sides[el.dataset.id]; else state.body.sides[el.dataset.id] = el.value; bodyChanged(); };
+binds['body-pref'] = el => { state.body[el.name] = el.checked; bodyChanged(); };
+binds['body-figure'] = el => { state.body.figure = el.value === 'straight' ? 'straight' : 'curvy'; bodyChanged(); };
+binds['body-days'] = el => {
+  const d = Number(el.value);
+  state.body.days = el.checked ? [...new Set([...state.body.days, d])].sort() : state.body.days.filter(x => x !== d);
+  bodyChanged();
+};
+actions['body-add-spot'] = () => {
+  const name = $('#cz-name').value.trim();
+  if (!name) { toast('Give the spot a name.'); $('#cz-name').focus(); return; }
+  const taken = [...BODY_SPOTS, ...state.body.custom].some(s => s.name.toLowerCase() === name.toLowerCase());
+  if (taken) { toast('You already have a spot with that name.'); return; }
+  if (state.body.custom.length >= 40) { toast('That is the maximum number of your own spots.'); return; }
+  const id = 'c-' + uid().replace(/[^a-zA-Z0-9]/g, '').slice(0, 12);
+  state.body.custom.push({ id, name: name.slice(0, 40), paired: $('#cz-paired').checked });
+  state.body.spots.push(id);
+  bodyChanged();
+  toast(`“${name}” added to your check-ins.`);
+};
+actions['body-remove-spot'] = el => {
+  const c = state.body.custom.find(x => x.id === el.dataset.id);
+  const n = state.body.entries.filter(e => Object.keys(e.m).some(k => k === c.id || k.startsWith(c.id + '-'))).length;
+  confirmDialog({
+    title: `Remove “${c.name}”?`, yes: 'Remove',
+    body: `<p>${n ? `Its numbers from ${plural(n, 'check-in')} will be deleted too.` : 'It has no numbers yet.'} To only stop measuring it, untick it instead.</p>`,
+    onYes: () => {
+      const b = state.body;
+      b.custom = b.custom.filter(x => x.id !== c.id);
+      b.spots = b.spots.filter(x => x !== c.id);
+      delete b.sides[c.id];
+      for (const e of b.entries) for (const k of Object.keys(e.m)) if (k === c.id || k.startsWith(c.id + '-')) delete e.m[k];
+      bodyChanged();
+    },
+    onNo: () => openCustomize(),
+  });
+};
+actions['body-delete-photos'] = () => confirmDialog({
+  title: 'Delete all progress photos?', yes: 'Delete photos',
+  body: '<p>All photos are removed from this device. Your numbers stay. Backups you already made still contain their photos.</p>',
+  onYes: async () => {
+    for (const e of state.body.entries) delete e.photos;
+    save();
+    try { await photoClearAll(); } catch { /* nothing stored */ }
+    render(); openCustomize(); toast('Photos deleted.');
+  },
+  onNo: () => openCustomize(),
+});
+
+// --------------------------------------------------------- My week ----
+
+/** The "measuring day" line in the Today card, or the done check-in. */
+function measureTodayItem() {
+  const done = bodyEntry(todayKey());
+  if (done) {
+    const n = Object.keys(done.m).length;
+    const facts = [done.weight ? showVal('weight', done.weight) : '', n ? plural(n, 'measurement') : ''].filter(Boolean).join(' · ');
+    return `<div class="today-item done"><div><strong>Body check-in</strong><small>${esc(facts || 'Saved')}</small></div>
+      <button class="done-badge" data-view="body">${icon('check')} Measured</button></div>`;
+  }
+  if (!state.body.days.includes(new Date().getDay())) return '';
+  return `<div class="today-item"><div><strong>Measuring day</strong><small>Weight and measurements · about 2 min</small></div>
+    <button class="btn lime" data-action="measure">Measure</button></div>`;
+}
+/** A small marker in the week calendar: measured, or a measuring day still to come. */
+function bodyDayMark(d) {
+  const key = dateKey(d);
+  if (bodyEntry(key)) return `<button class="event body-mark done" data-view="body">${icon('check', 'event-check')}Measured</button>`;
+  if (key >= todayKey() && state.body.days.includes(d.getDay())) {
+    return `<button class="event body-mark" ${key === todayKey() ? 'data-action="measure"' : 'data-view="body"'}>${icon('body', 'event-check')}Measure</button>`;
+  }
+  return '';
+}
+
+// ------------------------------------------------------------ export ----
+
+function exportBodyCSV() {
+  const b = state.body;
+  const known = [...BODY_SPOTS, ...b.custom].flatMap(s => (s.paired ? ['r', 'l'] : ['']).map(side => spotKey(s.id, side)));
+  const used = new Set(b.entries.flatMap(e => Object.keys(e.m)));
+  const keys = known.filter(k => used.has(k));
+  const cell = v => { const t = String(v ?? ''); return /[",\n;]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t; };
+  const rows = [['date', `weight_${weightUnit()}`, 'body_fat_pct', ...keys.map(k => `${keyLabel(k)} (${lengthUnit()})`), 'photos', 'note']];
+  for (const e of b.entries) {
+    rows.push([e.date, e.weight ? showNum('weight', e.weight) : '', e.fat ?? '', ...keys.map(k => (e.m[k] != null ? showNum(k, e.m[k]) : '')),
+      Object.keys(e.photos || {}).length || '', e.note || '']);
+  }
+  download(`forma-body-${todayKey()}.csv`, rows.map(r => r.map(cell).join(',')).join('\n'), 'text/csv');
+  toast('Measurements exported as a spreadsheet file.');
+}
+actions['export-body-csv'] = () => exportBodyCSV();
+
+</script>
 <script>/* js/views/settings.js */
 // Settings: units, calendar, theme, session behaviour, equipment and data.
 'use strict';
 
-const APP_VERSION = '0.6';
+const APP_VERSION = '0.7';
 
 renderers.settings = () => {
   const s = state.settings;
@@ -3998,22 +5429,26 @@ actions.import = () => {
 };
 
 let pendingBackup = null;
+let pendingPhotos = {};
 async function handleBackupFile(file) {
   try {
-    if (file.size > 20e6) throw new Error('Choose a backup smaller than 20 MB.');
+    if (file.size > 300e6) throw new Error('Choose a backup smaller than 300 MB.');
     let parsed;
     try { parsed = JSON.parse(await file.text()); } catch { throw new Error('This file is not a Forma backup (it is not JSON).'); }
     pendingBackup = normalizeState(parsed);
+    pendingPhotos = backupPhotosFrom(parsed.photos);
     const b = pendingBackup;
-    showModal(modalHead('Restore this backup?') + `<p>It contains ${plural(b.routines.length, 'routine')}, ${plural(b.exercises.length, 'custom exercise')}, ${plural(b.schedule.length, 'plan')} and ${plural(b.history.length, 'history entry', 'history entries')}${b.activeSession ? ', plus an unfinished session you can resume' : ''}.</p>
+    const photos = Object.keys(pendingPhotos).length;
+    const body = b.body.entries.length ? `, ${plural(b.body.entries.length, 'body check-in')}${photos ? ` with ${plural(photos, 'photo')}` : ''}` : '';
+    showModal(modalHead('Restore this backup?') + `<p>It contains ${plural(b.routines.length, 'routine')}, ${plural(b.exercises.length, 'custom exercise')}, ${plural(b.schedule.length, 'plan')}, ${plural(b.history.length, 'history entry', 'history entries')}${body}${b.activeSession ? ', plus an unfinished session you can resume' : ''}.</p>
       <p class="note warning">Restoring replaces everything currently saved in this browser. Export first if you want to keep it.</p>
       <div class="modal-actions"><button class="btn light" data-action="export">Export current data</button><button class="btn danger" data-action="confirm-restore">Replace with backup</button></div>`);
   } catch (err) { toast(err.message || 'Could not read this backup.'); }
 }
-actions['confirm-restore'] = () => {
+actions['confirm-restore'] = async () => {
   if (!pendingBackup) return;
-  const b = pendingBackup;
-  pendingBackup = null;
+  const b = pendingBackup, photos = pendingPhotos;
+  pendingBackup = null; pendingPhotos = {};
   const snapshot = b.activeSession;
   delete b.activeSession;
   state = b;
@@ -4022,16 +5457,19 @@ actions['confirm-restore'] = () => {
   applyTheme();
   if (snapshot) { resumeSession(snapshot); saveSession(); }
   closeModal(); render(); toast('Backup restored.');
+  try { await restorePhotos(photos); render(); }
+  catch { if (Object.keys(photos).length) toast('Backup restored, but its photos could not be stored on this device.'); }
 };
 
 actions['erase-all'] = () => confirmDialog({
   title: 'Erase everything?', yes: 'Erase all data',
-  body: '<p>This deletes all routines, plans, custom exercises, history and settings from this browser. It cannot be undone.</p><p class="note warning">Export a backup first if there is anything you might want back.</p>',
+  body: '<p>This deletes all routines, plans, custom exercises, history, body measurements, photos and settings from this browser. It cannot be undone.</p><p class="note warning">Export a backup first if there is anything you might want back.</p>',
   onYes: () => {
     state = freshState();
     session = null;
     try { [STORAGE_KEY, STORAGE_KEY + '-recovery', SESSION_KEY, LEGACY_KEY, LEGACY_KEY + '-recovery'].forEach(k => localStorage.removeItem(k)); } catch { /* ignore */ }
     save(); applyTheme(); go('week'); toast('All data erased.');
+    photoClearAll().catch(() => {});
   },
 });
 
@@ -4728,7 +6166,9 @@ document.addEventListener('click', ev => {
 
 document.addEventListener('keydown', ev => {
   // Rows that act like buttons (e.g. in tables) respond to Enter.
-  if (ev.key === 'Enter' && ev.target.matches?.('tr[data-action]')) { actions[ev.target.dataset.action]?.(ev.target, ev); return; }
+  if ((ev.key === 'Enter' || (ev.key === ' ' && ev.target.matches?.('g[data-action]'))) && ev.target.matches?.('tr[data-action], g[role=button][data-action]')) {
+    ev.preventDefault(); actions[ev.target.dataset.action]?.(ev.target, ev); return;
+  }
   if (!session || $('#modal').open || $('#picker').open) return;
   const typing = ev.target.closest?.('input,textarea,select,button,summary');
   if (typing) return;
@@ -4780,7 +6220,7 @@ for (const id of ['modal', 'picker']) {
     else actions.close();
   });
   dlg.addEventListener('cancel', ev => {
-    if (id === 'modal' && guardEditorClose()) ev.preventDefault();
+    if (id === 'modal' && (guardEditorClose() || guardMeasureClose())) ev.preventDefault();
     if (id === 'picker') { ev.preventDefault(); actions['close-picker'](); }
   });
 }

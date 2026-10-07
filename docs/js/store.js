@@ -28,8 +28,24 @@ const DEFAULT_SETTINGS = {
   lastBackupAt: '',       // when a backup was last exported or shared
 };
 
+/** Body tracking: which spots to measure, preferences, and one entry per measured day. */
+function freshBody() {
+  return {
+    spots: [...DEFAULT_BODY_SPOTS],   // measured spots, built-in ids and custom ids
+    sides: {},                       // paired spot id -> 'both' | 'right' | 'left'
+    custom: [],                      // your own spots: { id, name, paired }
+    figure: 'curvy',                 // 'curvy' | 'straight'
+    fat: false,                      // also track body fat %
+    photos: true,                    // offer progress photos
+    blur: false,                     // blur photos until tapped
+    backupPhotos: true,              // put photos into backups
+    days: [],                        // weekdays (0 = Sunday) shown as measuring days on My week
+    entries: [],                     // { date, weight (kg), fat (%), m: { key: cm }, photos: { pose: id }, note }
+  };
+}
+
 function freshState() {
-  return { version: 2, settings: structuredClone(DEFAULT_SETTINGS), exercises: [], routines: [], schedule: [], history: [] };
+  return { version: 2, settings: structuredClone(DEFAULT_SETTINGS), exercises: [], routines: [], schedule: [], history: [], body: freshBody() };
 }
 
 let state = freshState();
@@ -197,8 +213,69 @@ function normalizeState(raw) {
   }
   out.history.sort((a, b) => Date.parse(a.at) - Date.parse(b.at));
 
+  // Body measurements (added in 0.7; older backups simply have none).
+  if (s.body !== undefined) out.body = normalizeBody(s.body, fail);
+
   // An unfinished session (backups include one; version 1 kept it inside the state).
   if (s.activeSession) out.activeSession = normalizeSession(s.activeSession, checkExercise, checkSet, fail);
+  return out;
+}
+
+function normalizeBody(b, fail) {
+  const str = (x, n) => typeof x === 'string' && x.length <= n;
+  const num = (x, min, max) => Number.isFinite(x) && x >= min && x <= max;
+  const idOk = x => str(x, 100) && /^[a-zA-Z0-9_-]+$/.test(x);
+  const bool = (x, d) => (typeof x === 'boolean' ? x : d);
+  if (!b || typeof b !== 'object') fail('the body measurements are invalid');
+  const out = freshBody();
+  const custom = Array.isArray(b.custom) ? b.custom : [];
+  if (custom.length > 40) fail('there are too many custom body spots');
+  for (const c of custom) {
+    if (!c || !idOk(c.id) || !c.id.startsWith('c-') || !str(c.name, 40) || !c.name.trim() || out.custom.some(x => x.id === c.id)) fail('a custom body spot is invalid');
+    out.custom.push({ id: c.id, name: c.name.trim(), paired: c.paired === true });
+  }
+  const known = new Set([...BODY_SPOT_IDS, ...out.custom.map(c => c.id)]);
+  if (Array.isArray(b.spots)) out.spots = [...new Set(b.spots.filter(id => known.has(id)))];
+  const pairedIds = [...BODY_SPOTS.filter(s => s.paired).map(s => s.id), ...out.custom.filter(c => c.paired).map(c => c.id)];
+  for (const id of pairedIds) if (['both', 'right', 'left'].includes(b.sides?.[id])) out.sides[id] = b.sides[id];
+  out.figure = b.figure === 'straight' ? 'straight' : 'curvy';
+  out.fat = bool(b.fat, false); out.photos = bool(b.photos, true); out.blur = bool(b.blur, false); out.backupPhotos = bool(b.backupPhotos, true);
+  out.days = Array.isArray(b.days) ? [...new Set(b.days.filter(d => Number.isInteger(d) && d >= 0 && d <= 6))].sort() : [];
+  const entries = Array.isArray(b.entries) ? b.entries : [];
+  if (entries.length > 20000) fail('there are too many body measurements');
+  const dates = new Set();
+  for (const e of entries) {
+    if (!e || !isValidDateKey(e.date) || dates.has(e.date)) fail('a body measurement has an invalid or repeated date');
+    dates.add(e.date);
+    const entry = { date: e.date, m: {} };
+    if (e.weight !== undefined && e.weight !== null) { if (!num(e.weight, 20, 400)) fail(`the weight on ${e.date} is out of range`); entry.weight = e.weight; }
+    if (e.fat !== undefined && e.fat !== null) { if (!num(e.fat, 1, 75)) fail(`the body fat on ${e.date} is out of range`); entry.fat = e.fat; }
+    const m = e.m ?? {};
+    if (typeof m !== 'object' || Array.isArray(m) || Object.keys(m).length > 200) fail(`the measurements on ${e.date} are invalid`);
+    for (const [k, v] of Object.entries(m)) {
+      if (!/^[a-zA-Z0-9_-]{1,100}$/.test(k) || !num(v, 3, 400)) fail(`a measurement on ${e.date} is invalid`);
+      entry.m[k] = v;
+    }
+    if (e.photos !== undefined && e.photos !== null) {
+      if (typeof e.photos !== 'object' || !Object.entries(e.photos).every(([p, id]) => PHOTO_POSES.includes(p) && idOk(id))) fail(`the photos on ${e.date} are invalid`);
+      if (Object.keys(e.photos).length) entry.photos = { ...e.photos };
+    }
+    if (e.note !== undefined && e.note !== null) { if (!str(e.note, 1000)) fail(`the note on ${e.date} is too long`); if (e.note.trim()) entry.note = e.note.trim(); }
+    out.entries.push(entry);
+  }
+  out.entries.sort((x, y) => x.date.localeCompare(y.date));
+  return out;
+}
+
+/** Photos inside a backup file: { id: "data:image/jpeg;base64,…" }. Invalid ones are dropped. */
+function backupPhotosFrom(raw) {
+  const out = {};
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return out;
+  for (const [id, url] of Object.entries(raw).slice(0, 5000)) {
+    if (!/^[a-zA-Z0-9_-]{1,100}$/.test(id) || typeof url !== 'string' || url.length > 20e6) continue;
+    const head = /^data:image\/(jpeg|png|webp);base64,/.exec(url);
+    if (head && /^[A-Za-z0-9+/]+={0,2}$/.test(url.slice(head[0].length))) out[id] = url;
+  }
   return out;
 }
 
@@ -306,11 +383,16 @@ function updateSaveBadges() {
 
 // ------------------------------------------------------------- backups ----
 
-function backupText() {
+/** The whole backup as text. Progress photos are added from the photo store when wanted. */
+async function backupText() {
   if (session) { accountTime(); saveSession(); }
   const data = { ...state, exportedAt: new Date().toISOString(), app: 'Forma' };
   if (session && !session.isDemo) data.activeSession = sessionSnapshot();
-  return JSON.stringify(data, null, 2);
+  const ids = state.body.backupPhotos ? usedPhotoIds() : [];
+  if (ids.length) {
+    try { data.photos = await photosAsDataURLs(ids); } catch { toast('The photos could not be read, so this backup has none.'); }
+  }
+  return JSON.stringify(data, null, ids.length ? 0 : 2);
 }
 const backupName = () => `forma-backup-${todayKey()}.json`;
 
@@ -319,8 +401,8 @@ function markBackedUp() {
   save();
 }
 
-function exportBackup() {
-  download(backupName(), backupText(), 'application/json');
+async function exportBackup() {
+  download(backupName(), await backupText(), 'application/json');
   markBackedUp();
   toast('Backup downloaded. Keep it somewhere safe.');
 }
@@ -330,7 +412,7 @@ function canShareFiles() {
   try { return !!navigator.canShare?.({ files: [new File(['{}'], 'test.json', { type: 'application/json' })] }); } catch { return false; }
 }
 async function shareBackup() {
-  const file = new File([backupText()], backupName(), { type: 'application/json' });
+  const file = new File([await backupText()], backupName(), { type: 'application/json' });
   try {
     await navigator.share({ files: [file], title: 'Forma backup' });
     markBackedUp();

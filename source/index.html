@@ -34,6 +34,7 @@
   <script defer src="js/model.js"></script>
   <script defer src="js/store.js"></script>
   <script defer src="js/stats.js"></script>
+  <script defer src="js/photos.js"></script>
   <script defer src="js/stickers.js"></script>
   <script defer src="js/ui.js"></script>
   <script defer src="js/views/week.js"></script>
@@ -41,6 +42,7 @@
   <script defer src="js/views/exercises.js"></script>
   <script defer src="js/views/quick.js"></script>
   <script defer src="js/views/progress.js"></script>
+  <script defer src="js/views/body.js"></script>
   <script defer src="js/views/settings.js"></script>
   <script defer src="js/player.js"></script>
   <script defer src="js/pwa.js"></script>
@@ -57,7 +59,8 @@
       <button data-view="library"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 7v10M17.5 7v10M3.5 9.5v5M20.5 9.5v5M6.5 12h11"/></svg><span>Exercises</span></button>
       <button data-view="quick"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M10.2 8.6 15.4 12l-5.2 3.4z"/></svg><span>Quick start</span></button>
       <button data-view="progress"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M10 20V5M16 20v-6M2.5 20.5h19"/></svg><span>Progress</span></button>
-      <button data-view="settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg><span>Settings</span></button>
+      <button data-view="body"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="4.4" r="2.2"/><path d="M8.3 21l1.3-7.6-1.2-4.1c2.3-1.2 4.9-1.2 7.2 0l-1.2 4.1 1.3 7.6"/><path d="M6.6 12.6c3.5 1.5 7.3 1.5 10.8 0" stroke-dasharray="1.6 1.6"/></svg><span>Body</span></button>
+      <button data-view="settings" class="nav-settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg><span>Settings</span></button>
     </nav>
     <div class="side-bottom">
       <div class="save-badge" data-save-status>Saved on this device</div>
@@ -68,7 +71,8 @@
   <main>
     <header class="topbar">
       <span id="breadcrumb">MY WEEK</span>
-      <button class="btn small light" data-action="log-activity">+ Log activity</button>
+      <div class="topbar-actions"><button class="btn small light" data-action="log-activity">+ Log activity</button>
+        <button class="icon-btn topbar-settings" data-view="settings" aria-label="Settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg></button></div>
     </header>
     <div id="app"></div>
     <footer>Make room for movement. Make it your own.</footer>

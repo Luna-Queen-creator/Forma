@@ -43,6 +43,28 @@ const GEAR = ['Mat', 'Chair or bench', 'Wall or support', 'Yoga props', 'Dumbbel
   'Cable / machines', 'Cardio machine', 'Bike', 'Pool', 'Box or step', 'Jump rope', 'Battle ropes'];
 const DEFAULT_GEAR = ['Mat', 'Chair or bench', 'Wall or support'];
 
+/**
+ * Body measurement spots. Paired spots are stored per side as "<id>-r" and "<id>-l".
+ * `col` is the side of the figure a centre spot's label sits on.
+ */
+const BODY_SPOTS = [
+  { id: 'neck', name: 'Neck', group: 'Upper body', col: 'r', hint: 'Around the middle of the neck, tape level, without pressing.' },
+  { id: 'shoulders', name: 'Shoulders', group: 'Upper body', col: 'l', hint: 'Around the widest part of both shoulders, arms relaxed at your sides.' },
+  { id: 'chest', name: 'Chest / bust', group: 'Upper body', col: 'r', hint: 'Around the fullest part of the chest, tape level under the arms. Breathe normally.' },
+  { id: 'underbust', name: 'Under-bust', group: 'Upper body', col: 'l', hint: 'Snug, directly under the chest, where a bra band sits.' },
+  { id: 'arm', name: 'Upper arm', group: 'Arms', paired: true, hint: 'Halfway between shoulder and elbow, arm hanging relaxed.' },
+  { id: 'forearm', name: 'Forearm', group: 'Arms', paired: true, hint: 'The widest part, just below the elbow, arm relaxed.' },
+  { id: 'waist', name: 'Waist', group: 'Middle', col: 'r', hint: 'The narrowest point, usually a little above the belly button. Breathe out normally, don’t pull in.' },
+  { id: 'belly', name: 'Belly', group: 'Middle', col: 'l', hint: 'Around the belly button, standing relaxed, after a normal breath out.' },
+  { id: 'hips', name: 'Hips & glutes', group: 'Middle', col: 'r', hint: 'The widest point of the glutes, feet together.' },
+  { id: 'thigh', name: 'Upper thigh', group: 'Legs', paired: true, hint: 'Just below the glute fold, standing with weight on both legs.' },
+  { id: 'midthigh', name: 'Mid thigh', group: 'Legs', paired: true, hint: 'Halfway between the hip crease and the top of the kneecap.' },
+  { id: 'calf', name: 'Calf', group: 'Legs', paired: true, hint: 'The widest part of the calf, standing with weight on both feet.' },
+];
+const BODY_SPOT_IDS = BODY_SPOTS.map(s => s.id);
+const DEFAULT_BODY_SPOTS = ['chest', 'arm', 'waist', 'belly', 'hips', 'thigh', 'calf'];
+const PHOTO_POSES = ['front', 'side', 'back'];
+
 const SECTIONS = ['Warm-up', 'Main', 'Cool-down'];
 const SIDES = ['Not applicable', 'Both sides', 'Alternating', 'Left', 'Right'];
 const LEGACY_SIDES = ['Both / alternating'];
